@@ -1,0 +1,15 @@
+Package: parseLatex
+Type: Package
+Title: Parse LaTeX Code
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Duncan", "Murdoch",
+      email = "murdoch.duncan@gmail.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: This package exports an enhanced version of the
+    tools::parseLatex function, which handles more LaTeX syntax.
+License: GPL-2 or higher.
+Encoding: UTF-8
