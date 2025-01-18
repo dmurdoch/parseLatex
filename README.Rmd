@@ -1,0 +1,42 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# parseLatex
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of `parseLatex` is to provide a parser for a subset of
+LaTeX syntax that is more capable than the `tools::parseLatex()` 
+parser.
+
+## Installation
+
+You can install the development version of parseLatex from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("dmurdoch/parseLatex")
+```
+
+## Example
+
+This is a basic example :
+
+```{r example}
+library(parseLatex)
+library(kableExtra)
+parseLatex(kbl(mtcars[1:2, 1:2]))
+```

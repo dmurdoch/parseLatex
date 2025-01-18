@@ -15,3 +15,4 @@ License: GPL-2 or higher.
 Encoding: UTF-8
 URL: https://github.com/dmurdoch/parseLatex
 BugReports: https://github.com/dmurdoch/parseLatex/issues
+Suggests: kableExtra
