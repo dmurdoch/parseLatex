@@ -13,3 +13,5 @@ Description: This package exports an enhanced version of the
     tools::parseLatex function, which handles more LaTeX syntax.
 License: GPL-2 or higher.
 Encoding: UTF-8
+URL: https://github.com/dmurdoch/parseLatex
+BugReports: https://github.com/dmurdoch/parseLatex/issues
