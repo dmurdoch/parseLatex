@@ -3,3 +3,4 @@
 export(parseLatex)
 importFrom(tools,deparseLatex)
 importFrom(utils,getParseData)
+useDynLib(parseLatex, .registration=TRUE)

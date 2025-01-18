@@ -24,4 +24,14 @@ parseLatex <- function(text,
                         "Sinput", "Soutput"),
                        verb = "\\Sexpr") {
 
+  ## the internal function must get some sort of srcfile
+  srcfile <- srcfilecopy(filename, text, file.mtime(filename))
+  text <- paste(text, collapse="\n")
+  .External(C_parseLatex, text, srcfile, as.logical(verbose), as.character(verbatim), as.character(verb))
+
 }
+
+
+#' @name parseLatex
+#' @useDynLib parseLatex, .registration=TRUE
+"_PACKAGE"
