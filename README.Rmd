@@ -19,8 +19,14 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 The goal of `parseLatex` is to provide a parser for a subset of
-LaTeX syntax that is more capable than the `tools::parseLatex()` 
-parser.
+LaTeX syntax that is more complete than the `tools::parseLatex()` 
+parser.  
+
+Perhaps some day it will handle all LaTeX inputs, but that's not
+likely.  For now, I'm aiming to handle anything that `knitr::kable()` 
+and the `kableExtra` functions will produce.
+
+At the moment, it doesn't even do as much as `tools::parseLatex()`.
 
 ## Installation
 
@@ -38,5 +44,9 @@ This is a basic example :
 ```{r example}
 library(parseLatex)
 library(kableExtra)
-parseLatex(kbl(mtcars[1:2, 1:2]))
+latex <- kbl(mtcars[1:2, 1:2], format = "latex")
+cat(latex)
+parsed <- parseLatex(latex)
+parsed
+getParseData(parsed)
 ```
