@@ -1,0 +1,6 @@
+all: $(SHLIB)
+
+$(SHLIB): gramLatex.tab.c
+
+gramLatex.tab.c: gramLatex.y
+	bison gramLatex.y

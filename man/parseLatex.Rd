@@ -4,6 +4,7 @@
 \name{parseLatex}
 \alias{parseLatex-package}
 \alias{parseLatex}
+\alias{print.LaTeX2}
 \title{Parse LaTeX code}
 \usage{
 parseLatex(
@@ -13,6 +14,8 @@ parseLatex(
   verbatim = c("verbatim", "verbatim*", "Sinput", "Soutput"),
   verb = "\\\\Sexpr"
 )
+
+\method{print}{LaTeX2}(x, ...)
 }
 \arguments{
 \item{text}{A character vector containing LaTeX source code.}
@@ -26,7 +29,7 @@ parseLatex(
 \item{verb}{A character vector containing LaTeX macros that should be assumed to hold verbatim text.}
 }
 \value{
-`NULL`, so far.
+Parsed Latex in list with class `"LaTeX2"`.
 }
 \description{
 The \code{parseLatex} function parses LaTeX source, producing a structured object.

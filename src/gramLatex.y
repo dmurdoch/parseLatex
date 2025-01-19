@@ -170,7 +170,7 @@ static SEXP	xxnewlist(SEXP);
 static SEXP	xxlist(SEXP, SEXP);
 static void	xxsavevalue(SEXP, YYLTYPE *);
 static SEXP	xxtag(SEXP, int, YYLTYPE *);
-static SEXP 	xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
+static SEXP xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP	xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP	xxblock(SEXP, YYLTYPE *);
 static void	xxSetInVerbEnv(SEXP);
@@ -178,9 +178,10 @@ static void	xxSetInVerbEnv(SEXP);
 static int	mkMarkup(int);
 static int	mkText(int);
 static int 	mkComment(int);
-static int      mkVerb(int);
+static int  mkSpecial(int, int);
+static int  mkVerb(int);
 static int	mkVerb2(const char *, int);
-static int      mkVerbEnv(void);
+static int  mkVerbEnv(void);
 static int	mkDollar(int);
 
 static SEXP R_LatexTagSymbol = NULL;
@@ -194,8 +195,9 @@ static SEXP R_LatexTagSymbol = NULL;
 %token		END_OF_INPUT ERROR
 %token		MACRO
 %token		TEXT COMMENT
-%token	        BEGIN END VERB VERB2
-%token          TWO_DOLLARS
+%token	  BEGIN END VERB VERB2
+%token    TWO_DOLLARS
+%token    SPECIAL
 
 /* Recent bison has <> to represent all of the destructors below, but we don't assume it */
 
@@ -225,6 +227,7 @@ nonMath:	Item				{ $$ = xxnewlist($1); }
 Item:		TEXT				{ $$ = xxtag($1, TEXT, &@$); }
 	|	COMMENT				{ $$ = xxtag($1, COMMENT, &@$); }
 	|	MACRO				{ $$ = xxtag($1, MACRO, &@$); }
+	| SPECIAL     { $$ = xxtag($1, SPECIAL, &@$); }
 	|	VERB				{ $$ = xxtag($1, VERB, &@$); }
 	|	VERB2				{ $$ = xxtag($1, VERB, &@$); }
 	|	environment			{ $$ = $1; }
@@ -275,26 +278,26 @@ static SEXP xxlist(SEXP list, SEXP item)
 
 static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
 {
-    SEXP ans;
+  SEXP ans;
 #if DEBUGVALS
-    Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
+  Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
 #endif
-    PRESERVE_SV(ans = allocVector(VECSXP, 2));
-    SET_VECTOR_ELT(ans, 0, begin);
-    RELEASE_SV(begin);
-    if (!isNull(body)) {
-	SET_VECTOR_ELT(ans, 1, PairToVectorList(CDR(body)));
-	RELEASE_SV(body);
-    }
-    /* FIXME:  check that begin and end match */
-    setAttrib(ans, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
-    setAttrib(ans, R_LatexTagSymbol, mkString("ENVIRONMENT"));
-    if (!isNull(end))
-	RELEASE_SV(end);
+  PRESERVE_SV(ans = allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(ans, 0, begin);
+  RELEASE_SV(begin);
+  if (!isNull(body)) {
+	  SET_VECTOR_ELT(ans, 1, PairToVectorList(CDR(body)));
+	  RELEASE_SV(body);
+  }
+  /* FIXME:  check that begin and end match */
+  setAttrib(ans, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
+  setAttrib(ans, R_LatexTagSymbol, mkString("ENVIRONMENT"));
+  if (!isNull(end))
+	  RELEASE_SV(end);
 #if DEBUGVALS
-    Rprintf(" result: %p\n", ans);
+  Rprintf(" result: %p\n", ans);
 #endif
-    return ans;
+  return ans;
 }
 
 static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
@@ -307,7 +310,7 @@ static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
     RELEASE_SV(body);
     setAttrib(ans, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
     setAttrib(ans, R_LatexTagSymbol,
-        mkString(display ? "DISPLAYMATH" : "MATH"));
+    mkString(display ? "DISPLAYMATH" : "MATH"));
 #if DEBUGVALS
     Rprintf(" result: %p\n", ans);
 #endif
@@ -365,7 +368,7 @@ static void xxsavevalue(SEXP items, YYLTYPE *lloc)
 	setAttrib(VECTOR_ELT(parseState.Value, 0), R_LatexTagSymbol, mkString("TEXT"));
     }
     if (!isNull(parseState.Value)) {
-    	setAttrib(parseState.Value, R_ClassSymbol, mkString("LaTeX"));
+    	setAttrib(parseState.Value, R_ClassSymbol, mkString("LaTeX2"));
     	setAttrib(parseState.Value, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
     }
 }
@@ -539,8 +542,8 @@ static void UseState(ParseState *state) {
 
 static void InitSymbols(void)
 {
-    if (!R_LatexTagSymbol)
-	R_LatexTagSymbol = install("latex_tag");
+  if (!R_LatexTagSymbol)
+	  R_LatexTagSymbol = install("latex_tag");
 }
 
 static SEXP ParseLatex(ParseStatus *status, SEXP srcfile)
@@ -772,19 +775,38 @@ static void setlastloc(void)
 /* Split the input stream into tokens. */
 /* This is the lowest of the parsing levels. */
 
+static int tex_catcode(int c) {
+  if (c == R_EOF) return -1;
+  if (c == '\\') return 0;
+  if (c == '{') return 1;
+  if (c == '}') return 2;
+  if (c == '$') return 3;
+  if (c == '&') return 4;
+  if (c == '\n' || c == '\r') return 5;
+  if (c == '#') return 6;
+  if (c == '^') return 7;
+  if (c == '_') return 8;
+  if (c == 0) return 9;
+  if (c == ' ' || c == '\t') return 10;
+  if (c == '%') return 14;
+  if (isalpha(c)) return 11;
+  if (c < 32) return 15;
+  return 12;
+}
+
 static int token(void)
 {
-    int c;
+    int c, cat;
 
     if (parseState.xxinitvalue) {
-        yylloc.first_line = 0;
-        yylloc.first_column = 0;
-        yylloc.first_byte = 0;
-        yylloc.last_line = 0;
-        yylloc.last_column = 0;
-        yylloc.last_byte = 0;
-	PRESERVE_SV(yylval = mkString(""));
-        c = parseState.xxinitvalue;
+      yylloc.first_line = 0;
+      yylloc.first_column = 0;
+      yylloc.first_byte = 0;
+      yylloc.last_line = 0;
+      yylloc.last_column = 0;
+      yylloc.last_byte = 0;
+	    PRESERVE_SV(yylval = mkString(""));
+      c = parseState.xxinitvalue;
     	parseState.xxinitvalue = 0;
     	return(c);
     }
@@ -796,15 +818,19 @@ static int token(void)
 
     c = xxgetc();
 
-    switch (c) {
-    	case '%': return mkComment(c);
-	case '\\':return mkMarkup(c);
-        case R_EOF:return END_OF_INPUT;
-    	case LBRACE:return c;
-    	case RBRACE:return c;
-    	case '$': return mkDollar(c);
+    cat = tex_catcode(c);
+
+    switch (cat) {
+    	case 0:  return mkMarkup(c);
+    	case 1:  return '{';
+    	case 2:  return '}';
+    	case 3:  return mkDollar(c);
+    	case 11: return mkText(c);
+    	case 14: return mkComment(c);
+
+      case -1:return END_OF_INPUT;
+    	default: return mkSpecial(c, cat);
     }
-    return mkText(c);
 }
 
 #define INITBUFSIZE 128
@@ -816,20 +842,11 @@ static int mkText(int c)
     unsigned int nstext = INITBUFSIZE;
     char *stext = st0, *bp = st0;
 
-    while(1) {
-    	switch (c) {
-    	case '\\':
-    	case '%':
-    	case LBRACE:
-    	case RBRACE:
-    	case '$':
-    	case R_EOF:
-    	    goto stop;
-    	}
+    do {
     	TEXT_PUSH(c);
     	c = xxgetc();
-    };
-stop:
+    } while (tex_catcode(c) == 11);
+
     xxungetc(c);
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
     if(st1) free(st1);
@@ -842,11 +859,15 @@ static int mkComment(int c)
     char *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
     char *stext = st0, *bp = st0;
+    int cat;
 
-    do TEXT_PUSH(c);
-    while ((c = xxgetc()) != '\n' && c != R_EOF);
+    do {
+      TEXT_PUSH(c);
+      c = xxgetc();
+      cat = tex_catcode(c);
+    } while (cat != 5 && cat != -1);
 
-    if (c == R_EOF) xxungetc(c);
+    if (cat == -1) xxungetc(c);
     else TEXT_PUSH(c);
 
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
@@ -856,9 +877,12 @@ static int mkComment(int c)
 
 static int mkDollar(int c)
 {
-    int retval = c;
+    int retval = c, cat;
 
-    if ((c = xxgetc()) == '$')
+    c = xxgetc();
+    cat = tex_catcode(c);
+
+    if (cat == 3)
         retval = TWO_DOLLARS;
     else
         xxungetc(c);
@@ -872,10 +896,13 @@ static int mkMarkup(int c)
     char *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
     char *stext = st0, *bp = st0;
-    int retval = 0;
+    int retval = 0, cat;
 
-    TEXT_PUSH(c);
-    while (isalpha((c = xxgetc()))) TEXT_PUSH(c);
+    do {
+      TEXT_PUSH(c);
+      c = xxgetc();
+      cat = tex_catcode(c);
+    } while (cat == 11);
 
     /* One non-alpha allowed */
     if (bp - stext == 1) {
@@ -883,19 +910,32 @@ static int mkMarkup(int c)
     	TEXT_PUSH('\0');
     	retval = MACRO;
     } else {
-	TEXT_PUSH('\0');
-        retval = KeywordLookup(stext);
-        if (retval == VERB)
-            retval = mkVerb(c); /* This makes the yylval */
-        else if (retval == VERB2)
-            retval = mkVerb2(stext, c); /* ditto */
-        else if (c != ' ') /* Eat a space, but keep other terminators */
-    	    xxungetc(c);
+	    TEXT_PUSH('\0');
+      retval = KeywordLookup(stext);
+      if (retval == VERB)
+        retval = mkVerb(c); /* This makes the yylval */
+      else if (retval == VERB2)
+        retval = mkVerb2(stext, c); /* ditto */
+      else if (cat != 10) /* Eat a space, but keep other terminators */
+    	  xxungetc(c);
     }
     if (retval != VERB)
-	PRESERVE_SV(yylval = mkString(stext));
+	    PRESERVE_SV(yylval = mkString(stext));
     if(st1) free(st1);
     return retval;
+}
+
+static int mkSpecial(int c, int cat)
+{
+  char st0[INITBUFSIZE];
+  char *st1 = NULL;
+  unsigned int nstext = INITBUFSIZE;
+  char *stext = st0, *bp = st0;
+  TEXT_PUSH(c);
+  PRESERVE_SV(yylval = mkString2(stext, bp - stext));
+  setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
+  if(st1) free(st1);
+  return SPECIAL;
 }
 
 static int mkVerb(int c)
