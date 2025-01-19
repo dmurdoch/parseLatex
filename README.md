@@ -13,8 +13,6 @@ Perhaps some day it will handle all LaTeX inputs, but that’s not likely.
 For now, I’m aiming to handle anything that `knitr::kable()` and the
 `kableExtra` functions will produce.
 
-At the moment, it doesn’t even do as much as `tools::parseLatex()`.
-
 ## Installation
 
 You can install the development version of parseLatex from
@@ -27,7 +25,7 @@ pak::pak("dmurdoch/parseLatex")
 
 ## Example
 
-This is a basic example :
+This is a basic example.
 
 ``` r
 library(parseLatex)
@@ -45,8 +43,9 @@ cat(latex)
 #> \hline
 #> \end{tabular}
 parsed <- parseLatex(latex)
-parsed
-#> NULL
-getParseData(parsed)
-#> NULL
+# This is a blank followed by a table; drop the blank
+table <- parsed[[find_env(parsed, "tabular")]]
+# Get the alignment options from the content
+brace_options(table[[2]])
+#> l|r|r
 ```

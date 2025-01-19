@@ -26,8 +26,6 @@ Perhaps some day it will handle all LaTeX inputs, but that's not
 likely.  For now, I'm aiming to handle anything that `knitr::kable()` 
 and the `kableExtra` functions will produce.
 
-At the moment, it doesn't even do as much as `tools::parseLatex()`.
-
 ## Installation
 
 You can install the development version of parseLatex from [GitHub](https://github.com/) with:
@@ -39,7 +37,7 @@ pak::pak("dmurdoch/parseLatex")
 
 ## Example
 
-This is a basic example :
+This is a basic example.
 
 ```{r example}
 library(parseLatex)
@@ -47,6 +45,8 @@ library(kableExtra)
 latex <- kbl(mtcars[1:2, 1:2], format = "latex")
 cat(latex)
 parsed <- parseLatex(latex)
-parsed
-getParseData(parsed)
+# This is a blank followed by a table; drop the blank
+table <- parsed[[find_env(parsed, "tabular")]]
+# Get the alignment options from the content
+brace_options(table[[2]])
 ```
