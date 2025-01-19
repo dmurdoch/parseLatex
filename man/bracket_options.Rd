@@ -4,7 +4,7 @@
 \alias{bracket_options}
 \title{Extract bracket wrapped options from Latex code.}
 \usage{
-bracket_options(items, which = 1, drop = TRUE)
+bracket_options(items, which = 1, drop = TRUE, start = 1)
 }
 \arguments{
 \item{items}{A list of latex items}
@@ -13,6 +13,8 @@ bracket_options(items, which = 1, drop = TRUE)
 macros support more than one set.}
 
 \item{drop}{Should whitespace be dropped?}
+
+\item{start}{Start looking at `items[[start]]`}
 }
 \description{
 Many Latex environments and macros take optional parameters

@@ -4,7 +4,7 @@
 \alias{brace_options}
 \title{Extract brace wrapped options from Latex code.}
 \usage{
-brace_options(items, which = 1, drop = TRUE)
+brace_options(items, which = 1, drop = TRUE, start = 1)
 }
 \arguments{
 \item{items}{A list of latex items}
@@ -12,6 +12,8 @@ brace_options(items, which = 1, drop = TRUE)
 \item{which}{Return this block}
 
 \item{drop}{Should whitespace be dropped from the result?}
+
+\item{start}{Start looking at `items[[start]]`}
 }
 \description{
 Some Latex environments and macros take optional parameters

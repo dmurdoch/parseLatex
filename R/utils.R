@@ -1,5 +1,6 @@
 #' Utility functions for working with parsed Latex.
 #' @rdname Utilities
+#' @name Utilities
 #' @param item A single latex item.
 #'
 #' @returns `latexTag()` returns the LaTeX2 tag for the item or `NULL`.
@@ -18,35 +19,59 @@ catcode <- function(item) {
 
 #' @rdname Utilities
 #'
-#' @returns `envname()` returns the Latex environment name for an item, or `NULL`.
+#' @returns `envName()` returns the Latex environment name for an item, or `NULL`.
 #' @export
-envname <- function(item) {
+envName <- function(item) {
   if (latexTag(item) == "ENVIRONMENT")
     item[[1]]
 }
 
 #' @rdname Utilities
 #'
-#' @returns `macroname()` returns the Latex macro, or `NULL`.
+#' @returns `macroName()` returns the Latex macro, or `NULL`.
 #' @export
-macroname <- function(item) {
+macroName <- function(item) {
   if (latexTag(item) == "MACRO")
     as.character(item)
 }
 
-is_env <- function(item,  types = NULL) {
-  !is.null(envname(item)) &&
-    (is.null(types) || item[[1]] %in% types)
+#' @rdname Utilities
+#' @param envtypes Types of Latex environment to check for,
+#' e.g. `"table"`.
+#'
+#' @returns `is_env()` returns a boolean if the item matches.
+#' @export
+#'
+is_env <- function(item,  envtypes = NULL) {
+  !is.null(envName(item)) &&
+    (is.null(envtypes) || item[[1]] %in% envtypes)
 }
 
-is_macro <- function(item, types = NULL) {
-  !is.null(macroname(item)) &&
-    (is.null(types) || item %in% types)
+#' @rdname Utilities
+#' @param macros Which macros to match, e.g. `"\\\\caption"`.
+#'
+#' @returns `is_macro()` returns a boolean indicating the match.
+#' @export
+is_macro <- function(item, macros = NULL) {
+  !is.null(macroName(item)) &&
+    (is.null(macros) || item %in% macros)
 }
 
+#' @rdname Utilities
+
+#' @returns `is_block()` returns a boolean indicating whether the `item` is a block wrapped in curly braces.
+#' @export
 is_block <- function(item) {
   latexTag(item) == "BLOCK"
 }
+
+#' @rdname Utilities
+
+#' @returns `as_LaTeX2()` marks the `items` as parsed Latex so that
+#' they print nicely.
+#' @export
+as_LaTeX2 <- function(items)
+  structure(items, class = "LaTeX2")
 
 #' @rdname Utilities
 #' @param bracket Which bracket are we looking for?
@@ -63,17 +88,40 @@ is_bracket <- function(item, bracket) {
     item == bracket
 }
 
-isWhitespace <- function(item) {
+#' @rdname Utilities
+
+#' @returns `is_whitespace()` returns a boolean indicating if the
+#' `item` is a space, tab or newline.
+#' @export
+is_whitespace <- function(item) {
   cat <- catcode(item)
   !is.null(cat) && cat %in% c(5, 10)
 }
 
 #' @rdname Utilities
 #'
-#' @returns `dropWhitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+#' @returns `drop_items()` returns the list of items with specific items removed.
 #' @export
-dropWhitespace <- function(items) {
-  structure(Filter(function(item) !isWhitespace(item), items), class = "LaTeX2")
+drop_items <- function(items, which) {
+  if (length(which))
+    items <- items[-which]
+  as_LaTeX2(items)
+}
+
+#' @rdname Utilities
+#'
+#' @returns `select_items()` returns the list of subsetted items
+#' @export
+select_items <- function(items, which) {
+  as_LaTeX2(items[which])
+}
+
+#' @rdname Utilities
+#'
+#' @returns `drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+#' @export
+drop_whitespace <- function(items) {
+  as_LaTeX2(Filter(function(item) !is_whitespace(item), items))
 }
 
 #' Extract bracket wrapped options from Latex code.
@@ -85,30 +133,32 @@ dropWhitespace <- function(items) {
 #'
 #' @param drop Should whitespace be dropped?
 #'
+#' @param start Start looking at `items[[start]]`
 #' @description
 #' Many Latex environments and macros take optional parameters
 #' wrapped in square brackets.  This function extracts those,
 #' assuming they come immediately after the macro.
 #'
 #' @export
-bracket_options <- function(items, which = 1, drop = TRUE) {
-  start <- NA
+bracket_options <- function(items, which = 1, drop = TRUE, start = 1) {
+  begin <- NA
   n <- length(items)
-  for (i in seq_len(n)) {
-    if (is.na(start) && is_bracket(items[[i]], "[")) {
-      which <- which - 1
-      start <- i
-    } else if (!is.na(start) && is_bracket(items[[i]], "]")) {
-      if (which == 0) {
-        result <- items[start + seq_len(i - start - 1)]
-        if (drop)
-          result <- dropWhitespace(result)
-        return(structure(result, class = "LaTeX2"))
-      } else
-        start <- NA
-    } else if (is.na(start) && !isWhitespace(items[[i]]))
-      break
-  }
+  if (start <= n)
+    for (i in start:n) {
+      if (is.na(begin) && is_bracket(items[[i]], "[")) {
+        which <- which - 1
+        begin <- i
+      } else if (!is.na(begin) && is_bracket(items[[i]], "]")) {
+        if (which == 0) {
+          result <- items[begin + seq_len(i - begin - 1)]
+          if (drop)
+            result <- drop_whitespace(result)
+          return(as_LaTeX2(result))
+        } else
+          begin <- NA
+      } else if (is.na(begin) && !is_whitespace(items[[i]]))
+        break
+    }
   invisible()
 }
 
@@ -117,6 +167,7 @@ bracket_options <- function(items, which = 1, drop = TRUE) {
 #' @param items A list of latex items
 #' @param which Return this block
 #' @param drop Should whitespace be dropped from the result?
+#' @param start Start looking at `items[[start]]`
 #'
 #' @description
 #' Some Latex environments and macros take optional parameters
@@ -125,8 +176,11 @@ bracket_options <- function(items, which = 1, drop = TRUE) {
 #' some bracketed options.
 #'
 #' @export
-brace_options <- function(items, which = 1, drop = TRUE) {
-  items <- dropWhitespace(items)
+brace_options <- function(items, which = 1, drop = TRUE, start = 1) {
+  if (start > length(items))
+    return(invisible())
+
+  items <- drop_whitespace(items[start:length(items)])
   while (length(items)) {
     if (is_bracket(items[[1]], "[")) {
       skip <- length(bracket_options(items, drop = FALSE)) + 2
@@ -136,8 +190,8 @@ brace_options <- function(items, which = 1, drop = TRUE) {
       if (which == 0) {
         result <- items[[1]]
         if (drop)
-          result <- dropWhitespace(result)
-        return(structure(result, class = "LaTeX2"))
+          result <- drop_whitespace(result)
+        return(as_LaTeX2(result))
       } else
         items <- items[-1]
     } else
@@ -146,9 +200,55 @@ brace_options <- function(items, which = 1, drop = TRUE) {
   invisible()
 }
 
-tabular_type <- function(item, tabtypes = c("tabular", "longtable")) {
-  if (is_env(item, tabtypes))
-    item[[1]]
+#' @rdname Utilities
+
+#' @returns `find_env()` returns the indices within `items`
+#' of environments in `envtypes`.
+#' @export
+find_env <- function(items, envtypes) {
+  which(sapply(seq_along(items),
+               function(i)
+                 is_env(items[[i]]) &&
+                 envName(items[[i]]) %in% envtypes))
 }
 
+#' @rdname Utilities
 
+#' @returns `find_macro()` returns the index within `items`
+#' of instances in `macros`.
+#' @export
+find_macro <- function(items, macros) {
+  which(sapply(seq_along(items),
+               function(i)
+                 is_macro(items[[i]]) &&
+                 macroName(items[[i]]) %in% macros))
+}
+
+#' @rdname Utilities
+#' @param codes Which codes to look for
+#' @returns `find_catcode()` returns the index within `items`
+#' of specials matching `code`.
+#' @export
+find_catcode <- function(items, codes) {
+  which(sapply(seq_along(items),
+               function(i)
+                 latexTag(items[[i]]) == "SPECIAL" &&
+                 catcode(items[[i]]) %in% codes))
+}
+
+#' @rdname Utilities
+#' @param splits Which items divide the parts?
+#' @returns `split_items()` returns a list of pieces
+#' separated at the splits
+#' @export
+split_items <- function(items, splits) {
+  prev <- 0
+  sapply(splits, function(s) {
+    if (s > prev + 1) {
+      sel <- select_items(items, (prev + 1):(s - 1))
+      prev <<- s
+      sel
+    } else
+      as_LaTeX2(list())
+  })
+}

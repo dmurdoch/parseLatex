@@ -1,38 +1,47 @@
 # Magic mirror for latex tables --------------
 #' @export
 magic_mirror_latex <- function(kable_input){
+
   table_info <- list(tabular = NULL, booktabs = FALSE, align = NULL,
                      valign = NULL, ncol = NULL, nrow = NULL, colnames = NULL,
                      rownames = NULL, caption = NULL, caption.short = NULL,
                      contents = NULL,
                      centering = FALSE, table_env = FALSE)
 
+  # parsed - the whole input.
+  # outeridx - the index of the table environment or NULL if none
+  # inner - the contents of the table env, or parsed if none
+  # contents - everything inside the tabular environment (including
+  #            the options)
+
   parsed <- parseLatex(kable_input)
 
   # Outer wrapper
-  outer <- Filter(function(item) is_env(item, "table"), parsed)
-  if (!length(outer))
+  outeridx <- find_env(parsed, "table")
+  if (!length(outeridx))
     inner <- parsed
   else {
-    if (length(outer) > 1) {
-      warning(length(outer), " tables found.  Using the first.")
-      outer <- outer[1]
+    if (length(outeridx) > 1) {
+      warning(length(outeridx), " tables found.  Using the first.")
+      outeridx <- outeridx[1]
     }
-    inner <- outer[[2]]
+    inner <- as_LaTeX2(parsed[[c(outeridx, 2)]])
   }
 
   # Tabular
-  table <- Filter(function(item) !is.null(tabular_type(item)), inner)
-  if (!length(table))
+  tableidx <- find_env(inner, c("tabular", "longtable"))
+  if (!length(tableidx))
     stop("No tabular environment found.")
-  if (length(table) > 1)
-    warning(length(table), " tabular environments found; using the first")
-  table <- table[[1]]
-  table_info$tabular <- tabular_type(table)
+  if (length(tableidx) > 1) {
+    warning(length(tableidx), " tabular environments found; using the first")
+    tableidx <- tableidx[1]
+  }
+  table <- inner[[tableidx]]
+  table_info$tabular <- envName(table)
 
   contents <- table[[2]]
   # Booktabs
-  table_info$booktabs <- length(Filter(function(item) is_macro(item, "\\toprule"), contents)) > 0
+  table_info$booktabs <- length(find_macro(contents, "\\toprule")) > 0
 
   # Align
   options <- deparseLatex(brace_options(contents))
@@ -52,28 +61,49 @@ magic_mirror_latex <- function(kable_input){
   table_info$end_tabular <- paste0("\\\\end\\{", table_info$tabular, "\\}")
   # N of columns
   table_info$ncol <- nchar(table_info$align)
+
   # Caption
-  if (str_detect(kable_input, "caption\\[")) {
-    caption_line <- str_match(kable_input, "\\\\caption(.*)\\n")[2]
-    table_info$caption.short <- str_match(caption_line, "\\[(.*?)\\]")[2]
-    table_info$caption <- substr(caption_line,
-                                 nchar(table_info$caption.short) + 4,
-                                 nchar(caption_line))
-  } else {
-    table_info$caption <- str_match(kable_input, "caption\\{(.*?)\\n")[2]
+  if (table_info$tabular == "longtable")
+    items <- contents
+  else
+    items <- inner
+
+  captionidx <- find_macro(items, c("\\caption", "\\caption*"))
+
+  if (length(captionidx)) {
+    cap <- bracket_options(items, drop = FALSE, start = captionidx[1] + 1)
+    if (length(cap))
+      table_info$caption.short <- deparseLatex(cap)
+    cap <- brace_options(items, drop = FALSE, start = captionidx + 1)
+    if (!is.null(cap))
+      table_info$caption <- deparseLatex(cap)
   }
-  if (table_info$tabular == "longtable") {
-    table_info$caption <- str_sub(table_info$caption, 1, -4)
-  } else {
-    table_info$caption <- str_sub(table_info$caption, 1, -2)
-  }
+
   # Contents
-  table_info$contents <- str_match_all(kable_input, "\n(.*)\\\\\\\\")[[1]][,2]
-  table_info$contents <- regex_escape(table_info$contents, T)
-  if (table_info$tabular == "longtable" & !is.na(table_info$caption) &
-      !str_detect(kable_input, "\\\\begin\\{table\\}\\n\\n\\\\caption")) {
-    table_info$contents <- table_info$contents[-1]
-  }
+  items <- contents
+  # Drop the tabular options
+  skip <- length(bracket_options(items, drop = FALSE)) +
+          length(brace_options(items, drop = FALSE))
+  if (skip > 0)
+    items <- drop_items(items, 1:skip)
+
+  # Drop the captions
+  skip <- find_macro(items, c("\\caption", "\\caption*"))
+  items <- drop_items(items, c(skip, skip+1))
+
+  # Drop the rules
+  skip <- find_macro(items, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule"))
+  items <- drop_items(items, skip)
+
+  # Drop all newlines
+  skip <- find_catcode(items, 5)
+  items <- drop_items(items, skip)
+
+  # Extract the rows
+  breaks <- find_macro(items, "\\\\")
+  rows <- split_items(items, breaks)
+  table_info$contents <- sapply(rows, deparseLatex)
+
   if (!is.null(attr(kable_input, "n_head"))) {
     n_head <- attr(kable_input, "n_head")
     table_info$new_header_row <- table_info$contents[seq(n_head - 1, 1)]
@@ -84,21 +114,22 @@ magic_mirror_latex <- function(kable_input){
   table_info$nrow <- length(table_info$contents)
   table_info$duplicated_rows <- (sum(duplicated(table_info$contents)) != 0)
   # Column names
-  if (table_info$booktabs & !grepl("\\\\midrule", kable_input)) {
+  if (table_info$booktabs & length(find_macro(contents, "\\midrule")) == 0) {
     table_info$colnames <- NULL
     table_info$position_offset <- 0
   } else {
-    table_info$colnames <- str_split(table_info$contents[1], " \\& ")[[1]]
+    row <- select_items(items, seq_len(breaks[1] - 1))
+    align <- c(find_catcode(row, 4), length(row) + 1)
+    table_info$colnames <- sapply(split_items(row, align),
+                                  deparseLatex)
     table_info$position_offset <- 1
   }
   # Row names
   table_info$rownames <- str_extract(table_info$contents, "^[^ &]*")
 
-  table_info$centering <- grepl("\\\\centering", kable_input)
+  table_info$centering <- length(find_macro(inner, "\\centering")) > 0
 
-  table_info$table_env <- (!is.na(table_info$caption) &
-                             table_info$tabular != "longtable") ||
-    grepl("\\\\begin\\{table\\}", kable_input)
+  table_info$table_env <- !is.null(outeridx)
 
   return(table_info)
 }
