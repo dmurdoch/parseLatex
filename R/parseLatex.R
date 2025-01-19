@@ -69,6 +69,13 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
 }
 
 # This converts a latex object into a single element character vector
+#' Convert latex object into character vector
+#'
+#' @param x A latex object
+#' @param dropBraces Whether to drop unnecessary braces.
+#'
+#' @returns A character vector.
+#' @export
 deparseLatex <- function(x, dropBraces = FALSE)
 {
   specials <- c("\\", "#", "$", "%", "&", "~", "_", "^", "{", "}")

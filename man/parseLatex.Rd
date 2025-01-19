@@ -15,7 +15,7 @@ parseLatex(
   verb = "\\\\Sexpr"
 )
 
-\method{print}{LaTeX2}(x, ...)
+\method{print}{LaTeX2}(x, tags = FALSE, ...)
 }
 \arguments{
 \item{text}{A character vector containing LaTeX source code.}
