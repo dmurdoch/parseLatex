@@ -148,8 +148,9 @@ typedef enum {
 } ParseStatus;
 
 static int	R_ParseError = 0; /* Line where parse error occurred */
-static int	R_ParseErrorCol;    /* Column of start of token where parse error occurred */
-static SEXP	R_ParseErrorFile;   /* Source file where parse error was seen.  Either a
+/* the next two are currently unused */
+/* static int	R_ParseErrorCol;     Column of start of token where parse error occurred */
+/* static SEXP	R_ParseErrorFile;    Source file where parse error was seen.  Either a
  STRSXP or (when keeping srcrefs) a SrcFile ENVSXP */
 #define PARSE_ERROR_SIZE 256	    /* Parse error messages saved here */
 static char	R_ParseErrorMsg[PARSE_ERROR_SIZE] = "";
@@ -332,7 +333,7 @@ typedef struct YYLTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 336 "gramLatex.tab.c"
+#line 337 "gramLatex.tab.c"
 
 #ifdef short
 # undef short
@@ -625,9 +626,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   212,   212,   213,   214,   217,   218,   219,   220,   221,
-     222,   224,   225,   227,   228,   229,   230,   231,   232,   233,
-     234,   236,   236,   240,   242,   244,   245
+       0,   213,   213,   214,   215,   218,   219,   220,   221,   222,
+     223,   225,   226,   228,   229,   230,   231,   232,   233,   234,
+     235,   237,   237,   241,   243,   245,   246
 };
 #endif
 
@@ -1273,29 +1274,29 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
   switch (yytype)
     {
       case 5: /* "MACRO" */
-#line 208 "gramLatex.y"
+#line 209 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1279 "gramLatex.tab.c"
+#line 1280 "gramLatex.tab.c"
 	break;
       case 6: /* "TEXT" */
-#line 208 "gramLatex.y"
+#line 209 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1284 "gramLatex.tab.c"
+#line 1285 "gramLatex.tab.c"
 	break;
       case 7: /* "COMMENT" */
-#line 208 "gramLatex.y"
+#line 209 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1289 "gramLatex.tab.c"
+#line 1290 "gramLatex.tab.c"
 	break;
       case 8: /* "BEGIN" */
-#line 208 "gramLatex.y"
+#line 209 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1294 "gramLatex.tab.c"
+#line 1295 "gramLatex.tab.c"
 	break;
       case 9: /* "END" */
-#line 208 "gramLatex.y"
+#line 209 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1299 "gramLatex.tab.c"
+#line 1300 "gramLatex.tab.c"
 	break;
 
       default:
@@ -1618,134 +1619,134 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 212 "gramLatex.y"
+#line 213 "gramLatex.y"
     { xxsavevalue((yyvsp[(1) - (2)]), &(yyloc)); YYACCEPT; ;}
     break;
 
   case 3:
-#line 213 "gramLatex.y"
+#line 214 "gramLatex.y"
     { xxsavevalue(NULL, &(yyloc)); YYACCEPT; ;}
     break;
 
   case 4:
-#line 214 "gramLatex.y"
+#line 215 "gramLatex.y"
     { PRESERVE_SV(parseState.Value = R_NilValue);  YYABORT; ;}
     break;
 
   case 5:
-#line 217 "gramLatex.y"
-    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
-    break;
-
-  case 6:
 #line 218 "gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
-  case 7:
+  case 6:
 #line 219 "gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
-  case 8:
+  case 7:
 #line 220 "gramLatex.y"
-    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
-  case 9:
+  case 8:
 #line 221 "gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
-  case 10:
+  case 9:
 #line 222 "gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
+  case 10:
+#line 223 "gramLatex.y"
+    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    break;
+
   case 11:
-#line 224 "gramLatex.y"
+#line 225 "gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
   case 12:
-#line 225 "gramLatex.y"
+#line 226 "gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
   case 13:
-#line 227 "gramLatex.y"
+#line 228 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), TEXT, &(yyloc)); ;}
     break;
 
   case 14:
-#line 228 "gramLatex.y"
+#line 229 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), COMMENT, &(yyloc)); ;}
     break;
 
   case 15:
-#line 229 "gramLatex.y"
+#line 230 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), MACRO, &(yyloc)); ;}
     break;
 
   case 16:
-#line 230 "gramLatex.y"
+#line 231 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), SPECIAL, &(yyloc)); ;}
     break;
 
   case 17:
-#line 231 "gramLatex.y"
-    { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
-    break;
-
-  case 18:
 #line 232 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
     break;
 
-  case 19:
+  case 18:
 #line 233 "gramLatex.y"
-    { (yyval) = (yyvsp[(1) - (1)]); ;}
+    { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
     break;
 
-  case 20:
+  case 19:
 #line 234 "gramLatex.y"
     { (yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
+  case 20:
+#line 235 "gramLatex.y"
+    { (yyval) = (yyvsp[(1) - (1)]); ;}
+    break;
+
   case 21:
-#line 236 "gramLatex.y"
+#line 237 "gramLatex.y"
     { xxSetInVerbEnv((yyvsp[(3) - (4)])); ;}
     break;
 
   case 22:
-#line 237 "gramLatex.y"
+#line 238 "gramLatex.y"
     { (yyval) = xxenv((yyvsp[(3) - (10)]), (yyvsp[(6) - (10)]), (yyvsp[(9) - (10)]), &(yyloc));
                                                   RELEASE_SV((yyvsp[(1) - (10)])); RELEASE_SV((yyvsp[(7) - (10)])); ;}
     break;
 
   case 23:
-#line 240 "gramLatex.y"
+#line 241 "gramLatex.y"
     { (yyval) = xxmath((yyvsp[(2) - (3)]), &(yyloc), FALSE); ;}
     break;
 
   case 24:
-#line 242 "gramLatex.y"
+#line 243 "gramLatex.y"
     { (yyval) = xxmath((yyvsp[(2) - (3)]), &(yyloc), TRUE); ;}
     break;
 
   case 25:
-#line 244 "gramLatex.y"
+#line 245 "gramLatex.y"
     { (yyval) = xxblock((yyvsp[(2) - (3)]), &(yyloc)); ;}
     break;
 
   case 26:
-#line 245 "gramLatex.y"
+#line 246 "gramLatex.y"
     { (yyval) = xxblock(NULL, &(yyloc)); ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1749 "gramLatex.tab.c"
+#line 1750 "gramLatex.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1965,7 +1966,7 @@ yyreturn:
 }
 
 
-#line 247 "gramLatex.y"
+#line 248 "gramLatex.y"
 
 
 static SEXP xxnewlist(SEXP item)

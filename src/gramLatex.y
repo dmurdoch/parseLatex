@@ -49,8 +49,9 @@ typedef enum {
 } ParseStatus;
 
 static int	R_ParseError = 0; /* Line where parse error occurred */
-static int	R_ParseErrorCol;    /* Column of start of token where parse error occurred */
-static SEXP	R_ParseErrorFile;   /* Source file where parse error was seen.  Either a
+/* the next two are currently unused */
+/* static int	R_ParseErrorCol;     Column of start of token where parse error occurred */
+/* static SEXP	R_ParseErrorFile;    Source file where parse error was seen.  Either a
  STRSXP or (when keeping srcrefs) a SrcFile ENVSXP */
 #define PARSE_ERROR_SIZE 256	    /* Parse error messages saved here */
 static char	R_ParseErrorMsg[PARSE_ERROR_SIZE] = "";
