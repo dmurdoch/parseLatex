@@ -48,5 +48,5 @@ parsed <- parseLatex(latex)
 # This is a blank followed by a table; drop the blank
 table <- parsed[[find_env(parsed, "tabular")]]
 # Get the alignment options from the content
-brace_options(table[[2]])
+brace_options(get_contents(table))
 ```

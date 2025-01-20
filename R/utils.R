@@ -252,3 +252,31 @@ split_items <- function(items, splits) {
       as_LaTeX2(list())
   })
 }
+
+#' Convenience function to get contents from an item
+#'
+#' @param item An item from a Latex list (or a list with one item)
+#'
+#' @returns The contents of the item as a Latex list, or as a
+#' character string.
+#' @export
+#' @examples
+#' get_contents(parseLatex("{abc}"))
+#'
+get_contents <- function(item) {
+  tag <- latexTag(item)
+  if (is.null(tag) && is.list(item)) {
+    if (length(item) > 1)
+      warning("only using the first element")
+    item <- item[[1]]
+    tag <- latexTag(item)
+  }
+  if (is.null(tag))
+    NULL
+  else if (tag == "ENVIRONMENT")
+    as_LaTeX2(item[[2]])
+  else if (tag == "BLOCK")
+    as_LaTeX2(item)
+  else
+    as.character(item)
+}
