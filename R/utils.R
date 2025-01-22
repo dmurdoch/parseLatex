@@ -66,12 +66,19 @@ is_block <- function(item) {
 }
 
 #' @rdname Utilities
-
-#' @returns `as_LaTeX2()` marks the `items` as parsed Latex so that
-#' they print nicely.
+#' @param x An object to convert to a LaTeX2 object.
+#' @returns `as_LaTeX2()` converts `x` to a LaTeX2 object.
 #' @export
-as_LaTeX2 <- function(items)
-  structure(items, class = "LaTeX2")
+as_LaTeX2 <- function(x) {
+  if (inherits(x, "LaTeX2"))
+    x
+  else if (inherits(x, "LaTex2item"))
+    structure(list(x), class = "LaTeX2")
+  else if (is.list(x))
+    structure(x, class = "LaTeX2")
+  else if (is.character(x))
+    parseLatex(x)
+}
 
 #' @rdname Utilities
 #' @param bracket Which bracket are we looking for?
@@ -99,7 +106,8 @@ is_whitespace <- function(item) {
 }
 
 #' @rdname Utilities
-#'
+#' @param items A LaTeX2 object or list of items.
+#' @param which Which items to operate on.
 #' @returns `drop_items()` returns the list of items with specific items removed.
 #' @export
 drop_items <- function(items, which) {
@@ -124,6 +132,44 @@ drop_whitespace <- function(items) {
   as_LaTeX2(Filter(function(item) !is_whitespace(item), items))
 }
 
+#' Find bracket wrapped options from Latex code.
+#'
+#' @param items A list of latex items
+#'
+#' @param which Which bracket options do you want?  Some
+#' macros support more than one set.
+#'
+#' @param start Start looking at `items[[start]]`
+#' @description
+#' Many Latex environments and macros take optional parameters
+#' wrapped in square brackets.  This function finds those,
+#' assuming they come immediately after the macro.
+#'
+#' @returns Indices into `items` of the options (including the
+#' brackets)
+#'
+#' @export
+find_bracket_options <- function(items, which = 1, start = 1) {
+  begin <- NA
+  n <- length(items)
+  if (start <= n)
+    for (i in start:n) {
+      if (is.na(begin) && is_bracket(items[[i]], "[")) {
+        which <- which - 1
+        begin <- i
+      } else if (!is.na(begin) && is_bracket(items[[i]], "]")) {
+        if (which == 0) {
+          result <- seq.int(begin, i)
+          return(result)
+        } else
+          begin <- NA
+      } else if (is.na(begin) && !is_whitespace(items[[i]]))
+        break
+    }
+  invisible()
+}
+
+
 #' Extract bracket wrapped options from Latex code.
 #'
 #' @param items A list of latex items
@@ -141,24 +187,41 @@ drop_whitespace <- function(items) {
 #'
 #' @export
 bracket_options <- function(items, which = 1, drop = TRUE, start = 1) {
-  begin <- NA
+  i <- find_bracket_options(items, which = which, start = start)
+  i <- i[-c(1, length(i))]
+  if (drop)
+    drop_whitespace(items[i])
+  else
+    items[i]
+}
+
+#' Find brace wrapped options in Latex code.
+#'
+#' @param items A list of latex items
+#' @param which Return this block
+#' @param start Start looking at `items[[start]]`
+#'
+#' @description
+#' Some Latex environments and macros take optional parameters
+#' wrapped in curly brackets (braces).  This function finds those
+#' if they immediately follow the environment or macro and possibly
+#' some bracketed options.
+#' @returns The index of the block containing the options.
+#' @export
+find_brace_options <- function(items, which = 1, start = 1) {
   n <- length(items)
-  if (start <= n)
-    for (i in start:n) {
-      if (is.na(begin) && is_bracket(items[[i]], "[")) {
-        which <- which - 1
-        begin <- i
-      } else if (!is.na(begin) && is_bracket(items[[i]], "]")) {
-        if (which == 0) {
-          result <- items[begin + seq_len(i - begin - 1)]
-          if (drop)
-            result <- drop_whitespace(result)
-          return(as_LaTeX2(result))
-        } else
-          begin <- NA
-      } else if (is.na(begin) && !is_whitespace(items[[i]]))
-        break
-    }
+  i <- start
+  while (i <= n) {
+    if (is_block(items[[i]])) {
+      which <- which - 1
+      if (which == 0)
+        return(i)
+    } else if (is_bracket(items[[i]], "["))
+      i <- max(find_bracket_options(items, start = i))
+    else if (!is_whitespace(items[[i]]))
+      return(invisible())
+    i <- i + 1
+  }
   invisible()
 }
 
@@ -177,27 +240,11 @@ bracket_options <- function(items, which = 1, drop = TRUE, start = 1) {
 #'
 #' @export
 brace_options <- function(items, which = 1, drop = TRUE, start = 1) {
-  if (start > length(items))
-    return(invisible())
-
-  items <- drop_whitespace(items[start:length(items)])
-  while (length(items)) {
-    if (is_bracket(items[[1]], "[")) {
-      skip <- length(bracket_options(items, drop = FALSE)) + 2
-      items <- items[skip + seq_len(length(items) - skip)]
-    } else if (is_block(items[[1]])) {
-      which <- which - 1
-      if (which == 0) {
-        result <- items[[1]]
-        if (drop)
-          result <- drop_whitespace(result)
-        return(as_LaTeX2(result))
-      } else
-        items <- items[-1]
-    } else
-      break
-  }
-  invisible()
+  i <- find_brace_options(items, which = which, start = start)
+  if (drop)
+    drop_whitespace(items[[c(i, 1)]])
+  else
+    items[[c(i, 1)]]
 }
 
 #' @rdname Utilities

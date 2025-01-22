@@ -1977,8 +1977,8 @@ static SEXP xxnewlist(SEXP item)
 #endif
     PRESERVE_SV(ans = NewList());
     if (item) {
-	GrowList(ans, item);
-	RELEASE_SV(item);
+	    GrowList(ans, item);
+	    RELEASE_SV(item);
     }
 #if DEBUGVALS
     Rprintf(" result: %p is length %d\n", ans, length(ans));
@@ -2015,6 +2015,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   /* FIXME:  check that begin and end match */
   setAttrib(ans, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
   setAttrib(ans, R_LatexTagSymbol, mkString("ENVIRONMENT"));
+  setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
   if (!isNull(end))
 	  RELEASE_SV(end);
 #if DEBUGVALS
@@ -2034,6 +2035,7 @@ static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
     setAttrib(ans, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
     setAttrib(ans, R_LatexTagSymbol,
     mkString(display ? "DISPLAYMATH" : "MATH"));
+    setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
     Rprintf(" result: %p\n", ans);
 #endif
@@ -2054,7 +2056,7 @@ static SEXP xxblock(SEXP body, YYLTYPE *lloc)
     }
     setAttrib(ans, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
     setAttrib(ans, R_LatexTagSymbol, mkString("BLOCK"));
-
+    setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
     Rprintf(" result: %p\n", ans);
 #endif
@@ -2083,12 +2085,14 @@ static void xxSetInVerbEnv(SEXP envname)
 static void xxsavevalue(SEXP items, YYLTYPE *lloc)
 {
     if (items) {
-	PRESERVE_SV(parseState.Value = PairToVectorList(CDR(items)));
-	RELEASE_SV(items);
+	    PRESERVE_SV(parseState.Value = PairToVectorList(CDR(items)));
+	    RELEASE_SV(items);
     } else {
-	PRESERVE_SV(parseState.Value = allocVector(VECSXP, 1));
+	    PRESERVE_SV(parseState.Value = allocVector(VECSXP, 1));
     	SET_VECTOR_ELT(parseState.Value, 0, ScalarString(mkChar("")));
-	setAttrib(VECTOR_ELT(parseState.Value, 0), R_LatexTagSymbol, mkString("TEXT"));
+	    setAttrib(VECTOR_ELT(parseState.Value, 0), R_LatexTagSymbol, mkString("TEXT"));
+	    setAttrib(VECTOR_ELT(parseState.Value, 0), R_ClassSymbol,
+	      mkString("LaTeX2item"));
     }
     if (!isNull(parseState.Value)) {
     	setAttrib(parseState.Value, R_ClassSymbol, mkString("LaTeX2"));
@@ -2100,6 +2104,7 @@ static SEXP xxtag(SEXP item, int type, YYLTYPE *lloc)
 {
     setAttrib(item, R_LatexTagSymbol, mkString(yytname[YYTRANSLATE(type)]));
     setAttrib(item, install("srcref"), makeSrcref(lloc, parseState.SrcFile));
+    setAttrib(item, R_ClassSymbol, mkString("LaTeX2item"));
     return item;
 }
 
@@ -2642,8 +2647,9 @@ static int mkMarkup(int c)
       else if (cat != 10) /* Eat a space, but keep other terminators */
     	  xxungetc(c);
     }
-    if (retval != VERB)
+    if (retval != VERB) {
 	    PRESERVE_SV(yylval = mkString(stext));
+	  }
     if(st1) free(st1);
     return retval;
 }
@@ -2657,6 +2663,7 @@ static int mkSpecial(int c, int cat)
   TEXT_PUSH(c);
   PRESERVE_SV(yylval = mkString2(stext, bp - stext));
   setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
+  setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
   if(st1) free(st1);
   return SPECIAL;
 }
@@ -2723,6 +2730,7 @@ static int mkVerbEnv(void)
     }
 
     PRESERVE_SV(yylval = mkString2(stext, bp - stext));
+
     if (st1) free(st1);
     return VERB;
 }

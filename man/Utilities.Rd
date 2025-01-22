@@ -35,7 +35,7 @@ is_macro(item, macros = NULL)
 
 is_block(item)
 
-as_LaTeX2(items)
+as_LaTeX2(x)
 
 is_bracket(item, bracket)
 
@@ -63,7 +63,13 @@ e.g. `"table"`.}
 
 \item{macros}{Which macros to match, e.g. `"\\\\caption"`.}
 
+\item{x}{An object to convert to a LaTeX2 object.}
+
 \item{bracket}{Which bracket are we looking for?}
+
+\item{items}{A LaTeX2 object or list of items.}
+
+\item{which}{Which items to operate on.}
 
 \item{codes}{Which codes to look for}
 
@@ -84,8 +90,7 @@ e.g. `"table"`.}
 
 `is_block()` returns a boolean indicating whether the `item` is a block wrapped in curly braces.
 
-`as_LaTeX2()` marks the `items` as parsed Latex so that
-they print nicely.
+`as_LaTeX2()` converts `x` to a LaTeX2 object.
 
 `is_bracket()` returns a boolean indicating that the `item` is a bracket of the
 specified type.

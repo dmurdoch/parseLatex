@@ -33,6 +33,15 @@ parseLatex <- function(text,
 
 #' @rdname parseLatex
 #' @export
+print.LaTeX2item <- function(x, ...) {
+  cat(paste0(latexTag(x), ": ", deparseLatex(list(x)), "\n"))
+}
+
+#' @rdname parseLatex
+#' @param x Object to work on.
+#' @param tags Whether to display LaTeX2 tags
+#' @param ... Extra parameters to pass to `deparseLatex`
+#' @export
 print.LaTeX2 <- function(x, tags = FALSE, ...) {
   if (tags) {
     showItem <- function(item, indent = 0) {

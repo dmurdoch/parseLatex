@@ -4,6 +4,7 @@
 \name{parseLatex}
 \alias{parseLatex-package}
 \alias{parseLatex}
+\alias{print.LaTeX2item}
 \alias{print.LaTeX2}
 \title{Parse LaTeX code}
 \usage{
@@ -14,6 +15,8 @@ parseLatex(
   verbatim = c("verbatim", "verbatim*", "Sinput", "Soutput"),
   verb = "\\\\Sexpr"
 )
+
+\method{print}{LaTeX2item}(x, ...)
 
 \method{print}{LaTeX2}(x, tags = FALSE, ...)
 }
@@ -27,6 +30,12 @@ parseLatex(
 \item{verbatim}{A character vector containing the names of \LaTeX environments holding verbatim text.}
 
 \item{verb}{A character vector containing LaTeX macros that should be assumed to hold verbatim text.}
+
+\item{x}{Object to work on.}
+
+\item{...}{Extra parameters to pass to `deparseLatex`}
+
+\item{tags}{Whether to display LaTeX2 tags}
 }
 \value{
 Parsed Latex in list with class `"LaTeX2"`.
