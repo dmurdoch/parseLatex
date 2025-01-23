@@ -249,3 +249,152 @@ tableContent <- function(table)
                   old[iold > max(i)])
   table
 }
+
+#' @rdname tables
+#' @param row row in the table (1 is top row), including
+#' rows of labels
+#' @returns `find_tableRow()` returns the indices of the
+#' entries corresponding to the content of row i of the table.
+#' @examples
+#' find_tableRow(table, 1)
+#'
+#' @export
+find_tableRow <- function(table, row) {
+  contentIdx <- find_tableContent(table)
+  content <- as_LaTeX2(table[[2]][contentIdx])
+
+  drop <- function(skip) {
+    if (length(skip)) {
+      skip <- unique(skip)
+      contentIdx <<- contentIdx[-skip]
+      content <<- as_LaTeX2(content[-skip])
+    }
+  }
+
+  # Drop the captions
+  skip <- find_macro(content, c("\\caption", "\\caption*"))
+  drop(c(skip, skip + 1))
+
+  # Drop the rules
+  drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
+
+  # Drop all newlines
+  drop(find_catcode(content, 5))
+
+  breaks <- find_macro(content, "\\\\")
+  rows <- split_list(contentIdx, breaks)
+  if (row <= length(rows))
+    c(rows[[row]], breaks[row])
+}
+
+#' @rdname tables
+#' @returns `tableRow()` returns a LaTeX2 object containing
+#' all of the table content in the row
+#' @examples
+#' tableRow(table, 1)
+#'
+#' @export
+tableRow <- function(table, row)
+  as_LaTeX2(table[[2]][find_tableRow(table, row)])
+
+#' @rdname tables
+#' @details Unless `asis = TRUE`, `tableContent(table) <- value`
+#'  will add \\ and a newline
+#' at the end if not present.
+#' @examples
+#' tableRow(table, 5) <- "a & b & c"
+#' table
+#'
+#' @export
+`tableRow<-` <- function(table, row, asis = FALSE, value) {
+  value <- as_LaTeX2(value)
+  if (!asis) {
+    breaks <- find_macro(value, "\\\\")
+    if (!length(breaks))
+      value <- c(value, as_LaTeX2("\\\\"))
+    newlines <- find_catcode(value, 5)
+    if (!(length(value) %in% newlines))
+      value <- c(value, as_LaTeX2("\n"))
+  }
+  i <- find_tableRow(table, row)
+  if (!length(i)) {
+    # Need to insert rows
+    contentIdx <- find_tableContent(table)
+    content <- table[[2]][contentIdx]
+    breaks <- contentIdx[find_macro(content, "\\\\")]
+    brk <- as_LaTeX2("\\\\\n")
+    value <- c(rep(brk, row - length(breaks) - 1),
+               value)
+    if (length(breaks))
+      i <- max(breaks) + 0.5
+    else
+      i <- 0
+  }
+  old <- table[[2]]
+  iold <- seq_along(old)
+  table[[2]] <- c(old[iold < min(i)],
+                  value,
+                  old[iold > max(i)])
+  table
+}
+
+#' @rdname tables
+#' @param col column in the table
+#' @returns `find_tableCell()` returns the indices of the
+#' entries corresponding to the content of the cell (row, col) of the table.
+#' @examples
+#' find_tableCell(table, 1, 2)
+#'
+#' @export
+find_tableCell <- function(table, row, col) {
+  contentIdx <- find_tableRow(table, row)
+  content <- as_LaTeX2(table[[2]][contentIdx])
+  if (is_macro(content[[length(content)]], "\\\\")) {
+    content <- content[-length(content)]
+    contentIdx <- contentIdx[-length(content)]
+  }
+  breaks <- find_catcode(content, 4)
+  cells <- split_list(contentIdx, breaks)
+  if (col <= length(cells))
+    cells[[col]]
+}
+
+#' @rdname tables
+#' @returns `tableCell()` returns a LaTeX2 object containing
+#' all of the table content in the cell (but not the &)
+#' @examples
+#' tableCell(table, 1, 2)
+#'
+#' @export
+tableCell <- function(table, row, col)
+  as_LaTeX2(table[[2]][find_tableCell(table, row, col)])
+
+#' @rdname tables
+#' @details Unless `asis = TRUE`, `tableContent(table) <- value`
+#'  will add blanks
+#' at the start end end if not present, to make the result
+#' more readable.
+#' @examples
+#' tableCell(table, 5, 2) <- " d "
+#' table
+#'
+#' @export
+`tableCell<-` <- function(table, row, col, asis = FALSE, value) {
+  value <- as_LaTeX2(value)
+  if (!asis) {
+    blanks <- find_catcode(value, 10)
+    if (!(length(value) %in% blanks))
+      value <- c(value, as_LaTeX2(" "))
+    if (!(1 %in% blanks))
+      value <- c(as_LaTeX2(" "), value)
+  }
+  i <- find_tableCell(table, row, col)
+  if (!length(i))
+    stop("Can't add cells that are not present.")
+  old <- table[[2]]
+  iold <- seq_along(old)
+  table[[2]] <- c(old[iold < min(i)],
+                  value,
+                  old[iold > max(i)])
+  table
+}

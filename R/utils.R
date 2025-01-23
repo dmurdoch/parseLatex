@@ -285,19 +285,28 @@ find_catcode <- function(items, codes) {
 
 #' @rdname Utilities
 #' @param splits Which items divide the parts?
-#' @returns `split_items()` returns a list of pieces
+#' @returns `split_list()` returns a list of pieces
 #' separated at the splits
 #' @export
-split_items <- function(items, splits) {
+split_list <- function(items, splits) {
   prev <- 0
-  sapply(splits, function(s) {
+  lapply(splits, function(s) {
     if (s > prev + 1) {
-      sel <- select_items(items, (prev + 1):(s - 1))
+      sel <- items[(prev + 1):(s - 1)]
       prev <<- s
       sel
     } else
-      as_LaTeX2(list())
+      list()
   })
+}
+
+#' @rdname Utilities
+#' @param splits Which items divide the parts?
+#' @returns `split_latex()` returns a list of pieces
+#' separated at the splits
+#' @export
+split_latex <- function(items, splits) {
+  lapply(split_list(items, splits), as_LaTeX2)
 }
 
 #' Convenience function to get contents from an item

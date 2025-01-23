@@ -18,7 +18,8 @@
 \alias{find_env}
 \alias{find_macro}
 \alias{find_catcode}
-\alias{split_items}
+\alias{split_list}
+\alias{split_latex}
 \title{Utility functions for working with parsed Latex.}
 \usage{
 latexTag(item)
@@ -53,7 +54,9 @@ find_macro(items, macros)
 
 find_catcode(items, codes)
 
-split_items(items, splits)
+split_list(items, splits)
+
+split_latex(items, splits)
 }
 \arguments{
 \item{item}{A single latex item.}
@@ -113,7 +116,10 @@ of instances in `macros`.
 `find_catcode()` returns the index within `items`
 of specials matching `code`.
 
-`split_items()` returns a list of pieces
+`split_list()` returns a list of pieces
+separated at the splits
+
+`split_latex()` returns a list of pieces
 separated at the splits
 }
 \description{

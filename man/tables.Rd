@@ -16,6 +16,12 @@
 \alias{find_tableContent}
 \alias{tableContent}
 \alias{tableContent<-}
+\alias{find_tableRow}
+\alias{tableRow}
+\alias{tableRow<-}
+\alias{find_tableCell}
+\alias{tableCell}
+\alias{tableCell<-}
 \title{Functions related to parsing LaTeX tables}
 \usage{
 is_Tabular(item)
@@ -45,6 +51,18 @@ find_tableContent(table)
 tableContent(table)
 
 tableContent(table, asis = FALSE) <- value
+
+find_tableRow(table, row)
+
+tableRow(table, row)
+
+tableRow(table, row, asis = FALSE) <- value
+
+find_tableCell(table, row, col)
+
+tableCell(table, row, col)
+
+tableCell(table, row, col, asis = FALSE) <- value
 }
 \arguments{
 \item{item}{An item from a LaTeX2 list object.}
@@ -58,6 +76,11 @@ tableContent(table, asis = FALSE) <- value
 \item{asis}{Whether to make small modifications in replacement functions}
 
 \item{value}{A character string or LaTeX2 object}
+
+\item{row}{row in the table (1 is top row), including
+rows of labels}
+
+\item{col}{column in the table}
 }
 \value{
 `is_Tabular()` returns boolean indicating if this is
@@ -91,6 +114,18 @@ entries corresponding to content of the table.
 
 `tableContent()` returns a LaTeX2 object containing
 all of the table content after the options.
+
+`find_tableRow()` returns the indices of the
+entries corresponding to the content of row i of the table.
+
+`tableRow()` returns a LaTeX2 object containing
+all of the table content in the row
+
+`find_tableCell()` returns the indices of the
+entries corresponding to the content of the cell (row, col) of the table.
+
+`tableCell()` returns a LaTeX2 object containing
+all of the table content in the cell (but not the &)
 }
 \description{
 Functions related to parsing LaTeX tables
@@ -101,6 +136,15 @@ can be specified with or without the enclosing brackets.
 
 Unless `asis = TRUE`, `tableContent(table) <- value`
  will add newlines
+at the start end end if not present, to make the result
+more readable.
+
+Unless `asis = TRUE`, `tableContent(table) <- value`
+ will add \\ and a newline
+at the end if not present.
+
+Unless `asis = TRUE`, `tableContent(table) <- value`
+ will add blanks
 at the start end end if not present, to make the result
 more readable.
 }
@@ -137,6 +181,20 @@ tableContent(table)
 tableContent(table) <- "Mazda RX4 & 21 & 6\\\\\\\\"
 table
 tableContent(table, asis = TRUE) <- "Mazda RX4 & 21 & 6\\\\\\\\"
+table
+
+find_tableRow(table, 1)
+
+tableRow(table, 1)
+
+tableRow(table, 5) <- "a & b & c"
+table
+
+find_tableCell(table, 1, 2)
+
+tableCell(table, 1, 2)
+
+tableCell(table, 5, 2) <- " d "
 table
 
 }
