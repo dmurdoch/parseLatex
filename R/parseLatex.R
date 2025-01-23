@@ -63,7 +63,7 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
         cat("}\n")
       } else if (tag == "SPECIAL") {
         code <- attr(item, "catcode")
-        if (code == 5)
+        if (code == NEWLINE)
           cat("NEWLINE\n")
         else
           cat(catcodes[1 + attr(item, "catcode")], ":", item, "\n")

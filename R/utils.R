@@ -91,7 +91,7 @@ as_LaTeX2 <- function(x) {
 #' is_bracket(parseLatex("[]")[[1]], "[")
 is_bracket <- function(item, bracket) {
   latexTag(item) == "SPECIAL" &&
-    catcode(item) == 12 &&
+    catcode(item) == OTHER &&
     item == bracket
 }
 
@@ -102,7 +102,7 @@ is_bracket <- function(item, bracket) {
 #' @export
 is_whitespace <- function(item) {
   cat <- catcode(item)
-  !is.null(cat) && cat %in% c(5, 10)
+  !is.null(cat) && cat %in% c(NEWLINE, SPACE)
 }
 
 #' @rdname Utilities

@@ -235,7 +235,7 @@ tableContent <- function(table)
 `tableContent<-` <- function(table, asis = FALSE, value) {
   value <- as_LaTeX2(value)
   if (!asis) {
-    newlines <- find_catcode(value, 5)
+    newlines <- find_catcode(value, NEWLINE)
     if (!(length(value) %in% newlines))
       value <- c(value, as_LaTeX2("\n"))
     if (!(1 %in% newlines))
@@ -279,7 +279,7 @@ find_tableRow <- function(table, row) {
   drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
 
   # Drop all newlines
-  drop(find_catcode(content, 5))
+  drop(find_catcode(content, NEWLINE))
 
   breaks <- find_macro(content, "\\\\")
   rows <- split_list(contentIdx, breaks)
@@ -312,7 +312,7 @@ tableRow <- function(table, row)
     breaks <- find_macro(value, "\\\\")
     if (!length(breaks))
       value <- c(value, as_LaTeX2("\\\\"))
-    newlines <- find_catcode(value, 5)
+    newlines <- find_catcode(value, NEWLINE)
     if (!(length(value) %in% newlines))
       value <- c(value, as_LaTeX2("\n"))
   }
@@ -353,7 +353,7 @@ find_tableCell <- function(table, row, col) {
     content <- content[-length(content)]
     contentIdx <- contentIdx[-length(content)]
   }
-  breaks <- find_catcode(content, 4)
+  breaks <- find_catcode(content, ALIGN)
   cells <- split_list(contentIdx, breaks)
   if (col <= length(cells))
     cells[[col]]
@@ -382,7 +382,7 @@ tableCell <- function(table, row, col)
 `tableCell<-` <- function(table, row, col, asis = FALSE, value) {
   value <- as_LaTeX2(value)
   if (!asis) {
-    blanks <- find_catcode(value, 10)
+    blanks <- find_catcode(value, SPACE)
     if (!(length(value) %in% blanks))
       value <- c(value, as_LaTeX2(" "))
     if (!(1 %in% blanks))

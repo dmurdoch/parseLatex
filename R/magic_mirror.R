@@ -96,7 +96,7 @@ magic_mirror_latex <- function(kable_input){
   items <- drop_items(items, skip)
 
   # Drop all newlines
-  skip <- find_catcode(items, 5)
+  skip <- find_catcode(items, NEWLINE)
   items <- drop_items(items, skip)
 
   # Extract the rows
@@ -119,7 +119,7 @@ magic_mirror_latex <- function(kable_input){
     table_info$position_offset <- 0
   } else {
     row <- select_items(items, seq_len(breaks[1] - 1))
-    align <- c(find_catcode(row, 4), length(row) + 1)
+    align <- c(find_catcode(row, ALIGN), length(row) + 1)
     table_info$colnames <- sapply(split_items(row, align),
                                   deparseLatex)
     table_info$position_offset <- 1
