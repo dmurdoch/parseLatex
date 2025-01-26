@@ -1,111 +1,7 @@
-#' Utility functions for working with parsed Latex.
+#' @title Miscellaneous utilities
 #' @rdname Utilities
-#' @name Utilities
-#' @param item A single latex item.
-#'
-#' @returns `latexTag()` returns the LaTeX2 tag for the item or `NULL`.
-#' @export
-latexTag <- function(item) {
-  attr(item, "latex_tag")
-}
+#' @name utils
 
-#' @rdname Utilities
-#'
-#' @returns `catcode()` returns the TeX catcode for the item, or `NULL`.
-#' @export
-catcode <- function(item) {
-  attr(item, "catcode")
-}
-
-#' @rdname Utilities
-#'
-#' @returns `envName()` returns the Latex environment name for an item, or `NULL`.
-#' @export
-envName <- function(item) {
-  if (latexTag(item) == "ENVIRONMENT")
-    item[[1]]
-}
-
-#' @rdname Utilities
-#'
-#' @returns `macroName()` returns the Latex macro, or `NULL`.
-#' @export
-macroName <- function(item) {
-  if (latexTag(item) == "MACRO")
-    as.character(item)
-}
-
-#' @rdname Utilities
-#' @param envtypes Types of Latex environment to check for,
-#' e.g. `"table"`.
-#'
-#' @returns `is_env()` returns a boolean if the item matches.
-#' @export
-#'
-is_env <- function(item,  envtypes = NULL) {
-  !is.null(envName(item)) &&
-    (is.null(envtypes) || item[[1]] %in% envtypes)
-}
-
-#' @rdname Utilities
-#' @param macros Which macros to match, e.g. `"\\\\caption"`.
-#'
-#' @returns `is_macro()` returns a boolean indicating the match.
-#' @export
-is_macro <- function(item, macros = NULL) {
-  !is.null(macroName(item)) &&
-    (is.null(macros) || item %in% macros)
-}
-
-#' @rdname Utilities
-
-#' @returns `is_block()` returns a boolean indicating whether the `item` is a block wrapped in curly braces.
-#' @export
-is_block <- function(item) {
-  latexTag(item) == "BLOCK"
-}
-
-#' @rdname Utilities
-#' @param x An object to convert to a LaTeX2 object.
-#' @returns `as_LaTeX2()` converts `x` to a LaTeX2 object.
-#' @export
-as_LaTeX2 <- function(x) {
-  if (inherits(x, "LaTeX2"))
-    x
-  else if (inherits(x, "LaTex2item"))
-    structure(list(x), class = "LaTeX2")
-  else if (is.list(x))
-    structure(x, class = "LaTeX2")
-  else if (is.character(x))
-    parseLatex(x)
-}
-
-#' @rdname Utilities
-#' @param bracket Which bracket are we looking for?
-#'
-#' @returns `is_bracket()` returns a boolean indicating that the `item` is a bracket of the
-#' specified type.
-#' @export
-#'
-#' @examples
-#' is_bracket(parseLatex("[]")[[1]], "[")
-is_bracket <- function(item, bracket) {
-  latexTag(item) == "SPECIAL" &&
-    catcode(item) == OTHER &&
-    item == bracket
-}
-
-#' @rdname Utilities
-
-#' @returns `is_whitespace()` returns a boolean indicating if the
-#' `item` is a space, tab or newline.
-#' @export
-is_whitespace <- function(item) {
-  cat <- catcode(item)
-  !is.null(cat) && cat %in% c(NEWLINE, SPACE)
-}
-
-#' @rdname Utilities
 #' @param items A LaTeX2 object or list of items.
 #' @param which Which items to operate on.
 #' @returns `drop_items()` returns the list of items with specific items removed.
@@ -122,15 +18,6 @@ drop_items <- function(items, which) {
 #' @export
 select_items <- function(items, which) {
   as_LaTeX2(items[which])
-}
-
-#' @rdname Utilities
-#'
-#' @returns `find_whitespace()` returns the indices of
-#' whitespace in `items`
-#' @export
-find_whitespace <- function(items) {
-  seq_along(items)[sapply(items, is_whitespace)]
 }
 
 #' @rdname Utilities
@@ -155,42 +42,7 @@ include_whitespace <- function(items, which) {
     which <- c(which, following)
   }
 }
-#' Find bracket wrapped options from Latex code.
-#'
-#' @param items A list of latex items
-#'
-#' @param which Which bracket options do you want?  Some
-#' macros support more than one set.
-#'
-#' @param start Start looking at `items[[start]]`
-#' @description
-#' Many Latex environments and macros take optional parameters
-#' wrapped in square brackets.  This function finds those,
-#' assuming they come immediately after the macro.
-#'
-#' @returns Indices into `items` of the options (including the
-#' brackets)
-#'
-#' @export
-find_bracket_options <- function(items, which = 1, start = 1) {
-  begin <- NA
-  n <- length(items)
-  if (start <= n)
-    for (i in start:n) {
-      if (is.na(begin) && is_bracket(items[[i]], "[")) {
-        which <- which - 1
-        begin <- i
-      } else if (!is.na(begin) && is_bracket(items[[i]], "]")) {
-        if (which == 0) {
-          result <- seq.int(begin, i)
-          return(result)
-        } else
-          begin <- NA
-      } else if (is.na(begin) && !is_whitespace(items[[i]]))
-        break
-    }
-  invisible()
-}
+
 
 
 #' Extract bracket wrapped options from Latex code.
@@ -218,36 +70,6 @@ bracket_options <- function(items, which = 1, drop = TRUE, start = 1) {
     items[i]
 }
 
-#' Find brace wrapped options in Latex code.
-#'
-#' @param items A list of latex items
-#' @param which Return this block
-#' @param start Start looking at `items[[start]]`
-#'
-#' @description
-#' Some Latex environments and macros take optional parameters
-#' wrapped in curly brackets (braces).  This function finds those
-#' if they immediately follow the environment or macro and possibly
-#' some bracketed options.
-#' @returns The index of the block containing the options.
-#' @export
-find_brace_options <- function(items, which = 1, start = 1) {
-  n <- length(items)
-  i <- start
-  while (i <= n) {
-    if (is_block(items[[i]])) {
-      which <- which - 1
-      if (which == 0)
-        return(i)
-    } else if (is_bracket(items[[i]], "["))
-      i <- max(find_bracket_options(items, start = i))
-    else if (!is_whitespace(items[[i]]))
-      return(invisible())
-    i <- i + 1
-  }
-  invisible()
-}
-
 #' Extract brace wrapped options from Latex code.
 #'
 #' @param items A list of latex items
@@ -268,55 +90,6 @@ brace_options <- function(items, which = 1, drop = TRUE, start = 1) {
     drop_whitespace(items[[c(i, 1)]])
   else
     items[[c(i, 1)]]
-}
-
-#' @rdname Utilities
-
-#' @returns `find_env()` returns the indices within `items`
-#' of environments in `envtypes`.
-#' @export
-find_env <- function(items, envtypes) {
-  which(sapply(seq_along(items),
-               function(i)
-                 is_env(items[[i]]) &&
-                 envName(items[[i]]) %in% envtypes))
-}
-
-#' @rdname Utilities
-
-#' @returns `find_macro()` returns the index within `items`
-#' of instances in `macros`.
-#' @export
-find_macro <- function(items, macros) {
-  which(sapply(seq_along(items),
-               function(i)
-                 is_macro(items[[i]]) &&
-                 macroName(items[[i]]) %in% macros))
-}
-
-#' @rdname Utilities
-#' @param codes Which codes to look for
-#' @returns `find_catcode()` returns the index within `items`
-#' of specials matching `code`.
-#' @export
-find_catcode <- function(items, codes) {
-  which(sapply(seq_along(items),
-               function(i)
-                 latexTag(items[[i]]) == "SPECIAL" &&
-                 catcode(items[[i]]) %in% codes))
-}
-
-#' @rdname Utilities
-#' @param char Which character to look for
-#' @returns `find_char()` returns the index within `items`
-#' of characters matching `char`.  Only characters
-#' marked as SPECIAL by the parser will be found.
-#' @export
-find_char <- function(items, char) {
-  which(sapply(seq_along(items),
-               function(i)
-                 latexTag(items[[i]]) == "SPECIAL" &&
-                 items[[i]] == char))
 }
 
 #' @rdname Utilities
