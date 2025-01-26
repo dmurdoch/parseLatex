@@ -56,7 +56,7 @@ Only some tabular-like environments have these.
 block corresponding to the column spec.
 
 `columnOptions()` returns a LaTeX2 object containing the
-"columb" options.
+"column" options.
 }
 \description{
 Functions related to table options.

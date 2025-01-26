@@ -38,17 +38,7 @@ posOption <- function(table)
 #' posOption(table)
 #' @export
 `posOption<-` <- function(table, asis = FALSE, value) {
-  value <- as_LaTeX2(value)
-  if (!asis && !is_bracket(value[[1]], "["))
-    value <- parseLatex(paste0("[", as.character(value), "]"))
-  i <- find_posOption(table)
-  if (!length(i))
-    i <- 0
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < min(i)],
-                  value,
-                  old[iold > max(i)])
+  bracket_options(table[[2]], asis = asis) <- value
   table
 }
 
@@ -84,26 +74,7 @@ widthOption <- function(table)
             " do not support a width option.  No change made.")
     return(table)
   }
-  value <- as_LaTeX2(value)
-  if (!asis && (length(value) > 1 || !is_block(value[[1]])))
-    value <- parseLatex(paste0("{", as.character(value), "}"))
-  # Need to figure out where to put it.
-  i <- find_widthOption(table)
-  if (!length(i))
-    i <- find_columnOptions(table) - 0.5
-  if (!length(i)) {
-    i <- find_posOption(table)
-    if (length(i)) i <- max(i) + 0.5
-  }
-  if (!length(i))
-    i <- 0
-
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < i],
-                  value,
-                  old[iold > i])
-  table
+  brace_options(table[[2]], asis = asis) <- value
 }
 
 #' @rdname tableOption
@@ -122,7 +93,7 @@ find_columnOptions <- function(table) {
 
 #' @rdname tableOption
 #' @returns `columnOptions()` returns a LaTeX2 object containing the
-#' "columb" options.
+#' "column" options.
 #' @examples
 #' columnOptions(table)
 #'
@@ -136,23 +107,9 @@ columnOptions <- function(table)
 #' table
 #' @export
 `columnOptions<-` <- function(table, asis = FALSE, value) {
-  value <- as_LaTeX2(value)
-  if (!asis && (length(value) > 1 || !is_block(value[[1]])))
-    value <- parseLatex(paste0("{", as.character(value), "}"))
-  i <- find_columnOptions(table)
-  if (!length(i))
-    i <- find_widthOption(table) + 0.5
-  if (!length(i)) {
-    i <- find_posOption(table)
-    if (length(i)) i <- max(i) + 0.5
-  }
-  if (!length(i))
-    i <- 0
-
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < i],
-                  value,
-                  old[iold > i])
+  which <- 1
+  if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
+    which <- 2
+  brace_options(table[[2]], which = which, asis = asis) <- value
   table
 }

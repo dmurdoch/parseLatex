@@ -47,7 +47,7 @@ parsed <- parseLatex(latex)
 table <- parsed[[find_env(parsed, "tabular")]]
 # Get the alignment options from the content
 brace_options(get_contents(table))
-#> l
+#> {l|r|r}
 tableCell(table, 2,2) # The title counts!
 #>  21
 tableCell(table, 2,2) <- "Changed!"
@@ -65,7 +65,6 @@ table
 
 ## To-do list
 
-- Need to write setters for options.
 - Should handle UTF-8 inputs, not just ASCII.
 - Needs a vignette to describe how to use it.
 - Possibly add class for table objects, and implement indexing and

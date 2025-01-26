@@ -2,12 +2,24 @@
 % Please edit documentation in R/options.R
 \name{find_bracket_options}
 \alias{find_bracket_options}
+\alias{bracket_options}
+\alias{bracket_options<-}
 \alias{find_brace_options}
+\alias{brace_options}
+\alias{brace_options<-}
 \title{Find macro or environment options}
 \usage{
 find_bracket_options(items, which = 1, start = 1)
 
+bracket_options(items, which = 1, start = 1)
+
+bracket_options(items, which = 1, start = 1, asis = FALSE) <- value
+
 find_brace_options(items, which = 1, start = 1)
+
+brace_options(items, which = 1, start = 1)
+
+brace_options(items, which = 1, start = 1, asis = FALSE) <- value
 }
 \arguments{
 \item{items}{A list of latex items}
@@ -20,7 +32,13 @@ find_brace_options(items, which = 1, start = 1)
 `find_bracket_options` returns indices into `items` of the options (including the
 brackets)
 
+`bracket_options` returns a LaTeX2 object containing
+the specified options.
+
 `find_brace_options` returns the index of the block containing the options.
+
+`brace_options` returns a LaTeX2 object containing
+the specified options.
 }
 \description{
 Many Latex environments and macros take optional parameters
@@ -31,4 +49,18 @@ Some Latex environments and macros take optional parameters
 wrapped in curly brackets (braces). `find_brace_options` finds those
 if they immediately follow the environment or macro (and possibly
 some bracketed options).
+}
+\examples{
+parsed <- parseLatex("\\\\section[a]{b}")
+macro <- find_macro(parsed, "\\\\section")
+bracket_options(parsed, start = macro + 1)
+
+bracket_options(parsed, start = macro + 1) <- "Short Title"
+parsed
+
+brace_options(parsed, start = macro + 1)
+
+brace_options(parsed, start = macro + 1) <- "Long Title"
+parsed
+
 }

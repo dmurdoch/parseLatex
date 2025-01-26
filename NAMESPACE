@@ -2,6 +2,8 @@
 
 S3method(print,LaTeX2)
 S3method(print,LaTeX2item)
+export("brace_options<-")
+export("bracket_options<-")
 export("columnOptions<-")
 export("posOption<-")
 export("rule<-")
