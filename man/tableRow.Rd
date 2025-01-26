@@ -16,7 +16,7 @@ tableRow(table, row, asis = FALSE) <- value
 \item{table}{A tabular-like environment to work with.}
 
 \item{row}{row in the table (1 is top row), including
-rows of labels}
+rows of labels.}
 
 \item{asis}{Should a linebreak and newline be added after the
 value?}

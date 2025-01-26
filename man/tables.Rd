@@ -15,7 +15,7 @@ find_tabular(items, start = 1)
 
 \item{items}{A LaTeX2 list object.}
 
-\item{start}{Where to start looking}
+\item{start}{Where to start looking.}
 }
 \value{
 `is_Tabular()` returns boolean indicating if this is

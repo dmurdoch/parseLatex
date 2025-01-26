@@ -2,7 +2,7 @@
 #' @rdname tableRow
 #' @param table A tabular-like environment to work with.
 #' @param row row in the table (1 is top row), including
-#' rows of labels
+#' rows of labels.
 #' @returns `find_tableRow()` returns the indices of the
 #' entries corresponding to the content of row i of the table.
 #' @examples

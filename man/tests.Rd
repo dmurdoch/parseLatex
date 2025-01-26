@@ -20,7 +20,7 @@ is_bracket(item, bracket)
 is_whitespace(item)
 }
 \arguments{
-\item{item}{An object of class "LaTeX2item" to test}
+\item{item}{An object of class "LaTeX2item" to test.}
 
 \item{envtypes}{Types of Latex environment to check for,
 e.g. `"table"`.}
