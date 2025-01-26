@@ -13,8 +13,12 @@ Description: This package exports an enhanced version of the
     tools::parseLatex function, which handles more LaTeX syntax.
 License: GPL (>= 2)
 Encoding: UTF-8
-URL: https://github.com/dmurdoch/parseLatex
+URL: https://github.com/dmurdoch/parseLatex, https://dmurdoch.github.io/parseLatex/
 BugReports: https://github.com/dmurdoch/parseLatex/issues
-Suggests: kableExtra
+Suggests: 
+    kableExtra,
+    knitr,
+    rmarkdown
 Imports: tools, utils
 RoxygenNote: 7.3.2
+VignetteBuilder: knitr

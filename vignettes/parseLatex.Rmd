@@ -1,0 +1,84 @@
+---
+title: "The parseLatex package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The parseLatex package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+Parsing LaTeX is tricky, because LaTeX macros (in LaTeX packages, or
+in user code) can change the parsing rules as they go.  
+
+`parseLatex` is not a LaTeX interpreter, so it can't do that:  it uses
+the default parsing rules for all code that it looks at.  (A to-do
+item is to allow the user to specify different rules.)  
+
+However, subject to the limitation that the code only uses the default
+rules, `parseLatex` should be able to parse any LaTeX code.  It
+extends the base `tools::parseLatex()` function in a few ways:
+
+1.  It classifies every character in the source file according to 
+TeX "catcodes".  The base function only handles some of them.
+2.  The `parseLatex::parseLatex()` function marks its output with
+class `"LaTeX2"` instead of `"LaTeX"`, and marks each item in the
+output with class `"LaTeX2item"`.  This allows it to print things
+in a more readable way.
+3.  The `parseLatex` package includes a large selection of functions
+for extracting and modifying parts of the parsed LaTeX.
+
+A simple demonstration is in order.
+
+First, we use `knitr` to create a LaTeX table.
+```{r}
+library(knitr)
+latex <- kable(mtcars[1:2, 1:2], format = "latex")
+cat(latex)
+```
+
+Next, we parse it in `parseLatex`.  
+```{r}
+library(parseLatex)
+parsed <- parseLatex(latex)
+```
+Printing the result would appear to duplicate the input, but in fact
+it is quite different.  `parsed` is a list of class `"LaTeX2"`.  Items
+in the list are of class `"LaTeX2item"`.  In this example, there
+are only two items:  the blank that `knitr` puts at the beginning of
+each table, and a second entry which is the whole table environment:
+```{r}
+parsed[[1]]
+parsed[[2]]
+```
+"`SPECIAL`" and "`ENVIRONMENT`" label the types of items.  Since
+the table is stored as an environment, we could find its location
+using `find_env()`:
+```{r}
+find_env(parsed, "tabular")
+```
+
+We can extract the table, and use other functions to work with it:
+
+```{r}
+table <- parsed[[find_env(parsed, "tabular")]]
+# Get the alignment options from the content
+columnOptions(table)
+tableCell(table, 2,2) # The title counts as a row
+tableCell(table, 2,2) <- "Changed!"
+table
+```
+
+## Work in progress!
+
+This is a work in progress, so if you have a use for something like
+this and need help, post an "issue" on the Github page: 
+https://github.com/dmurdoch/parseLatex .
