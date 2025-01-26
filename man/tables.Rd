@@ -4,80 +4,11 @@
 \alias{tables}
 \alias{is_Tabular}
 \alias{find_tabular}
-\alias{find_posOption}
-\alias{posOption}
-\alias{posOption<-}
-\alias{find_widthOption}
-\alias{widthOption}
-\alias{widthOption<-}
-\alias{find_columnOptions}
-\alias{columnOptions}
-\alias{columnOptions<-}
-\alias{find_tableContent}
-\alias{tableContent}
-\alias{tableContent<-}
-\alias{find_rules}
-\alias{rules}
-\alias{find_rule}
-\alias{rule}
-\alias{rule<-}
-\alias{find_tableRow}
-\alias{tableRow}
-\alias{tableRow<-}
-\alias{find_tableCell}
-\alias{tableCell}
-\alias{tableCell<-}
 \title{Functions related to parsing LaTeX tables}
 \usage{
 is_Tabular(item)
 
 find_tabular(items, start = 1)
-
-find_posOption(table)
-
-posOption(table)
-
-posOption(table, asis = FALSE) <- value
-
-find_widthOption(table)
-
-widthOption(table)
-
-widthOption(table, asis = FALSE) <- value
-
-find_columnOptions(table)
-
-columnOptions(table)
-
-columnOptions(table, asis = FALSE) <- value
-
-find_tableContent(table)
-
-tableContent(table)
-
-tableContent(table, asis = FALSE) <- value
-
-find_rules(table)
-
-rules(table)
-
-find_rule(table, row)
-
-rule(table, row)
-
-rule(table, row, asis = FALSE) <- value
-
-find_tableRow(table, row)
-
-tableRow(table, row)
-
-tableRow(table, row, asis = FALSE) <- value
-
-find_tableCell(table, row, col)
-
-tableCell(table, row, col)
-
-tableCell(table, row, col, asis = FALSE) <- value
 }
 \arguments{
 \item{item}{An item from a LaTeX2 list object.}
@@ -85,17 +16,6 @@ tableCell(table, row, col, asis = FALSE) <- value
 \item{items}{A LaTeX2 list object.}
 
 \item{start}{Where to start looking}
-
-\item{table}{A known tabular-like environment object.}
-
-\item{asis}{Whether to make small modifications in replacement functions}
-
-\item{value}{A character string or LaTeX2 object}
-
-\item{row}{row in the table (1 is top row), including
-rows of labels}
-
-\item{col}{column in the table}
 }
 \value{
 `is_Tabular()` returns boolean indicating if this is
@@ -103,93 +23,9 @@ a tabular-like environment.
 
 `find_tabular()` returns the index of the first
 tabular-like environment, or `NA` if none is found
-
-`find_posOption()` returns the indices of the
-entries corresponding to the "pos" option, including the
-brackets, within the contents list (i.e. `table[[2]]`).
-
-`posOption()` returns a LaTeX2 object containing the
-"pos" option.
-
-`find_widthOption()` returns the index of the
-block corresponding to the "width" option, if there is one.
-Only some tabular-like environments have these.
-
-`widthOption()` returns a LaTeX2 object containing the
-"width" option, if the table has one.
-
-`find_columnOptions()` returns the index of the
-block corresponding to the column spec.
-
-`columnOptions()` returns a LaTeX2 object containing the
-"columb" options.
-
-`find_tableContent()` returns the indices of the
-entries corresponding to content of the table.
-
-`tableContent()` returns a LaTeX2 object containing
-all of the table content after the options.
-
-`find_rules()` returns a list of the indices
-of rules before each row, including the whitespace
-following each one
-
-`rules(table)` returns a list of the rules
-before each row.  The last entry will be the rule(s)
-following the last row.
-
-`find_rule(table, row)` returns the indices
-of the rule(s) before `row`.
-
-`rule(table, row)` returns the indices
-rule(s) before `row`.
-
-`find_tableRow()` returns the indices of the
-entries corresponding to the content of row i of the table.
-
-`tableRow()` returns a LaTeX2 object containing
-all of the table content in the row
-
-`find_tableCell()` returns the indices of the
-entries corresponding to the content of the cell (row, col) of the table.
-
-`tableCell()` returns a LaTeX2 object containing
-all of the table content in the cell (but not the &)
 }
 \description{
 Functions related to parsing LaTeX tables
-}
-\details{
-Unless `asis == TRUE`, the value for `value` in `posOption(table) <- value`
-can be specified with or without the enclosing brackets.
-
-Unless `asis = TRUE`, `tableContent(table) <- value`
- will add newlines
-at the start end end if not present, to make the result
-more readable.
-
-Unless `asis = TRUE`, `tableContent(table) <- value`
- will add "\\" and a newline
-at the end if not present.
-
-If the `row` value is higher than the number of rows
-in the table, blank rows will be added to fill the
-space between.
-
-`find_tableCell()` returns `NA` if the requested
-cell is missing because an earlier cell covered multiple
-columns.  It signals an error if a request is made beyond
-the bounds of the table.
-
-Unless `asis = TRUE`, `tableContent(table) <- value`
- will add blanks
-at the start end end if not present, to make the result
-more readable.
-
-If `col` is higher than the current table width,
-the assignment will fail with an error.  If only `row`
-is too high, blank lines will be added and it should
-succeed.
 }
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
@@ -199,55 +35,6 @@ is_Tabular(parsed[[2]])
 
 find_tabular(parsed)
 table <- parsed[[find_tabular(parsed)]]
-table
-
-find_posOption(table)
-table[[2]][find_posOption(table)]
-
-posOption(table)
-
-posOption(table) <- "h"
-posOption(table)
-find_widthOption(table)
-
-widthOption(table)
-
-find_columnOptions(table)
-columnOptions(table)
-
-columnOptions(table) <- "lrr"
-table
-find_tableContent(table)
-
-tableContent(table)
-
-tableContent(table) <- "Mazda RX4 & 21 & 6\\\\\\\\"
-table
-tableContent(table, asis = TRUE) <- "Mazda RX4 & 21 & 6\\\\\\\\"
-table
-
-find_rules(table)
-
-rules(table)
-
-find_rule(table, 1)
-
-rule(table, 1)
-
-rule(table, 2) <- "\\\\midrule"
-
-find_tableRow(table, 1)
-
-tableRow(table, 1)
-
-tableRow(table, 5) <- "a & b & c"
-table
-
-find_tableCell(table, 1, 2)
-
-tableCell(table, 1, 2)
-
-tableCell(table, 5, 2) <- " d "
 table
 
 }
