@@ -251,6 +251,103 @@ tableContent <- function(table)
 }
 
 #' @rdname tables
+#' @returns `find_rules()` returns a list of the indices
+#' of rules before each row, including the whitespace
+#' following each one
+#' @examples
+#' find_rules(table)
+#'
+#' @export
+find_rules <- function(table) {
+  contentIdx <- find_tableContent(table)
+  content <- as_LaTeX2(table[[2]][contentIdx])
+
+  # linebreaks
+  breaks <- find_macro(content, "\\\\")
+
+  split <- split_list(contentIdx, breaks)
+
+  rules <- find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule"))
+
+  # partial rules
+  cline <- find_macro(content, "\\cline")
+  if (length(cline))
+    rules <- c(rules, cline, cline + 1)
+
+  rules <- include_whitespace(content, rules)
+
+  lapply(split, function(x) contentIdx[intersect(x, rules)])
+}
+
+#' @rdname tables
+#' @returns `rules(table)` returns a list of the rules
+#' before each row.  The last entry will be the rule(s)
+#' following the last row.
+#' @examples
+#' rules(table)
+#'
+#' @export
+rules <- function(table) {
+  idx <- find_rules(table)
+  lapply(idx, function(x) as_LaTeX2(table[[2]][x]))
+}
+
+#' @rdname tables
+#' @returns `find_rule(table, row)` returns the indices
+#' of the rule(s) before `row`.
+#' @examples
+#' find_rule(table, 1)
+#'
+#' @export
+find_rule <- function(table, row)
+  find_rules(table)[[row]]
+
+#' @rdname tables
+#' @returns `rule(table, row)` returns the indices
+#' rule(s) before `row`.
+#' @examples
+#' rule(table, 1)
+#'
+#' @export
+rule <- function(table, row)
+  as_LaTeX2(table[[2]][find_rule(table, row)])
+
+#' @rdname tables
+#' @examples
+#' rule(table, 2) <- "\\midrule"
+#'
+#' @export
+`rule<-` <- function(table, row, asis = FALSE, value) {
+  value <- as_LaTeX2(value)
+  if (!asis) {
+    breaks <- find_macro(value, "\\\\")
+    newlines <- find_catcode(value, NEWLINE)
+    if (!(length(value) %in% newlines))
+      value <- c(value, as_LaTeX2("\n"))
+  }
+  i <- find_rule(table, row)
+  if (!length(i)) {
+    # Need to insert new rule at start of row
+    rowidx <- find_tableRow(table, row)
+    if (length(rowidx))
+      i <- min(rowidx) - 0.5
+    else {
+      if (row > tableNrow(table) + 1)
+        # need to insert some blank rows
+        tableRow(table, row - 1) <- blankRow(table)
+      rowidx <- find_tableRow(table, row - 1)
+      i <- max(rowidx) + 0.5
+    }
+  }
+  old <- table[[2]]
+  iold <- seq_along(old)
+  table[[2]] <- c(old[iold < min(i)],
+                  value,
+                  old[iold > max(i)])
+  table
+}
+
+#' @rdname tables
 #' @param row row in the table (1 is top row), including
 #' rows of labels
 #' @returns `find_tableRow()` returns the indices of the
@@ -278,13 +375,20 @@ find_tableRow <- function(table, row) {
   # Drop the rules
   drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
 
+  # Drop partial rules
+  cline <- find_macro(content, "\\cline")
+  if (length(cline))
+    drop(c(cline, cline + 1))
+
   # Drop all newlines
   drop(find_catcode(content, NEWLINE))
 
   breaks <- find_macro(content, "\\\\")
   rows <- split_list(contentIdx, breaks)
-  if (row <= length(rows))
-    c(rows[[row]], breaks[row])
+  if (row <= length(breaks))
+    c(rows[[row]], contentIdx[breaks[row]])
+  else if (row == length(rows))
+    rows[[row]]
 }
 
 #' @rdname tables
@@ -297,10 +401,18 @@ find_tableRow <- function(table, row) {
 tableRow <- function(table, row)
   as_LaTeX2(table[[2]][find_tableRow(table, row)])
 
+blankRow <- function(table) {
+  paste0(rep(" & ", tableNcol(table) - 1), collapse = "")
+}
+
 #' @rdname tables
 #' @details Unless `asis = TRUE`, `tableContent(table) <- value`
-#'  will add \\ and a newline
+#'  will add "\\" and a newline
 #' at the end if not present.
+#'
+#' If the `row` value is higher than the number of rows
+#' in the table, blank rows will be added to fill the
+#' space between.
 #' @examples
 #' tableRow(table, 5) <- "a & b & c"
 #' table
@@ -313,8 +425,8 @@ tableRow <- function(table, row)
     if (!length(breaks))
       value <- c(value, as_LaTeX2("\\\\"))
     newlines <- find_catcode(value, NEWLINE)
-    if (!(length(value) %in% newlines))
-      value <- c(value, as_LaTeX2("\n"))
+    # if (!(length(value) %in% newlines))
+    #   value <- c(value, as_LaTeX2("\n"))
   }
   i <- find_tableRow(table, row)
   if (!length(i)) {
@@ -322,9 +434,8 @@ tableRow <- function(table, row)
     contentIdx <- find_tableContent(table)
     content <- table[[2]][contentIdx]
     breaks <- contentIdx[find_macro(content, "\\\\")]
-    brk <- as_LaTeX2("\\\\\n")
-    value <- c(rep(brk, row - length(breaks) - 1),
-               value)
+    blanks <- as_LaTeX2(c("", rep(paste0(blankRow(table), "\\\\"), row - length(breaks) - 1), ""))
+    value <- c(blanks, value)
     if (length(breaks))
       i <- max(breaks) + 0.5
     else
@@ -338,25 +449,77 @@ tableRow <- function(table, row)
   table
 }
 
+# this expands multicolumn macros to
+# an equivalent number of columns.  The
+# index of the added stuff is NA
+
+expandMulticolumn <- function(items, idx) {
+  multis <- find_macro(items, "\\multicolumn")
+  if (length(multis)) {
+    whitespace <- find_whitespace(items)
+    for (i in rev(seq_along(multis))) {
+      multi <- multis[i]
+      args <- setdiff(multi + seq_len(length(items) - multi), whitespace)
+      if (length(args) < 3)
+        stop("Badly formed \\multicolumn")
+      args <- args[1:3]
+      arg <- args[1]
+      if (latexTag(items[[arg]]) == "BLOCK")
+        count <- as.numeric(items[arg][[1]])
+      else
+        count <- as.numeric(items[arg])
+      if (count > 1) {
+        # add some fake alignment markers
+        markers <- rep(as_LaTeX2("& "), count - 1)
+        i <- seq_along(items)
+        items <- as_LaTeX2(c(items[i <= args[3]],
+                   markers,
+                   items[i > args[3]]))
+        idx <- c(idx[i <= args[3]],
+                 rep(NA_integer_, length(markers)),
+                 idx[i > args[3]])
+      }
+    }
+  }
+  list(items, idx)
+}
+
 #' @rdname tables
 #' @param col column in the table
 #' @returns `find_tableCell()` returns the indices of the
 #' entries corresponding to the content of the cell (row, col) of the table.
+#' @details `find_tableCell()` returns `NA` if the requested
+#' cell is missing because an earlier cell covered multiple
+#' columns.  It signals an error if a request is made beyond
+#' the bounds of the table.
 #' @examples
 #' find_tableCell(table, 1, 2)
 #'
 #' @export
 find_tableCell <- function(table, row, col) {
   contentIdx <- find_tableRow(table, row)
+  if (is.null(contentIdx))
+    stop(sprintf("row %d is too high", row))
   content <- as_LaTeX2(table[[2]][contentIdx])
-  if (is_macro(content[[length(content)]], "\\\\")) {
-    content <- content[-length(content)]
-    contentIdx <- contentIdx[-length(content)]
-  }
-  breaks <- find_catcode(content, ALIGN)
+
+  fix <- expandMulticolumn(content, contentIdx)
+  content <- fix[[1]]
+  contentIdx <- fix[[2]]
+
+  terminated <- is_macro(content[[length(content)]],
+                         "\\\\")
+  breaks <- c(find_catcode(content, ALIGN),
+              if (terminated) length(content))
   cells <- split_list(contentIdx, breaks)
+  if (terminated)
+    cells[[length(cells)]] <- NULL
+
   if (col <= length(cells))
-    cells[[col]]
+    result <- cells[[col]]
+  else
+    stop(sprintf("col %d is too high", col))
+
+  result
 }
 
 #' @rdname tables
@@ -366,14 +529,24 @@ find_tableCell <- function(table, row, col) {
 #' tableCell(table, 1, 2)
 #'
 #' @export
-tableCell <- function(table, row, col)
-  as_LaTeX2(table[[2]][find_tableCell(table, row, col)])
+tableCell <- function(table, row, col) {
+  entries <- find_tableCell(table, row, col)
+  if (any(is.na(entries)))
+    warning("Cell is missing because of earlier \\multicolumn cell.")
+  else
+    as_LaTeX2(table[[2]][entries])
+}
 
 #' @rdname tables
 #' @details Unless `asis = TRUE`, `tableContent(table) <- value`
 #'  will add blanks
 #' at the start end end if not present, to make the result
 #' more readable.
+#'
+#' If `col` is higher than the current table width,
+#' the assignment will fail with an error.  If only `row`
+#' is too high, blank lines will be added and it should
+#' succeed.
 #' @examples
 #' tableCell(table, 5, 2) <- " d "
 #' table
@@ -388,9 +561,24 @@ tableCell <- function(table, row, col)
     if (!(1 %in% blanks))
       value <- c(as_LaTeX2(" "), value)
   }
+  if (row > tableNrow(table))
+    tableRow(table, row) <- blankRow(table)
   i <- find_tableCell(table, row, col)
-  if (!length(i))
-    stop("Can't add cells that are not present.")
+  if (any(is.na(i)))
+    stop("Can't add cell covered by earlier \\multicolumn cell.")
+  if (!length(i)) {
+    i <- find_tableRow(table, row)
+    content <- table[[2]][i]
+    fix <- expandMulticolumn(content, i)
+    content <- fix[[1]]
+    i <- fix[[2]]
+    terminated <- is_macro(content[[length(content)]],
+                           "\\\\")
+    breaks <- c(find_catcode(content, ALIGN),
+                if (terminated) length(content))
+    i <- i[breaks[col]] - 0.5
+  }
+
   old <- table[[2]]
   iold <- seq_along(old)
   table[[2]] <- c(old[iold < min(i)],

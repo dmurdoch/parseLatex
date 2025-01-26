@@ -126,12 +126,35 @@ select_items <- function(items, which) {
 
 #' @rdname Utilities
 #'
-#' @returns `drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+#' @returns `find_whitespace()` returns the indices of
+#' whitespace in `items`
 #' @export
-drop_whitespace <- function(items) {
-  as_LaTeX2(Filter(function(item) !is_whitespace(item), items))
+find_whitespace <- function(items) {
+  seq_along(items)[sapply(items, is_whitespace)]
 }
 
+#' @rdname Utilities
+#'
+#' @returns `drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+#' @export
+drop_whitespace <- function(items)
+  drop_items(items, find_whitespace(items))
+
+#' @rdname Utilities
+#'
+#' @returns `include_whitespace()` returns `which` with
+#' following whitespace (blanks, tabs, newlines) included.
+#' @export
+include_whitespace <- function(items, which) {
+  whitespace <- find_whitespace(items)
+  repeat {
+    following <- setdiff(intersect(whitespace, which + 1),
+                         which)
+    if (!length(following))
+      return(sort(which))
+    which <- c(which, following)
+  }
+}
 #' Find bracket wrapped options from Latex code.
 #'
 #' @param items A list of latex items
@@ -284,20 +307,37 @@ find_catcode <- function(items, codes) {
 }
 
 #' @rdname Utilities
+#' @param char Which character to look for
+#' @returns `find_char()` returns the index within `items`
+#' of characters matching `char`.  Only characters
+#' marked as SPECIAL by the parser will be found.
+#' @export
+find_char <- function(items, char) {
+  which(sapply(seq_along(items),
+               function(i)
+                 latexTag(items[[i]]) == "SPECIAL" &&
+                 items[[i]] == char))
+}
+
+#' @rdname Utilities
 #' @param splits Which items divide the parts?
 #' @returns `split_list()` returns a list of pieces
 #' separated at the splits
 #' @export
 split_list <- function(items, splits) {
   prev <- 0
-  lapply(splits, function(s) {
+  result <- lapply(splits, function(s) {
     if (s > prev + 1) {
       sel <- items[(prev + 1):(s - 1)]
       prev <<- s
       sel
     } else
-      list()
+      items[FALSE]
   })
+  # Add in one more after the last split
+  extras <- items[seq_along(items) > max(splits)]
+  result <- c(result, list(extras))
+  result
 }
 
 #' @rdname Utilities

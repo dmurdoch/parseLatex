@@ -14,10 +14,13 @@
 \alias{is_whitespace}
 \alias{drop_items}
 \alias{select_items}
+\alias{find_whitespace}
 \alias{drop_whitespace}
+\alias{include_whitespace}
 \alias{find_env}
 \alias{find_macro}
 \alias{find_catcode}
+\alias{find_char}
 \alias{split_list}
 \alias{split_latex}
 \title{Utility functions for working with parsed Latex.}
@@ -46,13 +49,19 @@ drop_items(items, which)
 
 select_items(items, which)
 
+find_whitespace(items)
+
 drop_whitespace(items)
+
+include_whitespace(items, which)
 
 find_env(items, envtypes)
 
 find_macro(items, macros)
 
 find_catcode(items, codes)
+
+find_char(items, char)
 
 split_list(items, splits)
 
@@ -75,6 +84,8 @@ e.g. `"table"`.}
 \item{which}{Which items to operate on.}
 
 \item{codes}{Which codes to look for}
+
+\item{char}{Which character to look for}
 
 \item{splits}{Which items divide the parts?}
 }
@@ -105,7 +116,13 @@ specified type.
 
 `select_items()` returns the list of subsetted items
 
+`find_whitespace()` returns the indices of
+whitespace in `items`
+
 `drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+
+`include_whitespace()` returns `which` with
+following whitespace (blanks, tabs, newlines) included.
 
 `find_env()` returns the indices within `items`
 of environments in `envtypes`.
@@ -115,6 +132,10 @@ of instances in `macros`.
 
 `find_catcode()` returns the index within `items`
 of specials matching `code`.
+
+`find_char()` returns the index within `items`
+of characters matching `char`.  Only characters
+marked as SPECIAL by the parser will be found.
 
 `split_list()` returns a list of pieces
 separated at the splits

@@ -16,6 +16,11 @@
 \alias{find_tableContent}
 \alias{tableContent}
 \alias{tableContent<-}
+\alias{find_rules}
+\alias{rules}
+\alias{find_rule}
+\alias{rule}
+\alias{rule<-}
 \alias{find_tableRow}
 \alias{tableRow}
 \alias{tableRow<-}
@@ -51,6 +56,16 @@ find_tableContent(table)
 tableContent(table)
 
 tableContent(table, asis = FALSE) <- value
+
+find_rules(table)
+
+rules(table)
+
+find_rule(table, row)
+
+rule(table, row)
+
+rule(table, row, asis = FALSE) <- value
 
 find_tableRow(table, row)
 
@@ -115,6 +130,20 @@ entries corresponding to content of the table.
 `tableContent()` returns a LaTeX2 object containing
 all of the table content after the options.
 
+`find_rules()` returns a list of the indices
+of rules before each row, including the whitespace
+following each one
+
+`rules(table)` returns a list of the rules
+before each row.  The last entry will be the rule(s)
+following the last row.
+
+`find_rule(table, row)` returns the indices
+of the rule(s) before `row`.
+
+`rule(table, row)` returns the indices
+rule(s) before `row`.
+
 `find_tableRow()` returns the indices of the
 entries corresponding to the content of row i of the table.
 
@@ -140,13 +169,27 @@ at the start end end if not present, to make the result
 more readable.
 
 Unless `asis = TRUE`, `tableContent(table) <- value`
- will add \\ and a newline
+ will add "\\" and a newline
 at the end if not present.
+
+If the `row` value is higher than the number of rows
+in the table, blank rows will be added to fill the
+space between.
+
+`find_tableCell()` returns `NA` if the requested
+cell is missing because an earlier cell covered multiple
+columns.  It signals an error if a request is made beyond
+the bounds of the table.
 
 Unless `asis = TRUE`, `tableContent(table) <- value`
  will add blanks
 at the start end end if not present, to make the result
 more readable.
+
+If `col` is higher than the current table width,
+the assignment will fail with an error.  If only `row`
+is too high, blank lines will be added and it should
+succeed.
 }
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
@@ -182,6 +225,16 @@ tableContent(table) <- "Mazda RX4 & 21 & 6\\\\\\\\"
 table
 tableContent(table, asis = TRUE) <- "Mazda RX4 & 21 & 6\\\\\\\\"
 table
+
+find_rules(table)
+
+rules(table)
+
+find_rule(table, 1)
+
+rule(table, 1)
+
+rule(table, 2) <- "\\\\midrule"
 
 find_tableRow(table, 1)
 
