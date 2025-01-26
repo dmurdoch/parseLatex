@@ -75,21 +75,30 @@ some bracketed options).</p>
 
 
 <dl><dt id="arg-items">items<a class="anchor" aria-label="anchor" href="#arg-items"></a></dt>
-<dd><p>A list of latex items</p></dd>
+<dd><p>A list of latex items.</p></dd>
 
 
 <dt id="arg-which">which<a class="anchor" aria-label="anchor" href="#arg-which"></a></dt>
-<dd><p>Return this block</p></dd>
+<dd><p>Which options do you want?  Some
+macros support more than one set.</p></dd>
 
 
 <dt id="arg-start">start<a class="anchor" aria-label="anchor" href="#arg-start"></a></dt>
-<dd><p>Start looking at `items[[start]]`</p></dd>
+<dd><p>Start looking at `items[[start]]`.</p></dd>
+
+
+<dt id="arg-asis">asis<a class="anchor" aria-label="anchor" href="#arg-asis"></a></dt>
+<dd><p>Should newlines be added around the
+value?
+#' @param value The content to be inserted into the cell.  This
+can be a LaTeX2 object, or a character string that will be
+converted to one.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>`find_bracket_options` returns indices into `items` of the options (including the
-brackets)</p>
+brackets).</p>
 <p>`bracket_options` returns a LaTeX2 object containing
 the specified options.</p>
 <p>`find_brace_options` returns the index of the block containing the options.</p>

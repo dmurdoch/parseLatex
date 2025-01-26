@@ -86,20 +86,21 @@ This package exports an enhanced version of the tools::parseLatex function, whic
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Extra parameters to pass to `deparseLatex`</p></dd>
+<dd><p>Extra parameters to pass to `deparseLatex`.</p></dd>
 
 
 <dt id="arg-tags">tags<a class="anchor" aria-label="anchor" href="#arg-tags"></a></dt>
-<dd><p>Whether to display LaTeX2 tags</p></dd>
+<dd><p>Whether to display LaTeX2 tags.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Parsed Latex in list with class `"LaTeX2"`.</p>
+    <p>`parseLatex` returns parsed Latex in list with class `"LaTeX2"`.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Useful links:</p><ul><li><p><a href="https://github.com/dmurdoch/parseLatex" class="external-link">https://github.com/dmurdoch/parseLatex</a></p></li>
+<li><p><a href="https://dmurdoch.github.io/parseLatex/">https://dmurdoch.github.io/parseLatex/</a></p></li>
 <li><p>Report bugs at <a href="https://github.com/dmurdoch/parseLatex/issues" class="external-link">https://github.com/dmurdoch/parseLatex/issues</a></p></li>
 </ul></div>
     </div>
@@ -113,8 +114,6 @@ This package exports an enhanced version of the tools::parseLatex function, whic
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu">parseLatex</span><span class="op">(</span><span class="st">r"(fran\c{c}ais)"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">parsed</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fran\c{c}ais </span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/getParseData.html" class="external-link">getParseData</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -81,6 +81,10 @@ allows it to print things in a more readable way.</li>
 <li>The <code>parseLatex</code> package includes a large selection of
 functions for extracting and modifying parts of the parsed LaTeX.</li>
 </ol>
+</div>
+<div class="section level2">
+<h2 id="demo">Demo<a class="anchor" aria-label="anchor" href="#demo"></a>
+</h2>
 <p>A simple demonstration is in order.</p>
 <p>First, we use <code>knitr</code> to create a LaTeX table.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -121,8 +125,10 @@ and a second entry which is the whole table environment:</p>
 <span><span class="co">#&gt; \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span></code></pre></div>
 <p>“<code>SPECIAL</code>” and “<code>ENVIRONMENT</code>” label the types
-of items. Since the table is stored as an environment, we could find its
-location using <code><a href="../reference/finders.html">find_env()</a></code>:</p>
+of items. The table environment contains the environment name, and a
+<code>"LaTeX2"</code> list containing all the content.</p>
+<p>If we hadn’t known where we put it, we could find the table location
+using <code><a href="../reference/finders.html">find_env()</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/finders.html">find_env</a></span><span class="op">(</span><span class="va">parsed</span>, <span class="st">"tabular"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2</span></span></code></pre></div>
@@ -135,13 +141,13 @@ it:</p>
 <span><span class="co">#&gt; {l|r|r}</span></span>
 <span><span class="fu"><a href="../reference/tablecell.html">tableCell</a></span><span class="op">(</span><span class="va">table</span>, <span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span> <span class="co"># The title counts as a row</span></span>
 <span><span class="co">#&gt;  21</span></span>
-<span><span class="fu"><a href="../reference/tablecell.html">tableCell</a></span><span class="op">(</span><span class="va">table</span>, <span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Changed!"</span></span>
+<span><span class="fu"><a href="../reference/tablecell.html">tableCell</a></span><span class="op">(</span><span class="va">table</span>, <span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Model"</span></span>
 <span><span class="va">table</span></span>
 <span><span class="co">#&gt; ENVIRONMENT: \begin{tabular}{l|r|r}</span></span>
 <span><span class="co">#&gt; \hline</span></span>
-<span><span class="co">#&gt;   &amp; mpg &amp; cyl\\</span></span>
+<span><span class="co">#&gt;  Model &amp; mpg &amp; cyl\\</span></span>
 <span><span class="co">#&gt; \hline</span></span>
-<span><span class="co">#&gt; Mazda RX4 &amp; Changed! &amp; 6\\</span></span>
+<span><span class="co">#&gt; Mazda RX4 &amp; 21 &amp; 6\\</span></span>
 <span><span class="co">#&gt; \hline</span></span>
 <span><span class="co">#&gt; Mazda RX4 Wag &amp; 21 &amp; 6\\</span></span>
 <span><span class="co">#&gt; \hline</span></span>
