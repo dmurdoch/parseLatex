@@ -8,7 +8,7 @@
 #' @param verbatim A character vector containing the names of \LaTeX environments holding verbatim text.
 #' @param verb A character vector containing LaTeX macros that should be assumed to hold verbatim text.
 #'
-#' @returns Parsed Latex in list with class `"LaTeX2"`.
+#' @returns `parseLatex` returns parsed Latex in list with class `"LaTeX2"`.
 #' @export
 #' @importFrom utils getParseData
 #' @importFrom tools deparseLatex
@@ -16,7 +16,6 @@
 #' @examples
 #' parsed <- parseLatex(r"(fran\c{c}ais)")
 #' parsed
-#' getParseData(parsed)
 parseLatex <- function(text,
                        filename = deparse1(substitute(text)),
                        verbose = FALSE,
@@ -39,8 +38,8 @@ print.LaTeX2item <- function(x, ...) {
 
 #' @rdname parseLatex
 #' @param x Object to work on.
-#' @param tags Whether to display LaTeX2 tags
-#' @param ... Extra parameters to pass to `deparseLatex`
+#' @param tags Whether to display LaTeX2 tags.
+#' @param ... Extra parameters to pass to `deparseLatex`.
 #' @export
 print.LaTeX2 <- function(x, tags = FALSE, ...) {
   if (tags) {
@@ -80,11 +79,12 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
 # This converts a latex object into a single element character vector
 #' Convert latex object into character vector
 #'
-#' @param x A latex object
+#' @param x A latex object.
 #' @param dropBraces Whether to drop unnecessary braces.
 #'
-#' @returns A character vector.
-#' @export
+#' @returns `deparseLatex` returns character vector corresponding
+#' to the parsed Latex.
+#' #' @export
 deparseLatex <- function(x, dropBraces = FALSE)
 {
   specials <- c("\\", "#", "$", "%", "&", "~", "_", "^", "{", "}")

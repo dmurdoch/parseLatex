@@ -22,7 +22,7 @@ find_tabular(items, start = 1)
 a tabular-like environment.
 
 `find_tabular()` returns the index of the first
-tabular-like environment, or `NA` if none is found
+tabular-like environment, or `NA` if none is found.
 }
 \description{
 Functions related to parsing LaTeX tables

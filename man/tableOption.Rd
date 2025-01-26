@@ -33,9 +33,9 @@ columnOptions(table, asis = FALSE) <- value
 \arguments{
 \item{table}{A known tabular-like environment object.}
 
-\item{asis}{Whether to make small modifications in replacement functions}
+\item{asis}{Whether to make small modifications in replacement functions.}
 
-\item{value}{A character string or LaTeX2 object}
+\item{value}{A character string or LaTeX2 object.}
 }
 \value{
 `find_posOption()` returns the indices of the

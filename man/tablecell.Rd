@@ -15,7 +15,7 @@ tableCell(table, row, col, asis = FALSE) <- value
 \arguments{
 \item{table}{A tabular-like environment to work with.}
 
-\item{row, col}{row and column in the table}
+\item{row, col}{row and column in the table.}
 
 \item{asis}{Should blanks be added around the value?}
 
@@ -28,7 +28,7 @@ converted to one.}
 entries corresponding to the content of the cell (row, col) of the table.
 
 `tableCell()` returns a LaTeX2 object containing
-all of the table content in the cell (but not the &)
+all of the table content in the cell (but not the &).
 }
 \description{
 These functions work with the content of cells in

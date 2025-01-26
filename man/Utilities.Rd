@@ -32,7 +32,7 @@ split_latex(items, splits)
 \value{
 `drop_items()` returns the list of items with specific items removed.
 
-`select_items()` returns the list of subsetted items
+`select_items()` returns the list of subsetted items.
 
 `drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
 
@@ -40,10 +40,11 @@ split_latex(items, splits)
 following whitespace (blanks, tabs, newlines) included.
 
 `split_list()` returns a list of pieces
-separated at the splits
+separated at the splits.
 
 `split_latex()` returns a list of pieces
-separated at the splits
+separated at the splits.  Each piece is marked as
+a LaTeX2 object.
 }
 \description{
 Miscellaneous utilities

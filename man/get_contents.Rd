@@ -7,10 +7,10 @@
 get_contents(item)
 }
 \arguments{
-\item{item}{An item from a Latex list (or a list with one item)}
+\item{item}{An item from a Latex list (or a list with one item).}
 }
 \value{
-The contents of the item as a Latex list, or as a
+`get_contents` returns the contents of the item as a Latex list, or as a
 character string.
 }
 \description{

@@ -33,12 +33,12 @@ parseLatex(
 
 \item{x}{Object to work on.}
 
-\item{...}{Extra parameters to pass to `deparseLatex`}
+\item{...}{Extra parameters to pass to `deparseLatex`.}
 
-\item{tags}{Whether to display LaTeX2 tags}
+\item{tags}{Whether to display LaTeX2 tags.}
 }
 \value{
-Parsed Latex in list with class `"LaTeX2"`.
+`parseLatex` returns parsed Latex in list with class `"LaTeX2"`.
 }
 \description{
 The \code{parseLatex} function parses LaTeX source, producing a structured object.
@@ -48,12 +48,12 @@ This package exports an enhanced version of the tools::parseLatex function, whic
 \examples{
 parsed <- parseLatex(r"(fran\c{c}ais)")
 parsed
-getParseData(parsed)
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/dmurdoch/parseLatex}
+  \item \url{https://dmurdoch.github.io/parseLatex/}
   \item Report bugs at \url{https://github.com/dmurdoch/parseLatex/issues}
 }
 

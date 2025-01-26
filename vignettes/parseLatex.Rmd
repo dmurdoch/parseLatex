@@ -36,6 +36,8 @@ in a more readable way.
 3.  The `parseLatex` package includes a large selection of functions
 for extracting and modifying parts of the parsed LaTeX.
 
+## Demo
+
 A simple demonstration is in order.
 
 First, we use `knitr` to create a LaTeX table.
@@ -59,8 +61,11 @@ each table, and a second entry which is the whole table environment:
 parsed[[1]]
 parsed[[2]]
 ```
-"`SPECIAL`" and "`ENVIRONMENT`" label the types of items.  Since
-the table is stored as an environment, we could find its location
+"`SPECIAL`" and "`ENVIRONMENT`" label the types of items. The table
+environment contains the environment name, and a `"LaTeX2"` list
+containing all the content.
+
+If we hadn't known where we put it, we could find the table location
 using `find_env()`:
 ```{r}
 find_env(parsed, "tabular")
@@ -73,7 +78,7 @@ table <- parsed[[find_env(parsed, "tabular")]]
 # Get the alignment options from the content
 columnOptions(table)
 tableCell(table, 2,2) # The title counts as a row
-tableCell(table, 2,2) <- "Changed!"
+tableCell(table, 1,1) <- "Model"
 table
 ```
 

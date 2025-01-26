@@ -34,7 +34,7 @@ converted to one.}
 \value{
 `find_rules()` returns a list of the indices
 of rules before each row, including the whitespace
-following each one
+following each one.
 
 `rules(table)` returns a list of the rules
 before each row.  The last entry will be the rule(s)

@@ -4,7 +4,7 @@
 #' @rdname tablecalcs
 #' @param table A known tabular-like environment object.
 #'
-#' @returns `tableNrow()` returns the number of rows in the table
+#' @returns `tableNrow()` returns the number of rows in the table.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:3], format = "latex")
 #' parsed <- parseLatex(latex)
@@ -18,7 +18,7 @@ tableNrow <- function(table) {
 }
 
 #' @rdname tablecalcs
-#' @returns `tableNcol()` returns the number of columns in the table
+#' @returns `tableNcol()` returns the number of columns in the table.
 #' @examples
 #' tableNcol(table)
 #' @export
@@ -31,7 +31,7 @@ tableNcol <- function(table) {
 }
 
 #' @rdname tablecalcs
-#' @returns `tableDim()` returns the number of rows and columns in the table
+#' @returns `tableDim()` returns the number of rows and columns in the table.
 #'
 #' @examples
 #' tableDim(table)

@@ -3,7 +3,7 @@
 #' @rdname tableRule
 #' @returns `find_rules()` returns a list of the indices
 #' of rules before each row, including the whitespace
-#' following each one
+#' following each one.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 #' parsed <- parseLatex(latex)

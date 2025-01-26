@@ -27,8 +27,8 @@ find_posOption <- function(table) {
 posOption <- function(table)
   as_LaTeX2(table[[2]][find_posOption(table)])
 
-#' @param value A character string or LaTeX2 object
-#' @param asis Whether to make small modifications in replacement functions
+#' @param value A character string or LaTeX2 object.
+#' @param asis Whether to make small modifications in replacement functions.
 #' @details Unless `asis == TRUE`, the value for `value` in `posOption(table) <- value`
 #' can be specified with or without the enclosing brackets.
 #' @rdname tableOption

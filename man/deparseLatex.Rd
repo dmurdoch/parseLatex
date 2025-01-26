@@ -7,12 +7,14 @@
 deparseLatex(x, dropBraces = FALSE)
 }
 \arguments{
-\item{x}{A latex object}
+\item{x}{A latex object.}
 
 \item{dropBraces}{Whether to drop unnecessary braces.}
 }
 \value{
-A character vector.
+`deparseLatex` returns character vector corresponding
+to the parsed Latex.
+#' @export
 }
 \description{
 Convert latex object into character vector

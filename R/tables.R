@@ -23,7 +23,7 @@ is_Tabular <- function(item) {
 #' @param items A LaTeX2 list object.
 #' @param start Where to start looking
 #' @returns `find_tabular()` returns the index of the first
-#' tabular-like environment, or `NA` if none is found
+#' tabular-like environment, or `NA` if none is found.
 #' @examples
 #' find_tabular(parsed)
 #' table <- parsed[[find_tabular(parsed)]]

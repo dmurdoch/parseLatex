@@ -14,7 +14,7 @@ drop_items <- function(items, which) {
 
 #' @rdname Utilities
 #'
-#' @returns `select_items()` returns the list of subsetted items
+#' @returns `select_items()` returns the list of subsetted items.
 #' @export
 select_items <- function(items, which) {
   as_LaTeX2(items[which])
@@ -46,7 +46,7 @@ include_whitespace <- function(items, which) {
 #' @rdname Utilities
 #' @param splits Which items divide the parts?
 #' @returns `split_list()` returns a list of pieces
-#' separated at the splits
+#' separated at the splits.
 #' @export
 split_list <- function(items, splits) {
   prev <- 0
@@ -67,7 +67,8 @@ split_list <- function(items, splits) {
 #' @rdname Utilities
 #' @param splits Which items divide the parts?
 #' @returns `split_latex()` returns a list of pieces
-#' separated at the splits
+#' separated at the splits.  Each piece is marked as
+#' a LaTeX2 object.
 #' @export
 split_latex <- function(items, splits) {
   lapply(split_list(items, splits), as_LaTeX2)
@@ -75,9 +76,9 @@ split_latex <- function(items, splits) {
 
 #' Convenience function to get contents from an item
 #'
-#' @param item An item from a Latex list (or a list with one item)
+#' @param item An item from a Latex list (or a list with one item).
 #'
-#' @returns The contents of the item as a Latex list, or as a
+#' @returns `get_contents` returns the contents of the item as a Latex list, or as a
 #' character string.
 #' @export
 #' @examples

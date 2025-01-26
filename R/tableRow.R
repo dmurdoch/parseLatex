@@ -49,7 +49,7 @@ find_tableRow <- function(table, row) {
 
 #' @rdname tableRow
 #' @returns `tableRow()` returns a LaTeX2 object containing
-#' all of the table content in the row
+#' all of the table content in the row.
 #' @examples
 #' tableRow(table, 1)
 #'

@@ -19,19 +19,19 @@ find_catcode(items, codes)
 find_char(items, char)
 }
 \arguments{
-\item{items}{A list of latex items}
+\item{items}{A list of latex items.}
 
 \item{envtypes}{Which types of environment to look for.}
 
 \item{macros}{Which types of macros to look for.}
 
-\item{codes}{Which codes to look for}
+\item{codes}{Which codes to look for.}
 
-\item{char}{Which character to look for}
+\item{char}{Which character to look for.}
 }
 \value{
 `find_whitespace()` returns the indices of
-whitespace in `items`
+whitespace in `items`.
 
 `find_env()` returns the indices within `items`
 of environments in `envtypes`.
@@ -39,7 +39,7 @@ of environments in `envtypes`.
 `find_macro()` returns the index within `items`
 of instances in `macros`.
 
-`find_catcode()` returns the index within `items`
+`find_catcode()` returns the index within `items`.
 of specials matching `code`.
 
 `find_char()` returns the index within `items`

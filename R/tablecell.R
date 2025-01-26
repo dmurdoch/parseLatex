@@ -1,7 +1,7 @@
 #' @title Work with table cells
 #' @rdname tablecell
 #' @param table A tabular-like environment to work with.
-#' @param row,col row and column in the table
+#' @param row,col row and column in the table.
 #' @description
 #' These functions work with the content of cells in
 #' tabular-like environments.  Cells are numbered with the first
@@ -48,7 +48,7 @@ find_tableCell <- function(table, row, col) {
 
 #' @rdname tablecell
 #' @returns `tableCell()` returns a LaTeX2 object containing
-#' all of the table content in the cell (but not the &)
+#' all of the table content in the cell (but not the &).
 #' @examples
 #' tableCell(table, 1, 2)
 #'

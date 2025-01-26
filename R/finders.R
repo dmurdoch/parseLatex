@@ -1,9 +1,9 @@
 
 #' @rdname finders
 #' @title Miscellaneous low-level finders
-#' @param items A list of latex items
+#' @param items A list of latex items.
 #' @returns `find_whitespace()` returns the indices of
-#' whitespace in `items`
+#' whitespace in `items`.
 #' @export
 find_whitespace <- function(items) {
   seq_along(items)[sapply(items, is_whitespace)]
@@ -35,8 +35,8 @@ find_macro <- function(items, macros) {
 }
 
 #' @rdname finders
-#' @param codes Which codes to look for
-#' @returns `find_catcode()` returns the index within `items`
+#' @param codes Which codes to look for.
+#' @returns `find_catcode()` returns the index within `items`.
 #' of specials matching `code`.
 #' @export
 find_catcode <- function(items, codes) {
@@ -47,7 +47,7 @@ find_catcode <- function(items, codes) {
 }
 
 #' @rdname finders
-#' @param char Which character to look for
+#' @param char Which character to look for.
 #' @returns `find_char()` returns the index within `items`
 #' of characters matching `char`.  Only characters
 #' marked as SPECIAL by the parser will be found.

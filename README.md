@@ -7,7 +7,8 @@
 <!-- badges: end -->
 
 The goal of `parseLatex` is to provide a parser for a subset of LaTeX
-syntax that is more complete than the `tools::parseLatex()` parser.
+syntax that is more complete than what is handled by the
+`tools::parseLatex()` parser.
 
 Perhaps some day it will handle all LaTeX inputs, but that’s not likely.
 For now, I’m aiming to handle anything that `knitr::kable()` and the

@@ -30,7 +30,7 @@ converted to one.}
 entries corresponding to the content of row i of the table.
 
 `tableRow()` returns a LaTeX2 object containing
-all of the table content in the row
+all of the table content in the row.
 }
 \description{
 Functions to work with rows in tables

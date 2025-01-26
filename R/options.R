@@ -1,16 +1,16 @@
 #' @rdname options
 #' @title Find macro or environment options
-#' @param which Which bracket options do you want?  Some
+#' @param items A list of latex items.
+#' @param start Start looking at `items[[start]]`.
+#' @param which Which options do you want?  Some
 #' macros support more than one set.
-#'
-#' @param start Start looking at `items[[start]]`
 #' @description
 #' Many Latex environments and macros take optional parameters
 #' wrapped in square brackets.  `find_bracket_options` finds those,
 #' assuming they come immediately after the macro.
 #'
 #' @returns `find_bracket_options` returns indices into `items` of the options (including the
-#' brackets)
+#' brackets).
 #'
 #' @export
 find_bracket_options <- function(items, which = 1, start = 1) {
@@ -48,6 +48,12 @@ bracket_options <- function(items, which = 1, start = 1) {
 }
 
 #' @rdname options
+#' @param asis Should newlines be added around the
+#' value?
+#' #' @param value The content to be inserted into the cell.  This
+#' can be a LaTeX2 object, or a character string that will be
+#' converted to one.
+#' @value
 #' @examples
 #' bracket_options(parsed, start = macro + 1) <- "Short Title"
 #' parsed
@@ -84,10 +90,6 @@ bracket_options <- function(items, which = 1, start = 1) {
 }
 
 #' @rdname options
-#'
-#' @param items A list of latex items
-#' @param which Return this block
-#' @param start Start looking at `items[[start]]`
 #'
 #' @description
 #' Some Latex environments and macros take optional parameters

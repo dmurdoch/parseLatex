@@ -22,15 +22,22 @@ brace_options(items, which = 1, start = 1)
 brace_options(items, which = 1, start = 1, asis = FALSE) <- value
 }
 \arguments{
-\item{items}{A list of latex items}
+\item{items}{A list of latex items.}
 
-\item{which}{Return this block}
+\item{which}{Which options do you want?  Some
+macros support more than one set.}
 
-\item{start}{Start looking at `items[[start]]`}
+\item{start}{Start looking at `items[[start]]`.}
+
+\item{asis}{Should newlines be added around the
+value?
+#' @param value The content to be inserted into the cell.  This
+can be a LaTeX2 object, or a character string that will be
+converted to one.}
 }
 \value{
 `find_bracket_options` returns indices into `items` of the options (including the
-brackets)
+brackets).
 
 `bracket_options` returns a LaTeX2 object containing
 the specified options.
