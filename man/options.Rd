@@ -30,8 +30,9 @@ macros support more than one set.}
 \item{start}{Start looking at `items[[start]]`.}
 
 \item{asis}{Should newlines be added around the
-value?
-#' @param value The content to be inserted into the cell.  This
+value?}
+
+\item{value}{The content to be inserted into the cell.  This
 can be a LaTeX2 object, or a character string that will be
 converted to one.}
 }

@@ -50,10 +50,9 @@ bracket_options <- function(items, which = 1, start = 1) {
 #' @rdname options
 #' @param asis Should newlines be added around the
 #' value?
-#' #' @param value The content to be inserted into the cell.  This
+#' @param value The content to be inserted into the cell.  This
 #' can be a LaTeX2 object, or a character string that will be
 #' converted to one.
-#' @value
 #' @examples
 #' bracket_options(parsed, start = macro + 1) <- "Short Title"
 #' parsed
