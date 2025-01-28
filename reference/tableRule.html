@@ -63,12 +63,12 @@ These functions let rules be extracted or modified.</p>
 
 <dt id="arg-row">row<a class="anchor" aria-label="anchor" href="#arg-row"></a></dt>
 <dd><p>The rules will precede the contents of this row.
-The rule after the final row uses `row = tableNrow(table) + 1`.</p></dd>
+The rule after the final row uses <code>row = tableNrow(table) + 1</code>.</p></dd>
 
 
 <dt id="arg-asis">asis<a class="anchor" aria-label="anchor" href="#arg-asis"></a></dt>
 <dd><p>Should a newline be added after the
-value?  If `asis = TRUE`, it will not be.</p></dd>
+value?  If <code>asis = TRUE</code>, it will not be.</p></dd>
 
 
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
@@ -79,16 +79,16 @@ converted to one.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>`find_rules()` returns a list of the indices
+    <p><code>find_rules()</code> returns a list of the indices
 of rules before each row, including the whitespace
 following each one.</p>
-<p>`rules(table)` returns a list of the rules
+<p><code>rules(table)</code> returns a list of the rules
 before each row.  The last entry will be the rule(s)
 following the last row.</p>
-<p>`find_rule(table, row)` returns the indices
-of the rule(s) before `row`.</p>
-<p>`rule(table, row)` returns the indices
-rule(s) before `row`.</p>
+<p><code>find_rule(table, row)</code> returns the indices
+of the rule(s) before <code>row</code>.</p>
+<p><code>rule(table, row)</code> returns the indices
+rule(s) before <code>row</code>.</p>
     </div>
 
     <div class="section level2">
