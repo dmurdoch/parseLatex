@@ -27,7 +27,7 @@ brace_options(items, which = 1, start = 1, asis = FALSE) <- value
 \item{which}{Which options do you want?  Some
 macros support more than one set.}
 
-\item{start}{Start looking at `items[[start]]`.}
+\item{start}{Start looking at \code{items[[start]]}.}
 
 \item{asis}{Should newlines be added around the
 value?}
@@ -37,24 +37,24 @@ can be a LaTeX2 object, or a character string that will be
 converted to one.}
 }
 \value{
-`find_bracket_options` returns indices into `items` of the options (including the
+\code{find_bracket_options} returns indices into \code{items} of the options (including the
 brackets).
 
-`bracket_options` returns a LaTeX2 object containing
+\code{bracket_options} returns a LaTeX2 object containing
 the specified options.
 
-`find_brace_options` returns the index of the block containing the options.
+\code{find_brace_options} returns the index of the block containing the options.
 
-`brace_options` returns a LaTeX2 object containing
+\code{brace_options} returns a LaTeX2 object containing
 the specified options.
 }
 \description{
 Many Latex environments and macros take optional parameters
-wrapped in square brackets.  `find_bracket_options` finds those,
+wrapped in square brackets.  \code{find_bracket_options} finds those,
 assuming they come immediately after the macro.
 
 Some Latex environments and macros take optional parameters
-wrapped in curly brackets (braces). `find_brace_options` finds those
+wrapped in curly brackets (braces). \code{find_brace_options} finds those
 if they immediately follow the environment or macro (and possibly
 some bracketed options).
 }

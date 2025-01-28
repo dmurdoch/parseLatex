@@ -30,19 +30,19 @@ split_latex(items, splits)
 \item{splits}{Which items divide the parts?}
 }
 \value{
-`drop_items()` returns the list of items with specific items removed.
+\code{drop_items()} returns the list of items with specific items removed.
 
-`select_items()` returns the list of subsetted items.
+\code{select_items()} returns the list of subsetted items.
 
-`drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+\code{drop_whitespace()} returns the list of items with whitespace (blanks, tabs, newlines) removed.
 
-`include_whitespace()` returns `which` with
+\code{include_whitespace()} returns \code{which} with
 following whitespace (blanks, tabs, newlines) included.
 
-`split_list()` returns a list of pieces
+\code{split_list()} returns a list of pieces
 separated at the splits.
 
-`split_latex()` returns a list of pieces
+\code{split_latex()} returns a list of pieces
 separated at the splits.  Each piece is marked as
 a LaTeX2 object.
 }

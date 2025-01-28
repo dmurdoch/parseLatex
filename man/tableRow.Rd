@@ -26,21 +26,21 @@ can be a LaTeX2 object, or a character string that will be
 converted to one.}
 }
 \value{
-`find_tableRow()` returns the indices of the
+\code{find_tableRow()} returns the indices of the
 entries corresponding to the content of row i of the table.
 
-`tableRow()` returns a LaTeX2 object containing
+\code{tableRow()} returns a LaTeX2 object containing
 all of the table content in the row.
 }
 \description{
 Functions to work with rows in tables
 }
 \details{
-Unless `asis = TRUE`, `tableContent(table) <- value`
- will add "\\" and a newline
+Unless \code{asis = TRUE}, \code{tableContent(table) <- value}
+will add "\\" and a newline
 at the end if not present.
 
-If the `row` value is higher than the number of rows
+If the \code{row} value is higher than the number of rows
 in the table, blank rows will be added to fill the
 space between.
 }

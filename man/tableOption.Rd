@@ -38,31 +38,31 @@ columnOptions(table, asis = FALSE) <- value
 \item{value}{A character string or LaTeX2 object.}
 }
 \value{
-`find_posOption()` returns the indices of the
+\code{find_posOption()} returns the indices of the
 entries corresponding to the "pos" option, including the
-brackets, within the contents list (i.e. `table[[2]]`).
+brackets, within the contents list (i.e. \code{table[[2]]}).
 
-`posOption()` returns a LaTeX2 object containing the
+\code{posOption()} returns a LaTeX2 object containing the
 "pos" option.
 
-`find_widthOption()` returns the index of the
+\code{find_widthOption()} returns the index of the
 block corresponding to the "width" option, if there is one.
 Only some tabular-like environments have these.
 
-`widthOption()` returns a LaTeX2 object containing the
+\code{widthOption()} returns a LaTeX2 object containing the
 "width" option, if the table has one.
 
-`find_columnOptions()` returns the index of the
+\code{find_columnOptions()} returns the index of the
 block corresponding to the column spec.
 
-`columnOptions()` returns a LaTeX2 object containing the
+\code{columnOptions()} returns a LaTeX2 object containing the
 "column" options.
 }
 \description{
 Functions related to table options.
 }
 \details{
-Unless `asis == TRUE`, the value for `value` in `posOption(table) <- value`
+Unless \code{asis == TRUE}, the value for \code{value} in \code{posOption(table) <- value}
 can be specified with or without the enclosing brackets.
 }
 \examples{

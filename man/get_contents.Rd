@@ -10,7 +10,7 @@ get_contents(item)
 \item{item}{An item from a Latex list (or a list with one item).}
 }
 \value{
-`get_contents` returns the contents of the item as a Latex list, or as a
+\code{get_contents} returns the contents of the item as a Latex list, or as a
 character string.
 }
 \description{

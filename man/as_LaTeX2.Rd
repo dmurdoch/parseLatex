@@ -10,7 +10,7 @@ as_LaTeX2(x)
 \item{x}{An object to convert to a LaTeX2 object.}
 }
 \value{
-`as_LaTeX2()` converts `x` to a LaTeX2 object.
+\code{as_LaTeX2()} converts \code{x} to a LaTeX2 object.
 }
 \description{
 Coerce to LaTeX2

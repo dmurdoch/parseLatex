@@ -10,10 +10,10 @@
 \usage{
 parseLatex(
   text,
-  filename = deparse1(substitute(text)),
   verbose = FALSE,
   verbatim = c("verbatim", "verbatim*", "Sinput", "Soutput"),
-  verb = "\\\\Sexpr"
+  verb = "\\\\Sexpr",
+  catcodes = defaultCatcodes
 )
 
 \method{print}{LaTeX2item}(x, ...)
@@ -23,27 +23,59 @@ parseLatex(
 \arguments{
 \item{text}{A character vector containing LaTeX source code.}
 
-\item{filename}{A filename to use in syntax error messages.}
-
 \item{verbose}{If \code{TRUE}, print debug error messages.}
 
 \item{verbatim}{A character vector containing the names of \LaTeX environments holding verbatim text.}
 
 \item{verb}{A character vector containing LaTeX macros that should be assumed to hold verbatim text.}
 
+\item{catcodes}{A list or dataframe holding LaTeX "catcodes"; see
+Details.}
+
 \item{x}{Object to work on.}
 
-\item{...}{Extra parameters to pass to `deparseLatex`.}
+\item{...}{Extra parameters to pass to \code{deparseLatex}.}
 
 \item{tags}{Whether to display LaTeX2 tags.}
 }
 \value{
-`parseLatex` returns parsed Latex in list with class `"LaTeX2"`.
+\code{parseLatex} returns parsed Latex in list with class \code{"LaTeX2"}.
 }
 \description{
 The \code{parseLatex} function parses LaTeX source, producing a structured object.
 
-This package exports an enhanced version of the tools::parseLatex function, which handles more LaTeX syntax.
+This package exports an enhanced version of the tools::parseLatex function, and handles more LaTeX syntax.
+}
+\details{
+Some versions of LaTeX such as \code{pdflatex} only handle ASCII
+inputs, while others such as \code{xelatex} allow Unicode input.
+This function allows Unicode input.
+
+During processing of LaTeX input, the interpreter can change
+the handling of characters as it goes, using the \verb{\\\\catcode} macro
+or others such as \verb{\\\\makeatletter}.  This function is purely
+a parser, not an interpreter, so it can't do that.  However,
+the user can change handling for the whole call using the
+\code{catcodes} argument.
+
+\code{catcodes} should be a list or dataframe
+with at least two columns:
+\itemize{
+\item \code{char} should be a column of single characters.
+\item \code{catcode} should be a column of integers in the range 0 to 15
+giving the corresponding catcode.
+}
+
+During parsing, \code{parseLatex} will check these values first.
+If the input character doesn't match anything, then it may
+be categorized:
+\itemize{
+\item as a letter (catcode 11) using the ICU function
+\code{u_hasBinaryProperty(c, UCHAR_ALPHABETIC)},
+\item as a control
+character (catcode 15) if its code point is less than 32,
+\item as "other" (catcode 12) otherwise.
+}
 }
 \examples{
 parsed <- parseLatex(r"(fran\c{c}ais)")

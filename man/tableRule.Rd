@@ -22,29 +22,29 @@ rule(table, row, asis = FALSE) <- value
 \item{table}{A tabular-like environment to work with.}
 
 \item{row}{The rules will precede the contents of this row.
-The rule after the final row uses `row = tableNrow(table) + 1`.}
+The rule after the final row uses \code{row = tableNrow(table) + 1}.}
 
 \item{asis}{Should a newline be added after the
-value?  If `asis = TRUE`, it will not be.}
+value?  If \code{asis = TRUE}, it will not be.}
 
 \item{value}{The content to be inserted into the cell.  This
 can be a LaTeX2 object, or a character string that will be
 converted to one.}
 }
 \value{
-`find_rules()` returns a list of the indices
+\code{find_rules()} returns a list of the indices
 of rules before each row, including the whitespace
 following each one.
 
-`rules(table)` returns a list of the rules
+\code{rules(table)} returns a list of the rules
 before each row.  The last entry will be the rule(s)
 following the last row.
 
-`find_rule(table, row)` returns the indices
-of the rule(s) before `row`.
+\code{find_rule(table, row)} returns the indices
+of the rule(s) before \code{row}.
 
-`rule(table, row)` returns the indices
-rule(s) before `row`.
+\code{rule(table, row)} returns the indices
+rule(s) before \code{row}.
 }
 \description{
 In LaTeX, "rules" are horizontal lines in a table.

@@ -69,5 +69,4 @@ table
 - Possibly add class for table objects, and implement indexing and
   subsetting on that class.
 - See what `kableExtra` does with tables, and try to make that easier.
-- Allow catcodes to be specified before parsing.
 - Do something with math environments?

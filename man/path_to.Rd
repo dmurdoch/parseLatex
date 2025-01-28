@@ -13,18 +13,18 @@ path_to(items, all = FALSE, is_fn, ...)
 
 \item{is_fn}{Which test function to use.}
 
-\item{...}{Additional parameters to pass to `is_fn`.}
+\item{...}{Additional parameters to pass to \code{is_fn}.}
 }
 \value{
-`path_to()` returns the recursive path to the
-first example matching the `is_fn` conditions,
+\code{path_to()} returns the recursive path to the
+first example matching the \code{is_fn} conditions,
 or a list of paths to all matching items.
 }
 \description{
 Find path to a particular kind of item
 }
 \details{
-`path_to()` does a recursive search in the order
+\code{path_to()} does a recursive search in the order
 items appear in the deparse.
 }
 \examples{

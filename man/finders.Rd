@@ -30,20 +30,20 @@ find_char(items, char)
 \item{char}{Which character to look for.}
 }
 \value{
-`find_whitespace()` returns the indices of
-whitespace in `items`.
+\code{find_whitespace()} returns the indices of
+whitespace in \code{items}.
 
-`find_env()` returns the indices within `items`
-of environments in `envtypes`.
+\code{find_env()} returns the indices within \code{items}
+of environments in \code{envtypes}.
 
-`find_macro()` returns the index within `items`
-of instances in `macros`.
+\code{find_macro()} returns the index within \code{items}
+of instances in \code{macros}.
 
-`find_catcode()` returns the index within `items`.
-of specials matching `code`.
+\code{find_catcode()} returns the index within \code{items}.
+of specials matching \code{code}.
 
-`find_char()` returns the index within `items`
-of characters matching `char`.  Only characters
+\code{find_char()} returns the index within \code{items}
+of characters matching \code{char}.  Only characters
 marked as SPECIAL by the parser will be found.
 }
 \description{

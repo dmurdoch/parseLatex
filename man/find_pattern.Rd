@@ -15,7 +15,7 @@ LaTeX2range(path, range)
 \arguments{
 \item{items}{A list of latex items.}
 
-\item{pattern}{Pattern to use in `grepl()`.}
+\item{pattern}{Pattern to use in \code{grepl()}.}
 
 \item{all}{Find all matching, or the first?}
 
@@ -31,22 +31,22 @@ LaTeX2range(path, range)
 extract the range.}
 }
 \value{
-`find_pattern()` returns a `LaTeX2range` item
-or (if `all` is `TRUE`) a list of them.  `LaTeX2range`
- items are lists containing
-`path` and `range`, where `path` is the recursive path
-to the container holding the `range` of items
-matching the `pattern`, or a list of such lists.
+\code{find_pattern()} returns a \code{LaTeX2range} item
+or (if \code{all} is \code{TRUE}) a list of them.  \code{LaTeX2range}
+items are lists containing
+\code{path} and \code{range}, where \code{path} is the recursive path
+to the container holding the \code{range} of items
+matching the \code{pattern}, or a list of such lists.
 
-`LaTeX2range` returns a constructed `"LaTeX2range` object.
+\code{LaTeX2range} returns a constructed \verb{"LaTeX2range} object.
 }
 \description{
-Searches a `LaTeX2` list for text using `grepl()` on deparsed versions of parts of the code.
+Searches a \code{LaTeX2} list for text using \code{grepl()} on deparsed versions of parts of the code.
 It attempts to find the narrowest match(es) that lie
 within a single container.
 }
 \details{
-`find_pattern()` does a recursive search in the order
+\code{find_pattern()} does a recursive search in the order
 items appear in the deparse.  If the pattern matches,
 it attempts to narrow the match by recursing into
 containers and dropping earlier and later items.

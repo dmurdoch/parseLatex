@@ -17,11 +17,11 @@ tableDim(table)
 \item{table}{A known tabular-like environment object.}
 }
 \value{
-`tableNrow()` returns the number of rows in the table.
+\code{tableNrow()} returns the number of rows in the table.
 
-`tableNcol()` returns the number of columns in the table.
+\code{tableNcol()} returns the number of columns in the table.
 
-`tableDim()` returns the number of rows and columns in the table.
+\code{tableDim()} returns the number of rows and columns in the table.
 }
 \description{
 Calculations on tables

@@ -12,7 +12,7 @@ deparseLatex(x, dropBraces = FALSE)
 \item{dropBraces}{Whether to drop unnecessary braces.}
 }
 \value{
-`deparseLatex` returns character vector corresponding
+\code{deparseLatex} returns character vector corresponding
 to the parsed Latex.
 #' @export
 }

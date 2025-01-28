@@ -23,24 +23,24 @@ is_whitespace(item)
 \item{item}{An object of class "LaTeX2item" to test.}
 
 \item{envtypes}{Types of Latex environment to check for,
-e.g. `"table"`.}
+e.g. \code{"table"}.}
 
-\item{macros}{Which macros to match, e.g. `"\\\\caption"`.}
+\item{macros}{Which macros to match, e.g. \code{"\\\\\\\\caption"}.}
 
 \item{bracket}{Which bracket are we looking for?}
 }
 \value{
-`is_env()` returns a boolean if the item matches.
+\code{is_env()} returns a boolean if the item matches.
 
-`is_macro()` returns a boolean indicating the match.
+\code{is_macro()} returns a boolean indicating the match.
 
-`is_block()` returns a boolean indicating whether the `item` is a block wrapped in curly braces.
+\code{is_block()} returns a boolean indicating whether the \code{item} is a block wrapped in curly braces.
 
-`is_bracket()` returns a boolean indicating that the `item` is a bracket of the
+\code{is_bracket()} returns a boolean indicating that the \code{item} is a bracket of the
 specified type.
 
-`is_whitespace()` returns a boolean indicating if the
-`item` is a space, tab or newline.
+\code{is_whitespace()} returns a boolean indicating if the
+\code{item} is a space, tab or newline.
 }
 \description{
 Test objects

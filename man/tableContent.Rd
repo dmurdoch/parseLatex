@@ -23,18 +23,18 @@ can be a LaTeX2 object, or a character string that will be
 converted to one.}
 }
 \value{
-`find_tableContent()` returns the indices of the
+\code{find_tableContent()} returns the indices of the
 entries corresponding to content of the table.
 
-`tableContent()` returns a LaTeX2 object containing
+\code{tableContent()} returns a LaTeX2 object containing
 all of the table content after the options.
 }
 \description{
 Functions relating to the data content of a table
 }
 \details{
-Unless `asis = TRUE`, `tableContent(table) <- value`
- will add newlines
+Unless \code{asis = TRUE}, \code{tableContent(table) <- value}
+will add newlines
 at the start end end if not present, to make the result
 more readable.
 }

@@ -18,11 +18,11 @@ find_tabular(items, start = 1)
 \item{start}{Where to start looking.}
 }
 \value{
-`is_Tabular()` returns boolean indicating if this is
+\code{is_Tabular()} returns boolean indicating if this is
 a tabular-like environment.
 
-`find_tabular()` returns the index of the first
-tabular-like environment, or `NA` if none is found.
+\code{find_tabular()} returns the index of the first
+tabular-like environment, or \code{NA} if none is found.
 }
 \description{
 Functions related to parsing LaTeX tables

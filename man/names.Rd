@@ -20,13 +20,13 @@ macroName(item)
 \item{item}{A single latex item.}
 }
 \value{
-`latexTag()` returns the LaTeX2 tag for the item or `NULL`.
+\code{latexTag()} returns the LaTeX2 tag for the item or \code{NULL}.
 
-`catcode()` returns the TeX catcode for the item, or `NULL`.
+\code{catcode()} returns the TeX catcode for the item, or \code{NULL}.
 
-`envName()` returns the Latex environment name for an item, or `NULL`.
+\code{envName()} returns the Latex environment name for an item, or \code{NULL}.
 
-`macroName()` returns the Latex macro, or `NULL`.
+\code{macroName()} returns the Latex macro, or \code{NULL}.
 }
 \description{
 Utility functions finding names and types of objects

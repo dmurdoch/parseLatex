@@ -24,10 +24,10 @@ can be a LaTeX2 object, or a character string that will be
 converted to one.}
 }
 \value{
-`find_tableCell()` returns the indices of the
+\code{find_tableCell()} returns the indices of the
 entries corresponding to the content of the cell (row, col) of the table.
 
-`tableCell()` returns a LaTeX2 object containing
+\code{tableCell()} returns a LaTeX2 object containing
 all of the table content in the cell (but not the &).
 }
 \description{
@@ -37,18 +37,18 @@ row (typically column titles) being row 1.  Rules (i.e.
 horizontal lines) are not considered part of a cell.
 }
 \details{
-`find_tableCell()` returns `NA` if the requested
+\code{find_tableCell()} returns \code{NA} if the requested
 cell is missing because an earlier cell covered multiple
 columns.  It signals an error if a request is made beyond
 the bounds of the table.
 
-Unless `asis = TRUE`, `tableContent(table) <- value`
- will add blanks
+Unless \code{asis = TRUE}, \code{tableContent(table) <- value}
+will add blanks
 at the start end end if not present, to make the result
 more readable.
 
-If `col` is higher than the current table width,
-the assignment will fail with an error.  If only `row`
+If \code{col} is higher than the current table width,
+the assignment will fail with an error.  If only \code{row}
 is too high, blank lines will be added and it should
 succeed.
 }
