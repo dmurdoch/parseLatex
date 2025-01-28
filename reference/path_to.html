@@ -39,7 +39,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_to</span><span class="op">(</span><span class="va">items</span>, all <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">is_fn</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_to</span><span class="op">(</span><span class="va">items</span>, <span class="va">is_fn</span>, <span class="va">...</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_item</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_container</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_which</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -50,10 +56,6 @@
 <dd><p>A list of latex items.</p></dd>
 
 
-<dt id="arg-all">all<a class="anchor" aria-label="anchor" href="#arg-all"></a></dt>
-<dd><p>Find all matching, or the first?</p></dd>
-
-
 <dt id="arg-is-fn">is_fn<a class="anchor" aria-label="anchor" href="#arg-is-fn"></a></dt>
 <dd><p>Which test function to use.</p></dd>
 
@@ -61,12 +63,25 @@
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional parameters to pass to <code>is_fn</code>.</p></dd>
 
+
+<dt id="arg-all">all<a class="anchor" aria-label="anchor" href="#arg-all"></a></dt>
+<dd><p>Find all matching, or the first?</p></dd>
+
+
+<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
+<dd><p>Integer vector of subitems</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p><code>path_to()</code> returns the recursive path to the
 first example matching the <code>is_fn</code> conditions,
 or a list of paths to all matching items.</p>
+<p><code>get_item()</code> returns the item at the given path.</p>
+<p><code>get_container()</code> returns the item
+containing the given path</p>
+<p><code>get_which()</code> returns the index
+of the item within its container.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -95,7 +110,7 @@ items appear in the deparse.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{table} </span>
 <span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">path_to</span><span class="op">(</span><span class="va">parsed</span>, is_fn <span class="op">=</span> <span class="va">is_env</span>,</span></span>
 <span class="r-in"><span>                        envtypes <span class="op">=</span> <span class="st">"tabular"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">parsed</span><span class="op">[[</span><span class="va">path</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">get_item</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">path</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENVIRONMENT: \begin{tabular}[t]{l|r|r}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &amp; mpg &amp; cyl\\</span>
