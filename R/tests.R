@@ -10,6 +10,7 @@
 #' @export
 #'
 is_env <- function(item,  envtypes = NULL) {
+  inherits(item, "LaTeX2item") &&
   !is.null(envName(item)) &&
     (is.null(envtypes) || item[[1]] %in% envtypes)
 }
@@ -20,6 +21,7 @@ is_env <- function(item,  envtypes = NULL) {
 #' @returns `is_macro()` returns a boolean indicating the match.
 #' @export
 is_macro <- function(item, macros = NULL) {
+  inherits(item, "LaTeX2item") &&
   !is.null(macroName(item)) &&
     (is.null(macros) || item %in% macros)
 }
@@ -29,6 +31,7 @@ is_macro <- function(item, macros = NULL) {
 #' @returns `is_block()` returns a boolean indicating whether the `item` is a block wrapped in curly braces.
 #' @export
 is_block <- function(item) {
+  inherits(item, "LaTeX2item") &&
   latexTag(item) == "BLOCK"
 }
 
@@ -42,6 +45,7 @@ is_block <- function(item) {
 #' @examples
 #' is_bracket(parseLatex("[]")[[1]], "[")
 is_bracket <- function(item, bracket) {
+  inherits(item, "LaTeX2item") &&
   latexTag(item) == "SPECIAL" &&
     catcode(item) == OTHER &&
     item == bracket
@@ -53,6 +57,9 @@ is_bracket <- function(item, bracket) {
 #' `item` is a space, tab or newline.
 #' @export
 is_whitespace <- function(item) {
-  cat <- catcode(item)
-  !is.null(cat) && cat %in% c(NEWLINE, SPACE)
+  if (inherits(item, "LaTeX2item")) {
+    cat <- catcode(item)
+    !is.null(cat) && cat %in% c(NEWLINE, SPACE)
+  } else
+    FALSE
 }

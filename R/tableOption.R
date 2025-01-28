@@ -1,6 +1,7 @@
 #' @rdname tableOption
 #' @title Functions related to table options.
-#' @param table A known tabular-like environment object.
+#' @param table A known tabular-like environment object,
+#' or the contents of one.
 #' @returns `find_posOption()` returns the indices of the
 #' entries corresponding to the "pos" option, including the
 #' brackets, within the contents list (i.e. `table[[2]]`).
@@ -13,8 +14,12 @@
 #'
 #' @export
 find_posOption <- function(table) {
-  stopifnot(is_Tabular(table))
-  find_bracket_options(table[[2]])
+  if (is_env(table)) {
+    stopifnot(is_Tabular(table))
+    contents <- table[[2]]
+  } else
+    contents <- table
+  find_bracket_options(contents)
 }
 
 #' @rdname tableOption
@@ -24,8 +29,13 @@ find_posOption <- function(table) {
 #' posOption(table)
 #'
 #' @export
-posOption <- function(table)
-  as_LaTeX2(table[[2]][find_posOption(table)])
+posOption <- function(table) {
+  if (is_env(table))
+    contents <- table[[2]]
+  else
+    contents <- table
+  as_LaTeX2(contents[find_posOption(contents)])
+}
 
 #' @param value A character string or LaTeX2 object.
 #' @param asis Whether to make small modifications in replacement functions.
@@ -38,8 +48,16 @@ posOption <- function(table)
 #' posOption(table)
 #' @export
 `posOption<-` <- function(table, asis = FALSE, value) {
-  bracket_options(table[[2]], asis = asis) <- value
-  table
+  if (is_env(table)) {
+    contents <- table[[2]]
+  } else
+    contents <- table
+  bracket_options(contents, asis = asis) <- value
+  if (is_env(table)) {
+    table[[2]] <- contents
+    table
+  } else
+    contents
 }
 
 #' @rdname tableOption
@@ -51,9 +69,13 @@ posOption <- function(table)
 #'
 #' @export
 find_widthOption <- function(table) {
-  stopifnot(is_Tabular(table))
-  if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
-    find_brace_options(table[[2]])
+  if (is_env(table)) {
+    if(!is_env(table, envtypes = c("tabular*", "tabularx", "tabulary")))
+      return(NULL)
+    contents <- table[[2]]
+  } else
+    contents <- table
+  find_brace_options(contents)
 }
 
 #' @rdname tableOption
@@ -63,32 +85,53 @@ find_widthOption <- function(table) {
 #' widthOption(table)
 #'
 #' @export
-widthOption <- function(table)
-  as_LaTeX2(table[[2]][find_widthOption(table)])
+widthOption <- function(table) {
+  if (is_env(table)) {
+    if(!is_env(table, envtypes = c("tabular*", "tabularx", "tabulary")))
+      return(NULL)
+    contents <- table[[2]]
+  } else
+    contents <- table
+  as_LaTeX2(contents[find_widthOption(table)])
+}
 
 #' @rdname tableOption
 #' @export
 `widthOption<-` <- function(table, asis = FALSE, value) {
-  if (envName(table) %in% c("tabular", "longtable")) {
-    warning("tables of type ", dQuote(envName(table)),
-            " do not support a width option.  No change made.")
-    return(table)
-  }
-  brace_options(table[[2]], asis = asis) <- value
+  if (is_env(table)) {
+    if(envName(table) %in% c("tabular", "longtable")) {
+      warning("tables of type ", dQuote(envName(table)),
+              " do not support a width option.  No change made.")
+      return(table)
+    }
+    contents <- table[[2]]
+  } else
+    contents <- table
+  brace_options(contents, asis = asis) <- value
+  if (is_env(table)) {
+    table[[2]] <- contents
+    table
+  } else
+    contents
 }
 
 #' @rdname tableOption
+#' @param type The type of table.
 #' @returns `find_columnOptions()` returns the index of the
 #' block corresponding to the column spec.
 #' @examples
 #' find_columnOptions(table)
 #' @export
-find_columnOptions <- function(table) {
-  stopifnot(is_Tabular(table))
+find_columnOptions <- function(table, type = envName(table)) {
+  if (is_env(table)) {
+    stopifnot(is_Tabular(table))
+    contents <- table[[2]]
+  } else
+    contents <- table
   which <- 1
-  if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
+  if (type %in% c("tabular*", "tabularx", "tabulary"))
     which <- 2
-  find_brace_options(table[[2]], which = which)
+  find_brace_options(contents, which = which)
 }
 
 #' @rdname tableOption
@@ -98,18 +141,34 @@ find_columnOptions <- function(table) {
 #' columnOptions(table)
 #'
 #' @export
-columnOptions <- function(table)
-  as_LaTeX2(table[[2]][find_columnOptions(table)])
+columnOptions <- function(table, type = envName(table)) {
+  if (is_env(table)) {
+    stopifnot(is_Tabular(table))
+    contents <- table[[2]]
+  } else
+    contents <- table
+  as_LaTeX2(contents[find_columnOptions(contents, type)])
+}
 
 #' @rdname tableOption
 #' @examples
 #' columnOptions(table) <- "lrr"
 #' table
 #' @export
-`columnOptions<-` <- function(table, asis = FALSE, value) {
+`columnOptions<-` <- function(table, type = envName(table),
+                              asis = FALSE, value) {
+  if (is_env(table)) {
+    stopifnot(is_Tabular(table))
+    contents <- table[[2]]
+  } else
+    contents <- table
   which <- 1
-  if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
+  if (type %in% c("tabular*", "tabularx", "tabulary"))
     which <- 2
-  brace_options(table[[2]], which = which, asis = asis) <- value
-  table
+  brace_options(contents, which = which, asis = asis) <- value
+  if (is_env(table)) {
+    table[[2]] <- contents
+    table
+  } else
+    contents
 }

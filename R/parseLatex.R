@@ -127,7 +127,7 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
 #'
 #' @returns `deparseLatex` returns character vector corresponding
 #' to the parsed Latex.
-#' #' @export
+#' @export
 deparseLatex <- function(x, dropBraces = FALSE)
 {
   specials <- c("\\", "#", "$", "%", "&", "~", "_", "^", "{", "}")

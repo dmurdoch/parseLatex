@@ -2,23 +2,42 @@
 % Please edit documentation in R/finders.R
 \name{path_to}
 \alias{path_to}
+\alias{get_item}
+\alias{get_container}
+\alias{get_which}
 \title{Find path to a particular kind of item}
 \usage{
-path_to(items, all = FALSE, is_fn, ...)
+path_to(items, is_fn, ..., all = FALSE)
+
+get_item(items, path)
+
+get_container(items, path)
+
+get_which(path)
 }
 \arguments{
 \item{items}{A list of latex items.}
 
-\item{all}{Find all matching, or the first?}
-
 \item{is_fn}{Which test function to use.}
 
 \item{...}{Additional parameters to pass to \code{is_fn}.}
+
+\item{all}{Find all matching, or the first?}
+
+\item{path}{Integer vector of subitems}
 }
 \value{
 \code{path_to()} returns the recursive path to the
 first example matching the \code{is_fn} conditions,
 or a list of paths to all matching items.
+
+\code{get_item()} returns the item at the given path.
+
+\code{get_container()} returns the item
+containing the given path
+
+\code{get_which()} returns the index
+of the item within its container.
 }
 \description{
 Find path to a particular kind of item
@@ -33,5 +52,5 @@ parsed <- parseLatex(latex)
 parsed
 path <- path_to(parsed, is_fn = is_env,
                         envtypes = "tabular")
-parsed[[path]]
+get_item(parsed, path)
 }

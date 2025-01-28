@@ -14,7 +14,6 @@ deparseLatex(x, dropBraces = FALSE)
 \value{
 \code{deparseLatex} returns character vector corresponding
 to the parsed Latex.
-#' @export
 }
 \description{
 Convert latex object into character vector

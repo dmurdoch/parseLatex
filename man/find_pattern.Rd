@@ -6,7 +6,7 @@
 \alias{print.LaTeX2range}
 \title{Find a pattern in deparsed items}
 \usage{
-find_pattern(items, pattern, all = FALSE, ...)
+find_pattern(items, pattern, ..., all = FALSE)
 
 LaTeX2range(path, range)
 
@@ -17,9 +17,9 @@ LaTeX2range(path, range)
 
 \item{pattern}{Pattern to use in \code{grepl()}.}
 
-\item{all}{Find all matching, or the first?}
-
 \item{...}{Ignored.}
+
+\item{all}{Find all matching, or the first?}
 
 \item{path}{An integer vector to use as a path.}
 

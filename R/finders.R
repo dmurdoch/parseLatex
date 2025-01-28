@@ -75,9 +75,8 @@ find_char <- function(items, char) {
 #' parsed
 #' path <- path_to(parsed, is_fn = is_env,
 #'                         envtypes = "tabular")
-#' parsed[[path]]
 #' @export
-path_to <- function(items, all = FALSE, is_fn, ...) {
+path_to <- function(items, is_fn, ..., all = FALSE) {
   hits <- if (all) list() else numeric()
   for (i in seq_along(items)) {
     if (is_fn(items[[i]], ...)) {
@@ -100,6 +99,37 @@ path_to <- function(items, all = FALSE, is_fn, ...) {
   hits
 }
 
+#' @rdname path_to
+#'
+#' @param path Integer vector of subitems
+#'
+#' @returns `get_item()` returns the item at the given path.
+#' @export
+#'
+#' @examples
+#' get_item(parsed, path)
+get_item <- function(items, path)
+  items[[path]]
+
+#' @rdname path_to
+#'
+#' @returns `get_container()` returns the item
+#' containing the given path
+#' @export
+get_container <- function(items, path) {
+  if (length(path))
+    items[[path[-length(path)]]]
+  else
+    items
+}
+
+#' @rdname path_to
+#'
+#' @returns `get_which()` returns the index
+#' of the item within its container.
+#' @export
+get_which <- function(path)
+  path[length(path)]
 
 #' @title Find a pattern in deparsed items
 #' @param items A list of latex items.
@@ -129,7 +159,7 @@ path_to <- function(items, all = FALSE, is_fn, ...) {
 #' loc
 #' print(loc, source = parsed)
 #' @export
-find_pattern <- function(items, pattern, all = FALSE, ...) {
+find_pattern <- function(items, pattern, ..., all = FALSE) {
   hits <- list()
   items0 <- items
   deletes <- 0

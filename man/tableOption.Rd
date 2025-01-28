@@ -24,18 +24,21 @@ widthOption(table)
 
 widthOption(table, asis = FALSE) <- value
 
-find_columnOptions(table)
+find_columnOptions(table, type = envName(table))
 
-columnOptions(table)
+columnOptions(table, type = envName(table))
 
-columnOptions(table, asis = FALSE) <- value
+columnOptions(table, type = envName(table), asis = FALSE) <- value
 }
 \arguments{
-\item{table}{A known tabular-like environment object.}
+\item{table}{A known tabular-like environment object,
+or the contents of one.}
 
 \item{asis}{Whether to make small modifications in replacement functions.}
 
 \item{value}{A character string or LaTeX2 object.}
+
+\item{type}{The type of table.}
 }
 \value{
 \code{find_posOption()} returns the indices of the
