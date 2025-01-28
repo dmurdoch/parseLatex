@@ -3,10 +3,41 @@
 #'
 #' The \code{parseLatex} function parses LaTeX source, producing a structured object.
 #' @param text A character vector containing LaTeX source code.
-#' @param filename A filename to use in syntax error messages.
 #' @param verbose If \code{TRUE}, print debug error messages.
 #' @param verbatim A character vector containing the names of \LaTeX environments holding verbatim text.
 #' @param verb A character vector containing LaTeX macros that should be assumed to hold verbatim text.
+#' @param catcodes A list or dataframe holding LaTeX "catcodes"; see
+#' Details.
+#'
+#' @details
+#' Some versions of LaTeX such as `pdflatex` only handle ASCII
+#' inputs, while others such as `xelatex` allow Unicode input.
+#' This function allows Unicode input.
+#'
+#' During processing of LaTeX input, the interpreter can change
+#' the handling of characters as it goes, using the `\\catcode` macro
+#' or others such as `\\makeatletter`.  This function is purely
+#' a parser, not an interpreter, so it can't do that.  However,
+#' the user can change handling for the whole call using the
+#' `catcodes` argument.
+#'
+#' `catcodes` should be a list or dataframe
+#' with at least two columns:
+#'
+#'  - `char` should be a column of single characters.
+#'  - `catcode` should be a column of integers in the range 0 to 15
+#'  giving the corresponding catcode.
+#'
+#'  During parsing, `parseLatex` will check these values first.
+#'  If the input character doesn't match anything, then it may
+#'  be categorized:
+#'
+#'  - as a letter (catcode 11) using the ICU function
+#'  `u_hasBinaryProperty(c, UCHAR_ALPHABETIC)`,
+#'  - as a control
+#'  character (catcode 15) if its code point is less than 32,
+#'  - as "other" (catcode 12) otherwise.
+#'
 #'
 #' @returns `parseLatex` returns parsed Latex in list with class `"LaTeX2"`.
 #' @export
@@ -17,18 +48,30 @@
 #' parsed <- parseLatex(r"(fran\c{c}ais)")
 #' parsed
 parseLatex <- function(text,
-                       filename = deparse1(substitute(text)),
                        verbose = FALSE,
                        verbatim = c("verbatim", "verbatim*",
                         "Sinput", "Soutput"),
-                       verb = "\\Sexpr") {
+                       verb = "\\Sexpr",
+                       catcodes = defaultCatcodes) {
 
-  ## the internal function must get some sort of srcfile
-  srcfile <- srcfilecopy(filename, text, file.mtime(filename))
   text <- paste(text, collapse="\n")
-  .External(C_parseLatex, text, srcfile, as.logical(verbose), as.character(verbatim), as.character(verb))
+  stopifnot(all(nchar(catcodes$char, "chars") == 1))
+  codepoint <- utf8ToInt(paste0(catcodes$char, collapse = ""))
+  catcode <- as.integer(catcodes$catcode)
+  if (!(all(catcode %in% 0:15)))
+    stop("catcodes must be in the range 0 to 15")
+  if (length(codepoint) != length(catcode))
+    stop("catcodes must have one char per catcode")
+  .External(C_parseLatex, text, as.logical(verbose),
+            as.character(verbatim), as.character(verb),
+            codepoint, catcode)
 
 }
+
+#' @export
+defaultCatcodes <-
+  data.frame(char = c("\\", "{", "}", "$", "&", "\n", "\r", "#", "^", "_", " ", "\t", "%"),
+          catcode = c(0,     1,   2,   3,   4,    5,    5,   6,   7,  8,  10,   10,   14 ))
 
 #' @rdname parseLatex
 #' @export
