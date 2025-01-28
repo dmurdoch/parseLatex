@@ -124,6 +124,8 @@
 #endif
 
 #define R_USE_SIGNALS 1
+#include <unicode/uchar.h>
+#include <unicode/utf8.h>
 #include <Rinternals.h>
 #include <R_ext/RS.h>           /* for R_chk_* allocation */
 #include <ctype.h>
@@ -233,7 +235,7 @@ static void	GrowList(SEXP, SEXP);
 static int	KeywordLookup(const char *);
 static SEXP	NewList(void);
 static SEXP     makeSrcref(YYLTYPE *, SEXP);
-static int	xxgetc(void);
+static UChar32	xxgetc(void);
 static int	xxungetc(int);
 
 /* Internal lexer / parser state variables */
@@ -280,7 +282,7 @@ static int	mkText(int);
 static int 	mkComment(int);
 static int  mkSpecial(int, int);
 static int  mkVerb(int);
-static int	mkVerb2(const char *, int);
+static int	mkVerb2(const uint8_t *, int);
 static int  mkVerbEnv(void);
 static int	mkDollar(int);
 
@@ -333,7 +335,7 @@ typedef struct YYLTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 337 "gramLatex.tab.c"
+#line 339 "gramLatex.tab.c"
 
 #ifdef short
 # undef short
@@ -626,9 +628,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   213,   213,   214,   215,   218,   219,   220,   221,   222,
-     223,   225,   226,   228,   229,   230,   231,   232,   233,   234,
-     235,   237,   237,   241,   243,   245,   246
+       0,   215,   215,   216,   217,   220,   221,   222,   223,   224,
+     225,   227,   228,   230,   231,   232,   233,   234,   235,   236,
+     237,   239,   239,   243,   245,   247,   248
 };
 #endif
 
@@ -1274,29 +1276,29 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
   switch (yytype)
     {
       case 5: /* "MACRO" */
-#line 209 "gramLatex.y"
+#line 211 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1280 "gramLatex.tab.c"
+#line 1282 "gramLatex.tab.c"
 	break;
       case 6: /* "TEXT" */
-#line 209 "gramLatex.y"
+#line 211 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1285 "gramLatex.tab.c"
+#line 1287 "gramLatex.tab.c"
 	break;
       case 7: /* "COMMENT" */
-#line 209 "gramLatex.y"
+#line 211 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1290 "gramLatex.tab.c"
+#line 1292 "gramLatex.tab.c"
 	break;
       case 8: /* "BEGIN" */
-#line 209 "gramLatex.y"
+#line 211 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1295 "gramLatex.tab.c"
+#line 1297 "gramLatex.tab.c"
 	break;
       case 9: /* "END" */
-#line 209 "gramLatex.y"
+#line 211 "gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1300 "gramLatex.tab.c"
+#line 1302 "gramLatex.tab.c"
 	break;
 
       default:
@@ -1619,134 +1621,134 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 213 "gramLatex.y"
+#line 215 "gramLatex.y"
     { xxsavevalue((yyvsp[(1) - (2)]), &(yyloc)); YYACCEPT; ;}
     break;
 
   case 3:
-#line 214 "gramLatex.y"
+#line 216 "gramLatex.y"
     { xxsavevalue(NULL, &(yyloc)); YYACCEPT; ;}
     break;
 
   case 4:
-#line 215 "gramLatex.y"
+#line 217 "gramLatex.y"
     { PRESERVE_SV(parseState.Value = R_NilValue);  YYABORT; ;}
     break;
 
   case 5:
-#line 218 "gramLatex.y"
-    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
-    break;
-
-  case 6:
-#line 219 "gramLatex.y"
-    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
-    break;
-
-  case 7:
 #line 220 "gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
-  case 8:
+  case 6:
 #line 221 "gramLatex.y"
-    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
-  case 9:
+  case 7:
 #line 222 "gramLatex.y"
-    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
-  case 10:
+  case 8:
 #line 223 "gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
-  case 11:
+  case 9:
+#line 224 "gramLatex.y"
+    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    break;
+
+  case 10:
 #line 225 "gramLatex.y"
+    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    break;
+
+  case 11:
+#line 227 "gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
   case 12:
-#line 226 "gramLatex.y"
+#line 228 "gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
   case 13:
-#line 228 "gramLatex.y"
+#line 230 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), TEXT, &(yyloc)); ;}
     break;
 
   case 14:
-#line 229 "gramLatex.y"
+#line 231 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), COMMENT, &(yyloc)); ;}
     break;
 
   case 15:
-#line 230 "gramLatex.y"
+#line 232 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), MACRO, &(yyloc)); ;}
     break;
 
   case 16:
-#line 231 "gramLatex.y"
+#line 233 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), SPECIAL, &(yyloc)); ;}
     break;
 
   case 17:
-#line 232 "gramLatex.y"
+#line 234 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
     break;
 
   case 18:
-#line 233 "gramLatex.y"
+#line 235 "gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
     break;
 
   case 19:
-#line 234 "gramLatex.y"
+#line 236 "gramLatex.y"
     { (yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
   case 20:
-#line 235 "gramLatex.y"
+#line 237 "gramLatex.y"
     { (yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
   case 21:
-#line 237 "gramLatex.y"
+#line 239 "gramLatex.y"
     { xxSetInVerbEnv((yyvsp[(3) - (4)])); ;}
     break;
 
   case 22:
-#line 238 "gramLatex.y"
+#line 240 "gramLatex.y"
     { (yyval) = xxenv((yyvsp[(3) - (10)]), (yyvsp[(6) - (10)]), (yyvsp[(9) - (10)]), &(yyloc));
                                                   RELEASE_SV((yyvsp[(1) - (10)])); RELEASE_SV((yyvsp[(7) - (10)])); ;}
     break;
 
   case 23:
-#line 241 "gramLatex.y"
+#line 243 "gramLatex.y"
     { (yyval) = xxmath((yyvsp[(2) - (3)]), &(yyloc), FALSE); ;}
     break;
 
   case 24:
-#line 243 "gramLatex.y"
+#line 245 "gramLatex.y"
     { (yyval) = xxmath((yyvsp[(2) - (3)]), &(yyloc), TRUE); ;}
     break;
 
   case 25:
-#line 245 "gramLatex.y"
+#line 247 "gramLatex.y"
     { (yyval) = xxblock((yyvsp[(2) - (3)]), &(yyloc)); ;}
     break;
 
   case 26:
-#line 246 "gramLatex.y"
+#line 248 "gramLatex.y"
     { (yyval) = xxblock(NULL, &(yyloc)); ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1750 "gramLatex.tab.c"
+#line 1752 "gramLatex.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1966,7 +1968,7 @@ yyreturn:
 }
 
 
-#line 248 "gramLatex.y"
+#line 250 "gramLatex.y"
 
 
 static SEXP xxnewlist(SEXP item)
@@ -2118,7 +2120,7 @@ static int (*ptr_getc)(void);
 
 #define PUSHBACK_BUFSIZE 30
 
-static int pushback[PUSHBACK_BUFSIZE];
+static UChar32 pushback[PUSHBACK_BUFSIZE];
 static unsigned int npush = 0;
 
 static int prevpos = 0;
@@ -2126,11 +2128,38 @@ static int prevlines[PUSHBACK_BUFSIZE];
 static int prevcols[PUSHBACK_BUFSIZE];
 static int prevbytes[PUSHBACK_BUFSIZE];
 
-static int xxgetc(void)
+static UChar32 xxgetc(void)
 {
-    int c, oldpos;
+    UChar32 c;
+    int oldpos;
 
-    if(npush) c = pushback[--npush]; else  c = ptr_getc();
+    if(npush) c = pushback[--npush];
+    else {
+        uint8_t utf8_bytes[4];  // Buffer for UTF-8 character (max 4 bytes)
+        int i, byte_count = 0;
+        int first_byte = (uint8_t)ptr_getc();
+        if (first_byte == (uint8_t)EOF) {
+            c = EOF;
+        } else {
+            int expected_length = U8_LENGTH(first_byte);
+            utf8_bytes[byte_count++] = (uint8_t)first_byte;
+            // Read remaining bytes if needed
+            for (i = 1; i < expected_length; i++) {
+                int next_byte = ptr_getc();
+                if (next_byte == EOF) {
+                    // Unexpected EOF in the middle of a character
+                    break;
+                }
+                utf8_bytes[byte_count++] = (uint8_t)next_byte;
+            }
+            if (i < expected_length)
+                c = EOF;
+            else {
+                int32_t offset = 0;
+                U8_NEXT_OR_FFFD(utf8_bytes, offset, byte_count, c);
+            }
+        }
+    }
 
     oldpos = prevpos;
     prevpos = (prevpos + 1) % PUSHBACK_BUFSIZE;
@@ -2164,7 +2193,7 @@ static int xxgetc(void)
     return c;
 }
 
-static int xxungetc(int c)
+static UChar32 xxungetc(int c)
 {
     /* this assumes that c was the result of xxgetc; if not, some edits will be needed */
     parseState.xxlineno = prevlines[prevpos];
@@ -2200,13 +2229,13 @@ static SEXP makeSrcref(YYLTYPE *lloc, SEXP srcfile)
     return val;
 }
 
-static SEXP mkString2(const char *s, size_t len)
+static SEXP mkString2(const uint8_t *s, size_t len)
 {
     SEXP t;
     cetype_t enc = CE_UTF8;
 
     PROTECT(t = allocVector(STRSXP, 1));
-    SET_STRING_ELT(t, 0, mkCharLenCE(s, (int) len, enc));
+    SET_STRING_ELT(t, 0, mkCharLenCE((const char*)s, (int) len, enc));
     UNPROTECT(1); /* t */
     return t;
 }
@@ -2474,8 +2503,8 @@ static void yyerror(const char *s)
 
 #define TEXT_PUSH(c) do {		    \
 	size_t nc = bp - stext;		    \
-	if (nc >= nstext - 1) {             \
-	    char *old = stext;              \
+	if (nc >= nstext - 4) {             \
+	    uint8_t *old = stext;              \
 	    nstext *= 2;		    \
 	    stext = malloc(nstext);	    \
 	    if(!stext) error(_("unable to allocate buffer for long string at line %d"), parseState.xxlineno);\
@@ -2483,7 +2512,8 @@ static void yyerror(const char *s)
 	    if(st1) free(st1);		    \
 	    st1 = stext;		    \
 	    bp = stext+nc; }		    \
-	*bp++ = ((char)c);		    \
+	U8_APPEND(stext, nc, nstext, c, isError);		    \
+  bp = stext+nc; \
 } while(0)
 
 static void setfirstloc(void)
@@ -2503,7 +2533,7 @@ static void setlastloc(void)
 /* Split the input stream into tokens. */
 /* This is the lowest of the parsing levels. */
 
-static int tex_catcode(int c) {
+static int tex_catcode(UChar32 c) {
   if (c == R_EOF) return -1;
   if (c == '\\') return 0;
   if (c == '{') return 1;
@@ -2517,14 +2547,15 @@ static int tex_catcode(int c) {
   if (c == 0) return 9;
   if (c == ' ' || c == '\t') return 10;
   if (c == '%') return 14;
-  if (isalpha(c)) return 11;
+  if (u_hasBinaryProperty(c, UCHAR_ALPHABETIC)) return 11;
   if (c < 32) return 15;
   return 12;
 }
 
 static int token(void)
 {
-    int c, cat;
+    int cat;
+    UChar32 c = 0;
 
     if (parseState.xxinitvalue) {
       yylloc.first_line = 0;
@@ -2565,10 +2596,11 @@ static int token(void)
 
 static int mkText(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
 
     do {
     	TEXT_PUSH(c);
@@ -2583,10 +2615,11 @@ static int mkText(int c)
 
 static int mkComment(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int cat;
 
     do {
@@ -2620,10 +2653,11 @@ static int mkDollar(int c)
 
 static int mkMarkup(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int retval = 0, cat;
 
     do {
@@ -2639,7 +2673,7 @@ static int mkMarkup(int c)
     	retval = MACRO;
     } else {
 	    TEXT_PUSH('\0');
-      retval = KeywordLookup(stext);
+      retval = KeywordLookup((char *)stext);
       if (retval == VERB)
         retval = mkVerb(c); /* This makes the yylval */
       else if (retval == VERB2)
@@ -2648,7 +2682,7 @@ static int mkMarkup(int c)
     	  xxungetc(c);
     }
     if (retval != VERB) {
-	    PRESERVE_SV(yylval = mkString(stext));
+	    PRESERVE_SV(yylval = mkString((char*)stext));
 	  }
     if(st1) free(st1);
     return retval;
@@ -2656,10 +2690,11 @@ static int mkMarkup(int c)
 
 static int mkSpecial(int c, int cat)
 {
-  char st0[INITBUFSIZE];
-  char *st1 = NULL;
+  uint8_t st0[INITBUFSIZE];
+  uint8_t *st1 = NULL;
   unsigned int nstext = INITBUFSIZE;
-  char *stext = st0, *bp = st0;
+  uint8_t *stext = st0, *bp = st0;
+  UBool isError = false;
   TEXT_PUSH(c);
   PRESERVE_SV(yylval = mkString2(stext, bp - stext));
   setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
@@ -2670,10 +2705,11 @@ static int mkSpecial(int c, int cat)
 
 static int mkVerb(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int delim = c;
 
     TEXT_PUSH('\\'); TEXT_PUSH('v'); TEXT_PUSH('e'); TEXT_PUSH('r'); TEXT_PUSH('b');
@@ -2686,12 +2722,13 @@ static int mkVerb(int c)
     return VERB;
 }
 
-static int mkVerb2(const char *s, int c)
+static int mkVerb2(const uint8_t *s, int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int delim = '}';
 
     while (*s) TEXT_PUSH(*s++);
@@ -2707,10 +2744,11 @@ static int mkVerb2(const char *s, int c)
 
 static int mkVerbEnv(void)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int matched = 0, i;
     int c;
 

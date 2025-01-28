@@ -25,6 +25,8 @@
 #endif
 
 #define R_USE_SIGNALS 1
+#include <unicode/uchar.h>
+#include <unicode/utf8.h>
 #include <Rinternals.h>
 #include <R_ext/RS.h>           /* for R_chk_* allocation */
 #include <ctype.h>
@@ -134,7 +136,7 @@ static void	GrowList(SEXP, SEXP);
 static int	KeywordLookup(const char *);
 static SEXP	NewList(void);
 static SEXP     makeSrcref(YYLTYPE *, SEXP);
-static int	xxgetc(void);
+static UChar32	xxgetc(void);
 static int	xxungetc(int);
 
 /* Internal lexer / parser state variables */
@@ -181,7 +183,7 @@ static int	mkText(int);
 static int 	mkComment(int);
 static int  mkSpecial(int, int);
 static int  mkVerb(int);
-static int	mkVerb2(const char *, int);
+static int	mkVerb2(const uint8_t *, int);
 static int  mkVerbEnv(void);
 static int	mkDollar(int);
 
@@ -396,7 +398,7 @@ static int (*ptr_getc)(void);
 
 #define PUSHBACK_BUFSIZE 30
 
-static int pushback[PUSHBACK_BUFSIZE];
+static UChar32 pushback[PUSHBACK_BUFSIZE];
 static unsigned int npush = 0;
 
 static int prevpos = 0;
@@ -404,11 +406,38 @@ static int prevlines[PUSHBACK_BUFSIZE];
 static int prevcols[PUSHBACK_BUFSIZE];
 static int prevbytes[PUSHBACK_BUFSIZE];
 
-static int xxgetc(void)
+static UChar32 xxgetc(void)
 {
-    int c, oldpos;
+    UChar32 c;
+    int oldpos;
 
-    if(npush) c = pushback[--npush]; else  c = ptr_getc();
+    if(npush) c = pushback[--npush];
+    else {
+        uint8_t utf8_bytes[4];  // Buffer for UTF-8 character (max 4 bytes)
+        int i, byte_count = 0;
+        int first_byte = (uint8_t)ptr_getc();
+        if (first_byte == (uint8_t)EOF) {
+            c = EOF;
+        } else {
+            int expected_length = U8_LENGTH(first_byte);
+            utf8_bytes[byte_count++] = (uint8_t)first_byte;
+            // Read remaining bytes if needed
+            for (i = 1; i < expected_length; i++) {
+                int next_byte = ptr_getc();
+                if (next_byte == EOF) {
+                    // Unexpected EOF in the middle of a character
+                    break;
+                }
+                utf8_bytes[byte_count++] = (uint8_t)next_byte;
+            }
+            if (i < expected_length)
+                c = EOF;
+            else {
+                int32_t offset = 0;
+                U8_NEXT_OR_FFFD(utf8_bytes, offset, byte_count, c);
+            }
+        }
+    }
 
     oldpos = prevpos;
     prevpos = (prevpos + 1) % PUSHBACK_BUFSIZE;
@@ -442,7 +471,7 @@ static int xxgetc(void)
     return c;
 }
 
-static int xxungetc(int c)
+static UChar32 xxungetc(int c)
 {
     /* this assumes that c was the result of xxgetc; if not, some edits will be needed */
     parseState.xxlineno = prevlines[prevpos];
@@ -478,13 +507,13 @@ static SEXP makeSrcref(YYLTYPE *lloc, SEXP srcfile)
     return val;
 }
 
-static SEXP mkString2(const char *s, size_t len)
+static SEXP mkString2(const uint8_t *s, size_t len)
 {
     SEXP t;
     cetype_t enc = CE_UTF8;
 
     PROTECT(t = allocVector(STRSXP, 1));
-    SET_STRING_ELT(t, 0, mkCharLenCE(s, (int) len, enc));
+    SET_STRING_ELT(t, 0, mkCharLenCE((const char*)s, (int) len, enc));
     UNPROTECT(1); /* t */
     return t;
 }
@@ -752,8 +781,8 @@ static void yyerror(const char *s)
 
 #define TEXT_PUSH(c) do {		    \
 	size_t nc = bp - stext;		    \
-	if (nc >= nstext - 1) {             \
-	    char *old = stext;              \
+	if (nc >= nstext - 4) {             \
+	    uint8_t *old = stext;              \
 	    nstext *= 2;		    \
 	    stext = malloc(nstext);	    \
 	    if(!stext) error(_("unable to allocate buffer for long string at line %d"), parseState.xxlineno);\
@@ -761,7 +790,8 @@ static void yyerror(const char *s)
 	    if(st1) free(st1);		    \
 	    st1 = stext;		    \
 	    bp = stext+nc; }		    \
-	*bp++ = ((char)c);		    \
+	U8_APPEND(stext, nc, nstext, c, isError);		    \
+  bp = stext+nc; \
 } while(0)
 
 static void setfirstloc(void)
@@ -781,7 +811,7 @@ static void setlastloc(void)
 /* Split the input stream into tokens. */
 /* This is the lowest of the parsing levels. */
 
-static int tex_catcode(int c) {
+static int tex_catcode(UChar32 c) {
   if (c == R_EOF) return -1;
   if (c == '\\') return 0;
   if (c == '{') return 1;
@@ -795,14 +825,15 @@ static int tex_catcode(int c) {
   if (c == 0) return 9;
   if (c == ' ' || c == '\t') return 10;
   if (c == '%') return 14;
-  if (isalpha(c)) return 11;
+  if (u_hasBinaryProperty(c, UCHAR_ALPHABETIC)) return 11;
   if (c < 32) return 15;
   return 12;
 }
 
 static int token(void)
 {
-    int c, cat;
+    int cat;
+    UChar32 c = 0;
 
     if (parseState.xxinitvalue) {
       yylloc.first_line = 0;
@@ -843,10 +874,11 @@ static int token(void)
 
 static int mkText(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
 
     do {
     	TEXT_PUSH(c);
@@ -861,10 +893,11 @@ static int mkText(int c)
 
 static int mkComment(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int cat;
 
     do {
@@ -898,10 +931,11 @@ static int mkDollar(int c)
 
 static int mkMarkup(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int retval = 0, cat;
 
     do {
@@ -917,7 +951,7 @@ static int mkMarkup(int c)
     	retval = MACRO;
     } else {
 	    TEXT_PUSH('\0');
-      retval = KeywordLookup(stext);
+      retval = KeywordLookup((char *)stext);
       if (retval == VERB)
         retval = mkVerb(c); /* This makes the yylval */
       else if (retval == VERB2)
@@ -926,7 +960,7 @@ static int mkMarkup(int c)
     	  xxungetc(c);
     }
     if (retval != VERB) {
-	    PRESERVE_SV(yylval = mkString(stext));
+	    PRESERVE_SV(yylval = mkString((char*)stext));
 	  }
     if(st1) free(st1);
     return retval;
@@ -934,10 +968,11 @@ static int mkMarkup(int c)
 
 static int mkSpecial(int c, int cat)
 {
-  char st0[INITBUFSIZE];
-  char *st1 = NULL;
+  uint8_t st0[INITBUFSIZE];
+  uint8_t *st1 = NULL;
   unsigned int nstext = INITBUFSIZE;
-  char *stext = st0, *bp = st0;
+  uint8_t *stext = st0, *bp = st0;
+  UBool isError = false;
   TEXT_PUSH(c);
   PRESERVE_SV(yylval = mkString2(stext, bp - stext));
   setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
@@ -948,10 +983,11 @@ static int mkSpecial(int c, int cat)
 
 static int mkVerb(int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int delim = c;
 
     TEXT_PUSH('\\'); TEXT_PUSH('v'); TEXT_PUSH('e'); TEXT_PUSH('r'); TEXT_PUSH('b');
@@ -964,12 +1000,13 @@ static int mkVerb(int c)
     return VERB;
 }
 
-static int mkVerb2(const char *s, int c)
+static int mkVerb2(const uint8_t *s, int c)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int delim = '}';
 
     while (*s) TEXT_PUSH(*s++);
@@ -985,10 +1022,11 @@ static int mkVerb2(const char *s, int c)
 
 static int mkVerbEnv(void)
 {
-    char st0[INITBUFSIZE];
-    char *st1 = NULL;
+    uint8_t st0[INITBUFSIZE];
+    uint8_t *st1 = NULL;
     unsigned int nstext = INITBUFSIZE;
-    char *stext = st0, *bp = st0;
+    uint8_t *stext = st0, *bp = st0;
+    UBool isError = false;
     int matched = 0, i;
     int c;
 

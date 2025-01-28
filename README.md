@@ -66,8 +66,6 @@ table
 
 ## To-do list
 
-- Should handle UTF-8 inputs, not just ASCII.
-- Needs a vignette to describe how to use it.
 - Possibly add class for table objects, and implement indexing and
   subsetting on that class.
 - See what `kableExtra` does with tables, and try to make that easier.
