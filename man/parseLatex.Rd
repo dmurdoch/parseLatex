@@ -49,7 +49,7 @@ This package exports an enhanced version of the tools::parseLatex function, and 
 \details{
 Some versions of LaTeX such as \code{pdflatex} only handle ASCII
 inputs, while others such as \code{xelatex} allow Unicode input.
-This function allows Unicode input.
+\code{parseLatex} allows Unicode input.
 
 During processing of LaTeX input, the interpreter can change
 the handling of characters as it goes, using the \verb{\\\\catcode} macro
@@ -67,7 +67,7 @@ giving the corresponding catcode.
 }
 
 During parsing, \code{parseLatex} will check these values first.
-If the input character doesn't match anything, then it may
+If the input character doesn't match anything, then it will
 be categorized:
 \itemize{
 \item as a letter (catcode 11) using the ICU function

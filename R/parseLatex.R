@@ -12,7 +12,7 @@
 #' @details
 #' Some versions of LaTeX such as `pdflatex` only handle ASCII
 #' inputs, while others such as `xelatex` allow Unicode input.
-#' This function allows Unicode input.
+#' `parseLatex` allows Unicode input.
 #'
 #' During processing of LaTeX input, the interpreter can change
 #' the handling of characters as it goes, using the `\\catcode` macro
@@ -29,7 +29,7 @@
 #'  giving the corresponding catcode.
 #'
 #'  During parsing, `parseLatex` will check these values first.
-#'  If the input character doesn't match anything, then it may
+#'  If the input character doesn't match anything, then it will
 #'  be categorized:
 #'
 #'  - as a letter (catcode 11) using the ICU function
