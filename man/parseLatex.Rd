@@ -44,7 +44,7 @@ Details.}
 \item{tags}{Whether to display LaTeX2 tags.}
 }
 \value{
-\code{parseLatex} returns parsed Latex in list with class \code{"LaTeX2"}.
+\code{parseLatex} returns parsed Latex in a list with class \code{"LaTeX2"}.
 }
 \description{
 The \code{parseLatex} function parses LaTeX source, producing a structured object.

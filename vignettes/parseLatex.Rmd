@@ -119,7 +119,7 @@ as lists of items corresponding to their content.
 - The list storage is different between the two.  The
 `tools::parseLatex()` function
 stores some lists in two levels (e.g. the content of
-an environment named `item` would be in `item[[2]])`), while in
+an environment named `item` would be in `item[[2]]`), while in
 this package, all lists contain the content directly (e.g.
 the content of that environment would be in `item` itself).
 - This package marks all items with class `"LaTeX2item"`.  `tools::parseLatex()` does not assign a class to items.

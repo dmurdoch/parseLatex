@@ -39,7 +39,7 @@
 #'  - as "other" (catcode 12) otherwise.
 #'
 #'
-#' @returns `parseLatex` returns parsed Latex in list with class `"LaTeX2"`.
+#' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.
 #' @export
 #' @importFrom utils getParseData
 #' @importFrom tools deparseLatex
