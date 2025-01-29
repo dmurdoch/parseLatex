@@ -12,7 +12,7 @@
 is_env <- function(item,  envtypes = NULL) {
   inherits(item, "LaTeX2item") &&
   !is.null(envName(item)) &&
-    (is.null(envtypes) || item[[1]] %in% envtypes)
+    (is.null(envtypes) || envName(item) %in% envtypes)
 }
 
 #' @rdname tests

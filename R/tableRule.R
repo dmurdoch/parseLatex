@@ -14,7 +14,7 @@
 #' @export
 find_rules <- function(table) {
   contentIdx <- find_tableContent(table)
-  content <- as_LaTeX2(table[[2]][contentIdx])
+  content <- as_LaTeX2(table[contentIdx])
 
   # linebreaks
   breaks <- find_macro(content, "\\\\")
@@ -47,7 +47,7 @@ find_rules <- function(table) {
 #' @export
 rules <- function(table) {
   idx <- find_rules(table)
-  lapply(idx, function(x) as_LaTeX2(table[[2]][x]))
+  lapply(idx, function(x) as_LaTeX2(table[x]))
 }
 
 #' @rdname tableRule
@@ -70,7 +70,7 @@ find_rule <- function(table, row)
 #'
 #' @export
 rule <- function(table, row)
-  as_LaTeX2(table[[2]][find_rule(table, row)])
+  as_LaTeX2(table[find_rule(table, row)])
 
 #' @rdname tableRule
 #' @param asis Should a newline be added after the
@@ -104,10 +104,5 @@ rule <- function(table, row)
       i <- max(rowidx) + 0.5
     }
   }
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < min(i)],
-                  value,
-                  old[iold > max(i)])
-  table
+  replace_range(table, i, value)
 }

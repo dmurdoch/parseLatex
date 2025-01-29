@@ -9,8 +9,8 @@ find_tableContent <- function(table) {
   skip <- length(find_posOption(table)) +
     length(find_widthOption(table)) +
     length(find_columnOptions(table))
-  if (skip < length(table[[2]]))
-    seq.int(skip + 1, length(table[[2]]))
+  if (skip < length(table))
+    seq.int(skip + 1, length(table))
   else
     integer()
 }
@@ -27,7 +27,7 @@ find_tableContent <- function(table) {
 #'
 #' @export
 tableContent <- function(table)
-  as_LaTeX2(table[[2]][find_tableContent(table)])
+  as_LaTeX2(table[find_tableContent(table)])
 
 #' @rdname tableContent
 #' @param asis Should newlines be added around the
@@ -56,10 +56,5 @@ tableContent <- function(table)
       value <- c(as_LaTeX2("\n"), value)
   }
   i <- find_tableContent(table)
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < min(i)],
-                  value,
-                  old[iold > max(i)])
-  table
+  replace_range(table, i, value)
 }

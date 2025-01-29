@@ -94,9 +94,7 @@ get_contents <- function(item) {
   }
   if (is.null(tag))
     NULL
-  else if (tag == "ENVIRONMENT")
-    as_LaTeX2(item[[2]])
-  else if (tag == "BLOCK")
+  else if (tag %in% c("ENVIRONMENT", "BLOCK"))
     as_LaTeX2(item)
   else
     as.character(item)

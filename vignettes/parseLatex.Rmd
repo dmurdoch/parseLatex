@@ -82,6 +82,12 @@ tableCell(table, 1,1) <- "Model"
 table
 ```
 
+## Differences from `tools::parseLatex`
+
+- Format of environments
+- Inclusion of SPECIAL tags
+- Printing
+
 ## Work in progress!
 
 This is a work in progress, so if you have a use for something like

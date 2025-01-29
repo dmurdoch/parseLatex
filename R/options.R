@@ -47,6 +47,16 @@ bracket_options <- function(items, which = 1, start = 1) {
   as_LaTeX2(items[find_bracket_options(items, which, start)])
 }
 
+replace_range <- function(items, i, value) {
+  attrs <- attributes(items)
+  iold <- seq_along(items)
+  items <- c(items[iold < min(i)],
+             value,
+             items[iold > max(i)])
+  attributes(items) <- attrs
+  items
+}
+
 #' @rdname options
 #' @param asis Should newlines be added around the
 #' value?
@@ -80,12 +90,7 @@ bracket_options <- function(items, which = 1, start = 1) {
     if (!length(i))
       i <- start + 0.5
   }
-  old <- items
-  iold <- seq_along(old)
-  items <- c(old[iold < min(i)],
-             value,
-             old[iold > max(i)])
-  as_LaTeX2(items)
+  replace_range(items, i, value)
 }
 
 #' @rdname options
@@ -162,10 +167,5 @@ brace_options <- function(items, which = 1, start = 1) {
     i <- start - 0.5
   }
 
-  old <- items
-  iold <- seq_along(old)
-  items <- c(old[iold < min(i)],
-             value,
-             old[iold > max(i)])
-  as_LaTeX2(items)
+  replace_range(items, i, value)
 }

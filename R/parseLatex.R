@@ -96,8 +96,8 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
       cat(rep(" ", indent), collapse="")
       tag <- attr(item, "latex_tag")
       if (tag  == "ENVIRONMENT") {
-        cat(item[[1]], ":\n")
-        lapply(item[[2]], showItem, indent + 2)
+        cat(envName(item), ":\n")
+        lapply(item, showItem, indent + 2)
       } else if (tag == "BLOCK") {
         cat("{\n")
         lapply(item, showItem, indent + 2)
@@ -153,9 +153,9 @@ deparseLatex <- function(x, dropBraces = FALSE)
                        else
                          c("{", Recall(a), "}"),
                        ENVIRONMENT = c(
-                         "\\begin{", a[[1L]], "}",
-                         Recall(a[[2L]]),
-                         "\\end{", a[[1L]], "}"),
+                         "\\begin{", envName(a), "}",
+                         Recall(a),
+                         "\\end{", envName(a), "}"),
                        MATH = c("$", Recall(a), "$"), # \( and \) parse as MACRO
                        DISPLAYMATH = c("$$", Recall(a), "$$"),
                        NULL = stop("Internal error, no tag", domain = NA)

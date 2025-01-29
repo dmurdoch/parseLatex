@@ -24,7 +24,7 @@ find_tableCell <- function(table, row, col) {
   contentIdx <- find_tableRow(table, row)
   if (is.null(contentIdx))
     stop(sprintf("row %d is too high", row))
-  content <- as_LaTeX2(table[[2]][contentIdx])
+  content <- as_LaTeX2(table[contentIdx])
 
   fix <- expandMulticolumn(content, contentIdx)
   content <- fix[[1]]
@@ -58,7 +58,7 @@ tableCell <- function(table, row, col) {
   if (any(is.na(entries)))
     warning("Cell is missing because of earlier \\multicolumn cell.")
   else
-    as_LaTeX2(table[[2]][entries])
+    as_LaTeX2(table[entries])
 }
 
 #' @rdname tablecell
@@ -96,7 +96,7 @@ tableCell <- function(table, row, col) {
     stop("Can't add cell covered by earlier \\multicolumn cell.")
   if (!length(i)) {
     i <- find_tableRow(table, row)
-    content <- table[[2]][i]
+    content <- table[i]
     fix <- expandMulticolumn(content, i)
     content <- fix[[1]]
     i <- fix[[2]]
@@ -106,13 +106,7 @@ tableCell <- function(table, row, col) {
                 if (terminated) length(content))
     i <- i[breaks[col]] - 0.5
   }
-
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < min(i)],
-                  value,
-                  old[iold > max(i)])
-  table
+  replace_range(table, i, value)
 }
 
 # this expands multicolumn macros to

@@ -83,17 +83,14 @@ path_to <- function(items, is_fn, ..., all = FALSE) {
       if (!all) return(i)
       else hits <- c(hits, list(i))
     }
-    idx <- if (is_env(items[[i]])) 2
-           else if (is_block(items[[i]])) numeric()
-           else NULL
-    if (!is.null(idx)) {
+    if (is_env(items[[i]]) || is_block(items[[i]])) {
       recurse <- path_to(get_contents(items[[i]]),
                          all = all,
                          is_fn, ...)
       if (all)
-        hits <- c(hits, lapply(recurse, function(x) c(i, idx, x)))
+        hits <- c(hits, lapply(recurse, function(x) c(i, x)))
       else if (length(recurse))
-        return(c(i, idx, recurse))
+        return(c(i, recurse))
     }
   }
   hits
@@ -112,14 +109,17 @@ get_item <- function(items, path)
   items[[path]]
 
 #' @rdname path_to
-#'
 #' @returns `get_container()` returns the item
 #' containing the given path
 #' @export
 get_container <- function(items, path) {
-  if (length(path))
-    items[[path[-length(path)]]]
-  else
+  if (length(path)) {
+    head <- path[-length(path)]
+    if (!length(head))
+      items
+    else
+      items[[head]]
+  } else
     items
 }
 
@@ -186,12 +186,11 @@ find_pattern <- function(items, pattern, ..., all = FALSE) {
       recurse <- find_pattern(get_contents(items0[[deletes + range]]),
                               pattern = pattern,
                               all = all, ...)
-      idx <- if (tag == "BLOCK") numeric() else 2
       if (all)
         hits <- c(hits, lapply(recurse, function(x)
-          LaTeX2range(path = c(range, idx, x$path),
+          LaTeX2range(path = c(range, x$path),
                       range = deletes + x$range)))
-      else return(LaTeX2range(path = c(range, idx, recurse$path),
+      else return(LaTeX2range(path = c(range, recurse$path),
                        range = deletes + recurse$range))
     } else {
       result <- LaTeX2range(path = numeric(),

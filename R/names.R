@@ -23,7 +23,7 @@ catcode <- function(item) {
 #' @export
 envName <- function(item) {
   if (latexTag(item) == "ENVIRONMENT")
-    item[[1]]
+    attr(item, "envname")
 }
 
 #' @rdname names

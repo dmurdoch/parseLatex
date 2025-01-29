@@ -284,19 +284,20 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
 #if DEBUGVALS
   Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
 #endif
-  PRESERVE_SV(ans = allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(ans, 0, begin);
-  RELEASE_SV(begin);
   if (!isNull(body)) {
-	  SET_VECTOR_ELT(ans, 1, PairToVectorList(CDR(body)));
-	  RELEASE_SV(body);
-  }
+    PRESERVE_SV(ans = PairToVectorList(CDR(body)));
+    RELEASE_SV(body);
+  } else
+    PRESERVE_SV(ans = allocVector(VECSXP, 0));
+
   /* FIXME:  check that begin and end match */
+  setAttrib(ans, install("envname"), begin);
+  RELEASE_SV(begin);
+  if (!isNull(end))
+    RELEASE_SV(end);
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
   setAttrib(ans, R_LatexTagSymbol, mkString("ENVIRONMENT"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
-  if (!isNull(end))
-	  RELEASE_SV(end);
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
 #endif

@@ -14,7 +14,7 @@
 #' @export
 find_tableRow <- function(table, row) {
   contentIdx <- find_tableContent(table)
-  content <- as_LaTeX2(table[[2]][contentIdx])
+  content <- as_LaTeX2(table[contentIdx])
 
   drop <- function(skip) {
     if (length(skip)) {
@@ -55,7 +55,7 @@ find_tableRow <- function(table, row) {
 #'
 #' @export
 tableRow <- function(table, row)
-  as_LaTeX2(table[[2]][find_tableRow(table, row)])
+  as_LaTeX2(table[find_tableRow(table, row)])
 
 blankRow <- function(table) {
   paste0(rep(" & ", tableNcol(table) - 1), collapse = "")
@@ -93,7 +93,7 @@ blankRow <- function(table) {
   if (!length(i)) {
     # Need to insert rows
     contentIdx <- find_tableContent(table)
-    content <- table[[2]][contentIdx]
+    content <- table[contentIdx]
     breaks <- contentIdx[find_macro(content, "\\\\")]
     blanks <- as_LaTeX2(c("", rep(paste0(blankRow(table), "\\\\"), row - length(breaks) - 1), ""))
     value <- c(blanks, value)
@@ -102,10 +102,5 @@ blankRow <- function(table) {
     else
       i <- 0
   }
-  old <- table[[2]]
-  iold <- seq_along(old)
-  table[[2]] <- c(old[iold < min(i)],
-                  value,
-                  old[iold > max(i)])
-  table
+  replace_range(table, i, value)
 }

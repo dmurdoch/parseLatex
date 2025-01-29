@@ -24,11 +24,11 @@ widthOption(table)
 
 widthOption(table, asis = FALSE) <- value
 
-find_columnOptions(table, type = envName(table))
+find_columnOptions(table)
 
-columnOptions(table, type = envName(table))
+columnOptions(table)
 
-columnOptions(table, type = envName(table), asis = FALSE) <- value
+columnOptions(table, asis = FALSE) <- value
 }
 \arguments{
 \item{table}{A known tabular-like environment object,
@@ -37,13 +37,11 @@ or the contents of one.}
 \item{asis}{Whether to make small modifications in replacement functions.}
 
 \item{value}{A character string or LaTeX2 object.}
-
-\item{type}{The type of table.}
 }
 \value{
 \code{find_posOption()} returns the indices of the
 entries corresponding to the "pos" option, including the
-brackets, within the contents list (i.e. \code{table[[2]]}).
+brackets, within the table.
 
 \code{posOption()} returns a LaTeX2 object containing the
 "pos" option.
