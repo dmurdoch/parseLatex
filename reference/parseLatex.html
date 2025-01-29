@@ -50,6 +50,8 @@ This package exports an enhanced version of the tools::parseLatex function, and 
 <span>  catcodes <span class="op">=</span> <span class="va">defaultCatcodes</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">defaultCatcodes</span></span>
+<span></span>
 <span><span class="co"># S3 method for class 'LaTeX2item'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
@@ -57,6 +59,10 @@ This package exports an enhanced version of the tools::parseLatex function, and 
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, tags <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
+    <p>An object of class <code>data.frame</code> with 13 rows and 2 columns.</p>
+    </div>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
@@ -104,9 +110,9 @@ Details.</p></dd>
 inputs, while others such as <code>xelatex</code> allow Unicode input.
 <code>parseLatex</code> allows Unicode input.</p>
 <p>During processing of LaTeX input, the interpreter can change
-the handling of characters as it goes, using the <code>\\catcode</code> macro
-or others such as <code>\\makeatletter</code>.  This function is purely
-a parser, not an interpreter, so it can't do that.  However,
+the handling of characters as it goes, using the <code>\catcode</code> macro
+or others such as <code>\makeatletter</code>.  However, <code>parseLatex()</code> is purely
+a parser, not an interpreter, so it can't do that, but
 the user can change handling for the whole call using the
 <code>catcodes</code> argument.</p>
 <p><code>catcodes</code> should be a list or dataframe
@@ -120,7 +126,9 @@ be categorized:</p><ul><li><p>as a letter (catcode 11) using the ICU function
 <li><p>as a control
 character (catcode 15) if its code point is less than 32,</p></li>
 <li><p>as "other" (catcode 12) otherwise.</p></li>
-</ul></div>
+</ul><p><code>defaultCatcodes</code> is a dataframe containing the
+default catcode definitions.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Useful links:</p><ul><li><p><a href="https://github.com/dmurdoch/parseLatex" class="external-link">https://github.com/dmurdoch/parseLatex</a></p></li>
@@ -138,6 +146,32 @@ character (catcode 15) if its code point is less than 32,</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu">parseLatex</span><span class="op">(</span><span class="st">r"(fran\c{c}ais)"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">parsed</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fran\c{c}ais </span>
+<span class="r-in"><span><span class="co"># \makeatletter has no effect by default...</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu">parseLatex</span><span class="op">(</span><span class="st">"\\makeatletter\\internal@macro"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> MACRO: \makeatletter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> MACRO: \internal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> SPECIAL: @</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TEXT: macro</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="co"># ... but the effect can be simulated</span></span></span>
+<span class="r-in"><span><span class="va">atletter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">defaultCatcodes</span>,</span></span>
+<span class="r-in"><span>                  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>char<span class="op">=</span><span class="st">"@"</span>, catcode<span class="op">=</span><span class="fl">11</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu">parseLatex</span><span class="op">(</span><span class="st">"\\makeatletter\\internal@macro"</span>,</span></span>
+<span class="r-in"><span>                   catcodes <span class="op">=</span> <span class="va">atletter</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> MACRO: \makeatletter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> MACRO: \internal@macro</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
