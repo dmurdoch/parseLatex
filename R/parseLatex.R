@@ -15,9 +15,9 @@
 #' `parseLatex` allows Unicode input.
 #'
 #' During processing of LaTeX input, the interpreter can change
-#' the handling of characters as it goes, using the `\\catcode` macro
-#' or others such as `\\makeatletter`.  This function is purely
-#' a parser, not an interpreter, so it can't do that.  However,
+#' the handling of characters as it goes, using the `\catcode` macro
+#' or others such as `\makeatletter`.  However, `parseLatex()` is purely
+#' a parser, not an interpreter, so it can't do that, but
 #' the user can change handling for the whole call using the
 #' `catcodes` argument.
 #'
@@ -68,6 +68,18 @@ parseLatex <- function(text,
 
 }
 
+#' @rdname parseLatex
+#' @details `defaultCatcodes` is a dataframe containing the
+#' default catcode definitions.
+#' @examples
+#' # \makeatletter has no effect by default...
+#' unclass(parseLatex("\\makeatletter\\internal@macro"))
+#' # ... but the effect can be simulated
+#' atletter <- rbind(defaultCatcodes,
+#'                   data.frame(char="@", catcode=11))
+#' unclass(parseLatex("\\makeatletter\\internal@macro",
+#'                    catcodes = atletter))
+#'
 #' @export
 defaultCatcodes <-
   data.frame(char = c("\\", "{", "}", "$", "&", "\n", "\r", "#", "^", "_", " ", "\t", "%"),
