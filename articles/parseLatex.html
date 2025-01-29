@@ -156,10 +156,93 @@ it:</p>
 <div class="section level2">
 <h2 id="differences-from-toolsparselatex">Differences from <code>tools::parseLatex</code><a class="anchor" aria-label="anchor" href="#differences-from-toolsparselatex"></a>
 </h2>
+<p>The parser in this package is based on the one used by the base R
+<code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex</a></code> function (which I also wrote, based on
+other parsers in R). The output format is similar, but not compatible.
+These are the main differences.</p>
 <ul>
-<li>Format of environments</li>
-<li>Inclusion of SPECIAL tags</li>
-<li>Printing</li>
+<li>In both this package and <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex</a></code>, the result
+of calling the parser is a list of items.<br>
+</li>
+<li>The list has class <code>"LaTeX2"</code> in this package, and class
+<code>"LaTeX"</code> in <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex</a></code>.</li>
+<li>All items have an attribute returned by the <code><a href="../reference/names.html">latexTag()</a></code>
+function identifying the type of item. In this package the possible tags
+are</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Tag</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">BLOCK</td>
+<td align="left">A block enclosed in curly braces</td>
+<td align="left">list</td>
+</tr>
+<tr class="even">
+<td align="left">COMMENT</td>
+<td align="left">A LaTeX comment</td>
+<td align="left">character</td>
+</tr>
+<tr class="odd">
+<td align="left">DISPLAYMATH</td>
+<td align="left">A display math block</td>
+<td align="left">list</td>
+</tr>
+<tr class="even">
+<td align="left">ENVIRONMENT</td>
+<td align="left">A LaTeX environment</td>
+<td align="left">list</td>
+</tr>
+<tr class="odd">
+<td align="left">MACRO</td>
+<td align="left">A LaTeX macro</td>
+<td align="left">character</td>
+</tr>
+<tr class="even">
+<td align="left">MATH</td>
+<td align="left">An inline math block</td>
+<td align="left">list</td>
+</tr>
+<tr class="odd">
+<td align="left">SPECIAL</td>
+<td align="left">A non-alphabetic character</td>
+<td align="left">character</td>
+</tr>
+<tr class="even">
+<td align="left">TEXT</td>
+<td align="left">Text (consisting of letters only)</td>
+<td align="left">character</td>
+</tr>
+<tr class="odd">
+<td align="left">VERB</td>
+<td align="left">A verbatim environment</td>
+<td align="left">character</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser does not have the
+<code>SPECIAL</code> tag; such characters are included in
+<code>TEXT</code>.</li>
+<li>In both implementations, some items (<code>COMMENT</code>,
+<code>MACRO</code>, <code>SPECIAL</code>, <code>TEXT</code>, and
+<code>VERB</code>) are stored as length 1 character vectors; the others
+are stored as lists of items corresponding to their content.<br>
+</li>
+<li>The list storage is different between the two. The
+<code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> function stores some lists in two
+levels (e.g. the content of an environment named <code>item</code> would
+be in <code>item[[2]])</code>), while in this package, all lists contain
+the content directly (e.g. the content of that environment would be in
+<code>item</code> itself).</li>
+<li>This package marks all items with class <code>"LaTeX2item"</code>.
+<code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> does not assign a class to items.</li>
+<li>This package provides print methods for class
+<code>"LaTeX2item"</code> so that individual items print nicely.</li>
 </ul>
 </div>
 <div class="section level2">
