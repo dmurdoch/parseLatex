@@ -172,6 +172,7 @@ static SEXP	xxnewlist(SEXP);
 static SEXP	xxlist(SEXP, SEXP);
 static void	xxsavevalue(SEXP, YYLTYPE *);
 static SEXP	xxtag(SEXP, int, YYLTYPE *);
+static void xxgetEnvname(char *, size_t, SEXP);
 static SEXP xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP	xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP	xxblock(SEXP, YYLTYPE *);
@@ -200,6 +201,7 @@ static SEXP R_LatexTagSymbol = NULL;
 %token	  BEGIN END VERB VERB2
 %token    TWO_DOLLARS
 %token    SPECIAL
+%token    STAR
 
 /* Recent bison has <> to represent all of the destructors below, but we don't assume it */
 
@@ -230,14 +232,19 @@ Item:		TEXT				{ $$ = xxtag($1, TEXT, &@$); }
 	|	COMMENT				{ $$ = xxtag($1, COMMENT, &@$); }
 	|	MACRO				{ $$ = xxtag($1, MACRO, &@$); }
 	| SPECIAL     { $$ = xxtag($1, SPECIAL, &@$); }
+	| STAR        { $$ = xxtag($1, SPECIAL, &@$); }
 	|	VERB				{ $$ = xxtag($1, VERB, &@$); }
 	|	VERB2				{ $$ = xxtag($1, VERB, &@$); }
 	|	environment			{ $$ = $1; }
 	|	block				{ $$ = $1; }
 
-environment:	BEGIN '{' TEXT '}' { xxSetInVerbEnv($3); }
-                Items END '{' TEXT '}' 	{ $$ = xxenv($3, $6, $9, &@$);
-                                                  RELEASE_SV($1); RELEASE_SV($7); }
+envname: TEXT { $$ = $1; }
+  |      TEXT STAR { $$ = xxlist(xxnewlist($1), $2); }
+
+environment:	BEGIN '{' envname '}' { xxSetInVerbEnv($3); }
+                Items END '{' envname '}' 	{ $$ = xxenv($3, $6, $9, &@$);
+                                              RELEASE_SV($1);
+                                              RELEASE_SV($7); }
 
 math:		'$' nonMath '$'			{ $$ = xxmath($2, &@$, FALSE); }
 
@@ -278,9 +285,23 @@ static SEXP xxlist(SEXP list, SEXP item)
     return list;
 }
 
+static void xxgetEnvname(char *buffer, size_t bufsize,
+                       SEXP envname) {
+  if (length(envname) > 1) // This is TEXT STAR
+    snprintf(buffer, bufsize, "%s%s",
+            CHAR(STRING_ELT(CADR(envname), 0)),
+            CHAR(STRING_ELT(CADDR(envname), 0)));
+  else                     // This is just TEXT
+    snprintf(buffer, bufsize, "%s",
+           CHAR(STRING_ELT(envname, 0)));
+}
+
 static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
 {
   SEXP ans;
+  char ename[256];
+  xxgetEnvname(ename, sizeof(ename), begin);
+
 #if DEBUGVALS
   Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
 #endif
@@ -291,7 +312,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
     PRESERVE_SV(ans = allocVector(VECSXP, 0));
 
   /* FIXME:  check that begin and end match */
-  setAttrib(ans, install("envname"), begin);
+  setAttrib(ans, install("envname"), mkString(ename));
   RELEASE_SV(begin);
   if (!isNull(end))
     RELEASE_SV(end);
@@ -356,8 +377,11 @@ static int VerbatimLookup(const char *s)
 static void xxSetInVerbEnv(SEXP envname)
 {
   char buffer[256];
-  if (VerbatimLookup(CHAR(STRING_ELT(envname, 0)))) {
-    snprintf(buffer, sizeof(buffer), "\\end{%s}", CHAR(STRING_ELT(envname, 0)));
+  char ename[256];
+  xxgetEnvname(ename, sizeof(ename), envname);
+
+  if (VerbatimLookup(ename)) {
+    snprintf(buffer, sizeof(buffer), "\\end{%s}", ename);
     PRESERVE_SV(parseState.xxInVerbEnv = ScalarString(mkChar(buffer)));
   } else parseState.xxInVerbEnv = NULL;
 }
@@ -953,7 +977,10 @@ static int mkSpecial(int c, int cat)
   setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
   setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
   if(st1) free(st1);
-  return SPECIAL;
+  if (c == '*')
+    return STAR;
+  else
+    return SPECIAL;
 }
 
 static int mkVerb(int c)
