@@ -5,6 +5,7 @@
 <url><loc>https://dmurdoch.github.io/parseLatex/articles/parseLatex.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/authors.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/index.html</loc></url>
+<url><loc>https://dmurdoch.github.io/parseLatex/reference/LaTeX2range.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/reference/Utilities.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/reference/as_LaTeX2.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/reference/deparseLatex.html</loc></url>
@@ -24,5 +25,7 @@
 <url><loc>https://dmurdoch.github.io/parseLatex/reference/tablecell.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/reference/tables.html</loc></url>
 <url><loc>https://dmurdoch.github.io/parseLatex/reference/tests.html</loc></url>
+<url><loc>https://dmurdoch.github.io/parseLatex/reference/vector_to_latex2.html</loc></url>
+<url><loc>https://dmurdoch.github.io/parseLatex/reference/vector_to_row.html</loc></url>
 </urlset>
 

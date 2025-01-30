@@ -43,6 +43,8 @@
 <span></span>
 <span><span class="fu">get_item</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">set_item</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span>, <span class="va">value</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">get_container</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">get_which</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
@@ -78,6 +80,7 @@
 first example matching the <code>is_fn</code> conditions,
 or a list of paths to all matching items.</p>
 <p><code>get_item()</code> returns the item at the given path.</p>
+<p><code>set_item()</code> replaces the item at the given path, and returns the modified version of <code>items</code>.</p>
 <p><code>get_container()</code> returns the item
 containing the given path</p>
 <p><code>get_which()</code> returns the index

@@ -45,12 +45,7 @@ within a single container.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_pattern</span><span class="op">(</span><span class="va">items</span>, <span class="va">pattern</span>, <span class="va">...</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">LaTeX2range</span><span class="op">(</span><span class="va">path</span>, <span class="va">range</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'LaTeX2range'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, source <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_pattern</span><span class="op">(</span><span class="va">items</span>, <span class="va">pattern</span>, <span class="va">...</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -66,39 +61,21 @@ within a single container.</p>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Ignored.</p></dd>
+<dd><p>Additional parameters to pass to <code>grepl</code>.</p></dd>
 
 
 <dt id="arg-all">all<a class="anchor" aria-label="anchor" href="#arg-all"></a></dt>
 <dd><p>Find all matching, or the first?</p></dd>
 
-
-<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
-<dd><p>An integer vector to use as a path.</p></dd>
-
-
-<dt id="arg-range">range<a class="anchor" aria-label="anchor" href="#arg-range"></a></dt>
-<dd><p>A range of values within the path.</p></dd>
-
-
-<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Object to print.</p></dd>
-
-
-<dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
-<dd><p>Optional parsed list from which to
-extract the range.</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>find_pattern()</code> returns a <code>LaTeX2range</code> item
+    <p><code>find_pattern()</code> returns a <code>LaTeX2range</code> object
 or (if <code>all</code> is <code>TRUE</code>) a list of them.  <code>LaTeX2range</code>
 items are lists containing
 <code>path</code> and <code>range</code>, where <code>path</code> is the recursive path
 to the container holding the <code>range</code> of items
 matching the <code>pattern</code>, or a list of such lists.</p>
-<p><code>LaTeX2range</code> returns a constructed <code>"LaTeX2range</code> object.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
