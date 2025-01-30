@@ -109,6 +109,17 @@ get_item <- function(items, path)
   items[[path]]
 
 #' @rdname path_to
+#'
+#' @returns `set_item()` replaces the item at the given path, and returns the modified version of `items`.
+#' @export
+set_item <- function(items, path, value) {
+  if (!inherits(value, "LaTeX2item"))
+    stop("requires a LaTeX2item as a value")
+  items[[path]] <- value
+  items
+}
+
+#' @rdname path_to
 #' @returns `get_container()` returns the item
 #' containing the given path
 #' @export
@@ -145,7 +156,7 @@ get_which <- function(path)
 #' containers and dropping earlier and later items.
 #' It should always return syntactically correct LaTeX
 #' code in which the pattern appears.
-#' @returns `find_pattern()` returns a `LaTeX2range` item
+#' @returns `find_pattern()` returns a `LaTeX2range` object
 #' or (if `all` is `TRUE`) a list of them.  `LaTeX2range`
 #'  items are lists containing
 #' `path` and `range`, where `path` is the recursive path
@@ -209,18 +220,26 @@ find_pattern <- function(items, pattern, ..., all = FALSE) {
   hits
 }
 
-#' @rdname find_pattern
+#' Ranges within LaTeX2 lists.
 #'
 #' @param path An integer vector to use as a path.
 #' @param range A range of values within the path.
+#' @details
+#' LaTeX2range objects are lists with `path` and `range` entries.  `path` is a recursive index
+#' into a LaTeX2 list, and `range` is a range of
+#' entries in the result.
 #'
-#' @returns `LaTeX2range` returns a constructed `"LaTeX2range` object.
+#' If `path` is `NULL`, the object refers to the entire
+#' source object.  If `range` is `NULL`, it refers
+#' to the whole `LaTeX2item` given by the `path`.
+#'
+#' @returns `LaTeX2range()` returns a constructed `LaTeX2range` object.
 #' @export
 LaTeX2range <- function(path, range)
   structure(list(path = path, range = range),
             class = "LaTeX2range")
 
-#' @rdname find_pattern
+#' @rdname LaTeX2range
 #' @param x Object to print.
 #'
 #' @param source Optional parsed list from which to
@@ -237,4 +256,44 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
     cat(" range=", min(x$range), ":", max(x$range), "\n", sep = "")
   }
   invisible(x)
+}
+
+#' @rdname LaTeX2range
+#' @param items A LaTeX2 object or other list of
+#' LaTeX2item objects.
+#' @param range A LaTeX2range object.
+#' @param values An object that can be coerced to
+#' a LaTeX2 object or (if `range$range` is `NULL`)
+#' a LaTeX2item.
+#' @returns `set_item()` replaces the item(s) at the given path, and returns the modified version of `items`.
+#' @examples
+#' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
+#' parsed <- parseLatex(latex)
+#' tablepath <- path_to(parsed, is_env, envtypes = "tabular")
+#' range <- LaTeX2range(tablepath, 8)
+#' set_range(parsed, range, "The 8th item")
+#' @export
+set_range <- function(items, range, values) {
+  path <- range$path
+  range <- range$range
+  if (!length(range))
+    items <- set_item(items, path, values)
+  else {
+    values <- as_LaTeX2(values)
+    if (!length(path))
+      item <- items
+    else
+      item <- items[[path]]
+    iold <- seq_along(item)
+    saveattr <- attributes(item)
+    item <- c(item[iold < min(range)],
+              values,
+              item[iold > max(range)])
+    attributes(item) <- saveattr
+    if (!length(path))
+      items <- item
+    else
+      items[[path]] <- item
+  }
+  items
 }

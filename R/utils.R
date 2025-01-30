@@ -95,7 +95,21 @@ get_contents <- function(item) {
   if (is.null(tag))
     NULL
   else if (tag %in% c("ENVIRONMENT", "BLOCK"))
-    as_LaTeX2(item)
+    as_LaTeX2(unclass(item))
   else
     as.character(item)
+}
+
+#' @rdname Utilities
+#'
+#' @returns A BLOCK item containing the items.
+#' @export
+#'
+#' @examples
+#' new_block(parseLatex("abc"))
+new_block <- function(items) {
+  items <- as_LaTeX2(items)
+  attr(items, "latex_tag") <- "BLOCK"
+  class(items) <- "LaTeX2item"
+  items
 }

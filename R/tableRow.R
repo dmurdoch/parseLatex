@@ -104,3 +104,44 @@ blankRow <- function(table) {
   }
   replace_range(table, i, value)
 }
+
+#' @title Convert vector to table row
+#'
+#' @param cells A list or vector of cell contents.
+#' @param asis If `FALSE`, add blanks around cell contents.
+#' @param linebreak If `TRUE`, add a line break marker.
+#' @returns A LaTeX2 object which could be a row
+#' in a tabular object.
+#' @export
+#'
+#' @examples
+#' vector_to_row(1:3)
+vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
+  result <- list()
+  amp <- as_LaTeX2("&")
+  eol <- as_LaTeX2("\\\\")
+  blank <- as_LaTeX2(" ")
+  for (i in seq_along(cells)) {
+    result <- c(result,
+                if (!asis) blank,
+                as_LaTeX2(cells[[i]]),
+                if (!asis) blank,
+                if (i == length(cells)) {
+                  if (linebreak) eol
+                } else amp)
+  }
+  as_LaTeX2(result)
+}
+
+#' @title Convert vector to table row
+#'
+#' @param x A list or vector to convert.
+#' @returns A LaTeX2 object containing the entries
+#' of `x` concatenated.
+#' @export
+#'
+#' @examples
+#' vector_to_latex2(1:3)
+vector_to_latex2 <- function(x) {
+  as_LaTeX2(lapply(x, as_LaTeX2))
+}

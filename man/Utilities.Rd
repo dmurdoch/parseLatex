@@ -8,6 +8,7 @@
 \alias{include_whitespace}
 \alias{split_list}
 \alias{split_latex}
+\alias{new_block}
 \title{Miscellaneous utilities}
 \usage{
 drop_items(items, which)
@@ -21,6 +22,8 @@ include_whitespace(items, which)
 split_list(items, splits)
 
 split_latex(items, splits)
+
+new_block(items)
 }
 \arguments{
 \item{items}{A LaTeX2 object or list of items.}
@@ -45,7 +48,12 @@ separated at the splits.
 \code{split_latex()} returns a list of pieces
 separated at the splits.  Each piece is marked as
 a LaTeX2 object.
+
+A BLOCK item containing the items.
 }
 \description{
 Miscellaneous utilities
+}
+\examples{
+new_block(parseLatex("abc"))
 }

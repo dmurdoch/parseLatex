@@ -2,43 +2,26 @@
 % Please edit documentation in R/finders.R
 \name{find_pattern}
 \alias{find_pattern}
-\alias{LaTeX2range}
-\alias{print.LaTeX2range}
 \title{Find a pattern in deparsed items}
 \usage{
 find_pattern(items, pattern, ..., all = FALSE)
-
-LaTeX2range(path, range)
-
-\method{print}{LaTeX2range}(x, source = NULL, ...)
 }
 \arguments{
 \item{items}{A list of latex items.}
 
 \item{pattern}{Pattern to use in \code{grepl()}.}
 
-\item{...}{Ignored.}
+\item{...}{Additional parameters to pass to \code{grepl}.}
 
 \item{all}{Find all matching, or the first?}
-
-\item{path}{An integer vector to use as a path.}
-
-\item{range}{A range of values within the path.}
-
-\item{x}{Object to print.}
-
-\item{source}{Optional parsed list from which to
-extract the range.}
 }
 \value{
-\code{find_pattern()} returns a \code{LaTeX2range} item
+\code{find_pattern()} returns a \code{LaTeX2range} object
 or (if \code{all} is \code{TRUE}) a list of them.  \code{LaTeX2range}
 items are lists containing
 \code{path} and \code{range}, where \code{path} is the recursive path
 to the container holding the \code{range} of items
 matching the \code{pattern}, or a list of such lists.
-
-\code{LaTeX2range} returns a constructed \verb{"LaTeX2range} object.
 }
 \description{
 Searches a \code{LaTeX2} list for text using \code{grepl()} on deparsed versions of parts of the code.

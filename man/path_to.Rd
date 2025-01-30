@@ -3,6 +3,7 @@
 \name{path_to}
 \alias{path_to}
 \alias{get_item}
+\alias{set_item}
 \alias{get_container}
 \alias{get_which}
 \title{Find path to a particular kind of item}
@@ -10,6 +11,8 @@
 path_to(items, is_fn, ..., all = FALSE)
 
 get_item(items, path)
+
+set_item(items, path, value)
 
 get_container(items, path)
 
@@ -32,6 +35,8 @@ first example matching the \code{is_fn} conditions,
 or a list of paths to all matching items.
 
 \code{get_item()} returns the item at the given path.
+
+\code{set_item()} replaces the item at the given path, and returns the modified version of \code{items}.
 
 \code{get_container()} returns the item
 containing the given path
