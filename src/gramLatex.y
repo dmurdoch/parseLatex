@@ -201,7 +201,6 @@ static SEXP R_LatexTagSymbol = NULL;
 %token	  BEGIN END VERB VERB2
 %token    TWO_DOLLARS
 %token    SPECIAL
-%token    STAR
 
 /* Recent bison has <> to represent all of the destructors below, but we don't assume it */
 
@@ -232,14 +231,15 @@ Item:		TEXT				{ $$ = xxtag($1, TEXT, &@$); }
 	|	COMMENT				{ $$ = xxtag($1, COMMENT, &@$); }
 	|	MACRO				{ $$ = xxtag($1, MACRO, &@$); }
 	| SPECIAL     { $$ = xxtag($1, SPECIAL, &@$); }
-	| STAR        { $$ = xxtag($1, SPECIAL, &@$); }
 	|	VERB				{ $$ = xxtag($1, VERB, &@$); }
 	|	VERB2				{ $$ = xxtag($1, VERB, &@$); }
 	|	environment			{ $$ = $1; }
 	|	block				{ $$ = $1; }
 
-envname: TEXT { $$ = $1; }
-  |      TEXT STAR { $$ = xxlist(xxnewlist($1), $2); }
+envname: TEXT    { $$ = xxnewlist($1); }
+  |      SPECIAL { $$ = xxnewlist($1); }
+  |      envname TEXT { $$ = xxlist($1, $2); }
+  |      envname SPECIAL { $$ = xxlist($1, $2); }
 
 environment:	BEGIN '{' envname '}' { xxSetInVerbEnv($3); }
                 Items END '{' envname '}' 	{ $$ = xxenv($3, $6, $9, &@$);
@@ -287,13 +287,15 @@ static SEXP xxlist(SEXP list, SEXP item)
 
 static void xxgetEnvname(char *buffer, size_t bufsize,
                        SEXP envname) {
-  if (length(envname) > 1) // This is TEXT STAR
-    snprintf(buffer, bufsize, "%s%s",
-            CHAR(STRING_ELT(CADR(envname), 0)),
-            CHAR(STRING_ELT(CADDR(envname), 0)));
-  else                     // This is just TEXT
-    snprintf(buffer, bufsize, "%s",
-           CHAR(STRING_ELT(envname, 0)));
+  int len, done = 0;
+  envname = CDR(envname);
+  while (!isNull(envname)) {
+    len = snprintf(buffer + done, bufsize - done,
+                   "%s", CHAR(STRING_ELT(CAR(envname), 0)));
+    if (len > 0)
+      done += len;
+    envname = CDR(envname);
+  }
 }
 
 static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
@@ -443,10 +445,10 @@ static UChar32 xxgetc(void)
     if (first_byte == (uint8_t)EOF) {
       c = EOF;
     } else {
-      int expected_length = U8_LENGTH(first_byte);
+      int expected_length = U8_COUNT_TRAIL_BYTES(first_byte);
       utf8_bytes[byte_count++] = (uint8_t)first_byte;
       // Read remaining bytes if needed
-      for (i = 1; i < expected_length; i++) {
+      for (i = 0; i < expected_length; i++) {
         int next_byte = ptr_getc();
         if (next_byte == EOF) {
           // Unexpected EOF in the middle of a character
@@ -977,10 +979,7 @@ static int mkSpecial(int c, int cat)
   setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
   setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
   if(st1) free(st1);
-  if (c == '*')
-    return STAR;
-  else
-    return SPECIAL;
+  return SPECIAL;
 }
 
 static int mkVerb(int c)
