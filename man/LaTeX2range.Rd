@@ -3,19 +3,16 @@
 \name{LaTeX2range}
 \alias{LaTeX2range}
 \alias{print.LaTeX2range}
-\alias{set_range}
 \title{Ranges within LaTeX2 lists.}
 \usage{
 LaTeX2range(path, range)
 
 \method{print}{LaTeX2range}(x, source = NULL, ...)
-
-set_range(items, range, values)
 }
 \arguments{
 \item{path}{An integer vector to use as a path.}
 
-\item{range}{A LaTeX2range object.}
+\item{range}{A range of values within the path.}
 
 \item{x}{Object to print.}
 
@@ -23,18 +20,9 @@ set_range(items, range, values)
 extract the range.}
 
 \item{...}{Ignored.}
-
-\item{items}{A LaTeX2 object or other list of
-LaTeX2item objects.}
-
-\item{values}{An object that can be coerced to
-a LaTeX2 object or (if \code{range$range} is \code{NULL})
-a LaTeX2item.}
 }
 \value{
 \code{LaTeX2range()} returns a constructed \code{LaTeX2range} object.
-
-\code{set_item()} replaces the item(s) at the given path, and returns the modified version of \code{items}.
 }
 \description{
 Ranges within LaTeX2 lists.
@@ -47,11 +35,4 @@ entries in the result.
 If \code{path} is \code{NULL}, the object refers to the entire
 source object.  If \code{range} is \code{NULL}, it refers
 to the whole \code{LaTeX2item} given by the \code{path}.
-}
-\examples{
-latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
-parsed <- parseLatex(latex)
-tablepath <- path_to(parsed, is_env, envtypes = "tabular")
-range <- LaTeX2range(tablepath, 8)
-set_range(parsed, range, "The 8th item")
 }

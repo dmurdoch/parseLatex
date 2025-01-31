@@ -109,7 +109,7 @@ get_item <- function(items, path)
   items[[path]]
 
 #' @rdname path_to
-#'
+#' @param value A LaTeX2item to set as a value.
 #' @returns `set_item()` replaces the item at the given path, and returns the modified version of `items`.
 #' @export
 set_item <- function(items, path, value) {
@@ -258,14 +258,14 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
   invisible(x)
 }
 
-#' @rdname LaTeX2range
+#' Set items in a LaTeX2 object
 #' @param items A LaTeX2 object or other list of
 #' LaTeX2item objects.
 #' @param range A LaTeX2range object.
 #' @param values An object that can be coerced to
 #' a LaTeX2 object or (if `range$range` is `NULL`)
 #' a LaTeX2item.
-#' @returns `set_item()` replaces the item(s) at the given path, and returns the modified version of `items`.
+#' @returns `set_range()` replaces the item(s) at the given path, and returns the modified version of `items`.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
 #' parsed <- parseLatex(latex)

@@ -28,6 +28,8 @@ get_which(path)
 \item{all}{Find all matching, or the first?}
 
 \item{path}{Integer vector of subitems}
+
+\item{value}{A LaTeX2item to set as a value.}
 }
 \value{
 \code{path_to()} returns the recursive path to the

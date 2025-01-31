@@ -23,7 +23,7 @@ tableNrow <- function(table) {
 #' tableNcol(table)
 #' @export
 tableNcol <- function(table) {
-  opts <- drop_whitespace(columnOptions(table)[[1]])
+  opts <- drop_whitespace(get_contents(columnOptions(table)[[1]]))
   opts <- drop_items(opts, find_char(opts, "|"))
   sum(sapply(opts, function(x)
     if(latexTag(x) == "TEXT") nchar(x)

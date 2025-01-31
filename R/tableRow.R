@@ -143,5 +143,5 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 #' @examples
 #' vector_to_latex2(1:3)
 vector_to_latex2 <- function(x) {
-  as_LaTeX2(lapply(x, as_LaTeX2))
+  as_LaTeX2(do.call(c, lapply(x, as_LaTeX2)))
 }
