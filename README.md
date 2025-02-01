@@ -19,7 +19,7 @@ For now, I’m aiming to handle anything that `knitr::kable()` and the
 `kableExtra` functions will produce, plus related code.
 
 A website describing the current state is here:
-<https://dmurdoch.github.io/parseLatex> .
+<https://dmurdoch.github.io/parseLatex/> .
 
 ## Installation
 
