@@ -34,7 +34,8 @@
 #'  be categorized:
 #'
 #'  - as a letter (catcode 11) using the ICU function
-#'  `u_hasBinaryProperty(c, UCHAR_ALPHABETIC)`,
+#'  `u_hasBinaryProperty(c, UCHAR_ALPHABETIC)` (or `iswalpha(c)` on
+#'  Windows),
 #'  - as a control
 #'  character (catcode 15) if its code point is less than 32,
 #'  - as "other" (catcode 12) otherwise.
@@ -187,6 +188,6 @@ deparseLatex <- function(x, dropBraces = FALSE)
 }
 
 
-#' @name parseLatex
+#' @name parseLatex-package
 #' @useDynLib parseLatex, .registration=TRUE
 "_PACKAGE"

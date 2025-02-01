@@ -7,7 +7,8 @@ Authors@R: c(
       "Duncan", "Murdoch",
       email = "murdoch.duncan@gmail.com",
       role = c("aut", "cre")
-    )
+    ),
+    person("The R Core Team", role = c("ctb", "cph"))
   )
 Description: Exports an enhanced version of the
     tools::parseLatex function that handles more LaTeX syntax.  Also
