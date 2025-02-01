@@ -3,6 +3,7 @@
 #'
 #' The \code{parseLatex} function parses LaTeX source, producing a structured object.
 #' @aliases LaTeX2 LaTeX2item
+#' @name parseLatex_fn
 #' @param text A character vector containing LaTeX source code.
 #' @param verbose If \code{TRUE}, print debug error messages.
 #' @param verbatim A character vector containing the names of \LaTeX environments holding verbatim text.
@@ -42,6 +43,7 @@
 #'
 #'
 #' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.  Items in the list have class `"LaTeX2item"`.
+#' @seealso LaTeX2, LaTeX2item
 #' @export
 #' @importFrom utils getParseData
 #' @importFrom tools deparseLatex
@@ -88,13 +90,13 @@ defaultCatcodes <-
   data.frame(char = c("\\", "{", "}", "$", "&", "\n", "\r", "#", "^", "_", " ", "\t", "%"),
           catcode = c(0,     1,   2,   3,   4,    5,    5,   6,   7,  8,  10,   10,   14 ))
 
-#' @rdname parseLatex
+#' @rdname parseLatex_fn
 #' @export
 print.LaTeX2item <- function(x, ...) {
   cat(paste0(latexTag(x), ": ", deparseLatex(list(x)), "\n"))
 }
 
-#' @rdname parseLatex
+#' @rdname parseLatex_fn
 #' @param x Object to work on.
 #' @param tags Whether to display LaTeX2 tags.
 #' @param ... Extra parameters to pass to `deparseLatex`.
@@ -187,7 +189,7 @@ deparseLatex <- function(x, dropBraces = FALSE)
   paste(result, collapse="")
 }
 
-
-#' @name parseLatex-package
+#' The parseLatex package
+#' @name parseLatex_pkg
 #' @useDynLib parseLatex, .registration=TRUE
 "_PACKAGE"

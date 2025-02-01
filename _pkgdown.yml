@@ -5,8 +5,9 @@ reference:
 - title: Main functions
   desc: The main high-level functions
   contents:
-  - parseLatex
+  - parseLatex_fn
   - deparseLatex
+  - parseLatex_pkg
 - title: Searching
   desc: Functions to find and modify things
   contents:
