@@ -29,13 +29,13 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Set items in a <a href="parseLatex.html">LaTeX2</a> object</h1>
+      <h1>Set items in a <a href="parseLatex_fn.html">LaTeX2</a> object</h1>
       <small class="dont-index">Source: <a href="https://github.com/dmurdoch/parseLatex/blob/main/R/finders.R" class="external-link"><code>R/finders.R</code></a></small>
       <div class="d-none name"><code>set_range.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Set items in a <a href="parseLatex.html">LaTeX2</a> object</p>
+    <p>Set items in a <a href="parseLatex_fn.html">LaTeX2</a> object</p>
     </div>
 
     <div class="section level2">
@@ -48,8 +48,8 @@
 
 
 <dl><dt id="arg-items">items<a class="anchor" aria-label="anchor" href="#arg-items"></a></dt>
-<dd><p>A <a href="parseLatex.html">LaTeX2</a> object or other list of
-<a href="parseLatex.html">LaTeX2item</a> objects.</p></dd>
+<dd><p>A <a href="parseLatex_fn.html">LaTeX2</a> object or other list of
+<a href="parseLatex_fn.html">LaTeX2item</a> objects.</p></dd>
 
 
 <dt id="arg-range">range<a class="anchor" aria-label="anchor" href="#arg-range"></a></dt>
@@ -58,8 +58,8 @@
 
 <dt id="arg-values">values<a class="anchor" aria-label="anchor" href="#arg-values"></a></dt>
 <dd><p>An object that can be coerced to
-a <a href="parseLatex.html">LaTeX2</a> object or (if <code>range$range</code> is <code>NULL</code>)
-a <a href="parseLatex.html">LaTeX2item</a>.</p></dd>
+a <a href="parseLatex_fn.html">LaTeX2</a> object or (if <code>range$range</code> is <code>NULL</code>)
+a <a href="parseLatex_fn.html">LaTeX2item</a>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -70,7 +70,7 @@ a <a href="parseLatex.html">LaTeX2item</a>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">latex</span> <span class="op">&lt;-</span> <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kbl.html" class="external-link">kbl</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, format <span class="op">=</span> <span class="st">"latex"</span>, caption <span class="op">=</span> <span class="st">"Sample table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tablepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="path_to.html">path_to</a></span><span class="op">(</span><span class="va">parsed</span>, <span class="va">is_env</span>, envtypes <span class="op">=</span> <span class="st">"tabular"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">range</span> <span class="op">&lt;-</span> <span class="fu"><a href="LaTeX2range.html">LaTeX2range</a></span><span class="op">(</span><span class="va">tablepath</span>, <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">set_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span>, <span class="st">"The 8th item"</span><span class="op">)</span></span></span>

@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Parse LaTeX Code">
-<meta name="description" content="Exports an enhanced version of the tools::parseLatex function that handles more LaTeX syntax. Also includes numerous functions for searching and modifying LaTeX source.">
-<meta property="og:description" content="Exports an enhanced version of the tools::parseLatex function that handles more LaTeX syntax. Also includes numerous functions for searching and modifying LaTeX source.">
+<meta name="description" content="Exports an enhanced version of the tools::parseLatex() function that handles more LaTeX syntax. Also includes numerous functions for searching and modifying LaTeX source.">
+<meta property="og:description" content="Exports an enhanced version of the tools::parseLatex() function that handles more LaTeX syntax. Also includes numerous functions for searching and modifying LaTeX source.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -54,7 +54,7 @@
 
 <p>The goal of <code>parseLatex</code> is to provide a parser for a subset of LaTeX syntax that is more complete than what is handled by the <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser.</p>
 <p>Perhaps some day it will handle all LaTeX inputs, but that’s not likely. For now, I’m aiming to handle anything that <code><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">knitr::kable()</a></code> and the <code>kableExtra</code> functions will produce, plus related code.</p>
-<p>A website describing the current state is here: <a href="https://dmurdoch.github.io/parseLatex" class="uri">https://dmurdoch.github.io/parseLatex</a> .</p>
+<p>A website describing the current state is here: <a href="https://dmurdoch.github.io/parseLatex/" class="uri">https://dmurdoch.github.io/parseLatex/</a> .</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -82,7 +82,7 @@
 <span><span class="co">#&gt; Mazda RX4 Wag &amp; 21 &amp; 6\\</span></span>
 <span><span class="co">#&gt; \hline</span></span>
 <span><span class="co">#&gt; \end{tabular}</span></span>
-<span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span>
+<span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span>
 <span><span class="co"># This is a blank followed by a table; drop the blank</span></span>
 <span><span class="va">table</span> <span class="op">&lt;-</span> <span class="va">parsed</span><span class="op">[[</span><span class="fu"><a href="reference/finders.html">find_env</a></span><span class="op">(</span><span class="va">parsed</span>, <span class="st">"tabular"</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co"># Get the alignment options from the content</span></span>
@@ -140,6 +140,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Duncan Murdoch <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 

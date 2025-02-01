@@ -50,11 +50,11 @@
 
 
 <dl><dt id="arg-item">item<a class="anchor" aria-label="anchor" href="#arg-item"></a></dt>
-<dd><p>An item from a <a href="parseLatex.html">LaTeX2</a> list object.</p></dd>
+<dd><p>An item from a <a href="parseLatex_fn.html">LaTeX2</a> list object.</p></dd>
 
 
 <dt id="arg-items">items<a class="anchor" aria-label="anchor" href="#arg-items"></a></dt>
-<dd><p>A <a href="parseLatex.html">LaTeX2</a> list object.</p></dd>
+<dd><p>A <a href="parseLatex_fn.html">LaTeX2</a> list object.</p></dd>
 
 
 <dt id="arg-start">start<a class="anchor" aria-label="anchor" href="#arg-start"></a></dt>
@@ -72,7 +72,7 @@ tabular-like environment, or <code>NA</code> if none is found.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">latex</span> <span class="op">&lt;-</span> <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kbl.html" class="external-link">kbl</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">is_Tabular</span><span class="op">(</span><span class="va">parsed</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>

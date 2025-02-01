@@ -73,7 +73,7 @@ or the contents of one.</p></dd>
 
 
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
-<dd><p>A character string or <a href="parseLatex.html">LaTeX2</a> object.</p></dd>
+<dd><p>A character string or <a href="parseLatex_fn.html">LaTeX2</a> object.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -81,16 +81,16 @@ or the contents of one.</p></dd>
     <p><code>find_posOption()</code> returns the indices of the
 entries corresponding to the "pos" option, including the
 brackets, within the table.</p>
-<p><code>posOption()</code> returns a <a href="parseLatex.html">LaTeX2</a> object containing the
+<p><code>posOption()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "pos" option.</p>
 <p><code>find_widthOption()</code> returns the index of the
 block corresponding to the "width" option, if there is one.
 Only some tabular-like environments have these.</p>
-<p><code>widthOption()</code> returns a <a href="parseLatex.html">LaTeX2</a> object containing the
+<p><code>widthOption()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "width" option, if the table has one.</p>
 <p><code>find_columnOptions()</code> returns the index of the
 block corresponding to the column spec.</p>
-<p><code>columnOptions()</code> returns a <a href="parseLatex.html">LaTeX2</a> object containing the
+<p><code>columnOptions()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "column" options.</p>
     </div>
     <div class="section level2">
@@ -102,7 +102,7 @@ can be specified with or without the enclosing brackets.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">latex</span> <span class="op">&lt;-</span> <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kbl.html" class="external-link">kbl</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="va">parsed</span><span class="op">[[</span><span class="fu"><a href="tables.html">find_tabular</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">table</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENVIRONMENT: \begin{tabular}[t]{l|r|r}</span>

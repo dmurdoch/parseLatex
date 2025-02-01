@@ -76,7 +76,7 @@ ways:</p>
 <ol style="list-style-type: decimal">
 <li>It classifies every character in the source file according to TeX
 “catcodes”. The base function only handles some of them.</li>
-<li>The <code><a href="../reference/parseLatex.html">parseLatex::parseLatex()</a></code> function marks its output
+<li>The <code><a href="../reference/parseLatex_fn.html">parseLatex::parseLatex()</a></code> function marks its output
 with class <code>"LaTeX2"</code> instead of <code>"LaTeX"</code>, and
 marks each item in the output with class <code>"LaTeX2item"</code>. This
 allows it to print things in a more readable way.</li>
@@ -107,7 +107,7 @@ functions for extracting and modifying parts of the parsed LaTeX.</li>
 <p>Next, we parse it in <code>parseLatex</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmurdoch/parseLatex" class="external-link">parseLatex</a></span><span class="op">)</span></span>
-<span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></code></pre></div>
 <p>Printing the result would appear to duplicate the input, but in fact
 it is quite different. <code>parsed</code> is a list of class
 <code>"LaTeX2"</code>. Items in the list are of class

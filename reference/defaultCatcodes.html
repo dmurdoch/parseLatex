@@ -29,13 +29,13 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>The default "catcodes" used by <a href="parseLatex.html">parseLatex</a>.</h1>
+      <h1>The default "catcodes" used by <a href="parseLatex_fn.html">parseLatex</a>.</h1>
       <small class="dont-index">Source: <a href="https://github.com/dmurdoch/parseLatex/blob/main/R/parseLatex.R" class="external-link"><code>R/parseLatex.R</code></a></small>
       <div class="d-none name"><code>defaultCatcodes.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>The default "catcodes" used by <a href="parseLatex.html">parseLatex</a>.</p>
+    <p>The default "catcodes" used by <a href="parseLatex_fn.html">parseLatex</a>.</p>
     </div>
 
     <div class="section level2">
@@ -56,7 +56,7 @@ default catcode definitions.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \makeatletter has no effect by default...</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu"><a href="parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="st">"\\makeatletter\\internal@macro"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="st">"\\makeatletter\\internal@macro"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MACRO: \makeatletter</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -72,7 +72,7 @@ default catcode definitions.</p>
 <span class="r-in"><span><span class="co"># ... but the effect can be simulated</span></span></span>
 <span class="r-in"><span><span class="va">atletter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">defaultCatcodes</span>,</span></span>
 <span class="r-in"><span>                  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>char<span class="op">=</span><span class="st">"@"</span>, catcode<span class="op">=</span><span class="fl">11</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu"><a href="parseLatex.html">parseLatex</a></span><span class="op">(</span><span class="st">"\\makeatletter\\internal@macro"</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="st">"\\makeatletter\\internal@macro"</span>,</span></span>
 <span class="r-in"><span>                   catcodes <span class="op">=</span> <span class="va">atletter</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MACRO: \makeatletter</span>
