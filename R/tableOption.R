@@ -1,4 +1,5 @@
 #' @rdname tableOption
+#' @name tableOption
 #' @title Functions related to table options.
 #' @param table A known tabular-like environment object,
 #' or the contents of one.
@@ -18,7 +19,7 @@ find_posOption <- function(table) {
 }
 
 #' @rdname tableOption
-#' @returns `posOption()` returns a LaTeX2 object containing the
+#' @returns `posOption()` returns a [LaTeX2] object containing the
 #' "pos" option.
 #' @examples
 #' posOption(table)
@@ -28,7 +29,7 @@ posOption <- function(table) {
   as_LaTeX2(table[find_posOption(table)])
 }
 
-#' @param value A character string or LaTeX2 object.
+#' @param value A character string or [LaTeX2] object.
 #' @param asis Whether to make small modifications in replacement functions.
 #' @details Unless `asis == TRUE`, the value for `value` in `posOption(table) <- value`
 #' can be specified with or without the enclosing brackets.
@@ -59,7 +60,7 @@ find_widthOption <- function(table) {
 }
 
 #' @rdname tableOption
-#' @returns `widthOption()` returns a LaTeX2 object containing the
+#' @returns `widthOption()` returns a [LaTeX2] object containing the
 #' "width" option, if the table has one.
 #' @examples
 #' widthOption(table)
@@ -100,7 +101,7 @@ find_columnOptions <- function(table) {
 }
 
 #' @rdname tableOption
-#' @returns `columnOptions()` returns a LaTeX2 object containing the
+#' @returns `columnOptions()` returns a [LaTeX2] object containing the
 #' "column" options.
 #' @examples
 #' columnOptions(table)

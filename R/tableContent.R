@@ -16,7 +16,7 @@ find_tableContent <- function(table) {
 }
 
 #' @rdname tableContent
-#' @returns `tableContent()` returns a LaTeX2 object containing
+#' @returns `tableContent()` returns a [LaTeX2] object containing
 #' all of the table content after the options.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
@@ -33,7 +33,7 @@ tableContent <- function(table)
 #' @param asis Should newlines be added around the
 #' value?
 #' @param value The content to be inserted into the cell.  This
-#' can be a LaTeX2 object, or a character string that will be
+#' can be a [LaTeX2] object, or a character string that will be
 #' converted to one.
 #' @details Unless `asis = TRUE`, `tableContent(table) <- value`
 #'  will add newlines

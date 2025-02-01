@@ -2,25 +2,25 @@
 % Please edit documentation in R/finders.R
 \name{set_range}
 \alias{set_range}
-\title{Set items in a LaTeX2 object}
+\title{Set items in a \link{LaTeX2} object}
 \usage{
 set_range(items, range, values)
 }
 \arguments{
-\item{items}{A LaTeX2 object or other list of
-LaTeX2item objects.}
+\item{items}{A \link{LaTeX2} object or other list of
+\link{LaTeX2item} objects.}
 
-\item{range}{A LaTeX2range object.}
+\item{range}{A \link{LaTeX2range} object.}
 
 \item{values}{An object that can be coerced to
-a LaTeX2 object or (if \code{range$range} is \code{NULL})
-a LaTeX2item.}
+a \link{LaTeX2} object or (if \code{range$range} is \code{NULL})
+a \link{LaTeX2item}.}
 }
 \value{
 \code{set_range()} replaces the item(s) at the given path, and returns the modified version of \code{items}.
 }
 \description{
-Set items in a LaTeX2 object
+Set items in a \link{LaTeX2} object
 }
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")

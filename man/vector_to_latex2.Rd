@@ -10,7 +10,7 @@ vector_to_latex2(x)
 \item{x}{A list or vector to convert.}
 }
 \value{
-A LaTeX2 object containing the entries
+A \link{LaTeX2} object containing the entries
 of \code{x} concatenated.
 }
 \description{

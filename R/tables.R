@@ -2,7 +2,7 @@
 #' @title Functions related to parsing LaTeX tables
 #' @name tables
 #' @rdname tables
-#' @param item An item from a LaTeX2 list object.
+#' @param item An item from a [LaTeX2] list object.
 #' @returns `is_Tabular()` returns boolean indicating if this is
 #' a tabular-like environment.
 #' @examples
@@ -20,7 +20,7 @@ is_Tabular <- function(item) {
 }
 
 #' @rdname tables
-#' @param items A LaTeX2 list object.
+#' @param items A [LaTeX2] list object.
 #' @param start Where to start looking.
 #' @returns `find_tabular()` returns the index of the first
 #' tabular-like environment, or `NA` if none is found.

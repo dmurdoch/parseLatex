@@ -48,7 +48,7 @@ find_tableRow <- function(table, row) {
 }
 
 #' @rdname tableRow
-#' @returns `tableRow()` returns a LaTeX2 object containing
+#' @returns `tableRow()` returns a [LaTeX2] object containing
 #' all of the table content in the row.
 #' @examples
 #' tableRow(table, 1)
@@ -65,7 +65,7 @@ blankRow <- function(table) {
 #' @param asis Should a linebreak and newline be added after the
 #' value?
 #' @param value The content to be inserted into the cell.  This
-#' can be a LaTeX2 object, or a character string that will be
+#' can be a [LaTeX2] object, or a character string that will be
 #' converted to one.
 #' @details Unless `asis = TRUE`, `tableContent(table) <- value`
 #'  will add "\\" and a newline
@@ -110,7 +110,7 @@ blankRow <- function(table) {
 #' @param cells A list or vector of cell contents.
 #' @param asis If `FALSE`, add blanks around cell contents.
 #' @param linebreak If `TRUE`, add a line break marker.
-#' @returns A LaTeX2 object which could be a row
+#' @returns A [LaTeX2] object which could be a row
 #' in a tabular object.
 #' @export
 #'
@@ -136,7 +136,7 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 #' @title Convert vector to table row
 #'
 #' @param x A list or vector to convert.
-#' @returns A LaTeX2 object containing the entries
+#' @returns A [LaTeX2] object containing the entries
 #' of `x` concatenated.
 #' @export
 #'

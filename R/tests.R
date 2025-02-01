@@ -2,7 +2,7 @@
 #' @rdname tests
 #' @name tests
 
-#' @param item An object of class "LaTeX2item" to test.
+#' @param item An object of class [LaTeX2item] to test.
 #' @param envtypes Types of Latex environment to check for,
 #' e.g. `"table"`.
 #'

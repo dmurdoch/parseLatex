@@ -1,6 +1,6 @@
 #' @title Work with rules in tables
 
-#' @rdname tableRule
+#' @name tableRule
 #' @returns `find_rules()` returns a list of the indices
 #' of rules before each row, including the whitespace
 #' following each one.
@@ -76,7 +76,7 @@ rule <- function(table, row)
 #' @param asis Should a newline be added after the
 #' value?  If `asis = TRUE`, it will not be.
 #' @param value The content to be inserted into the cell.  This
-#' can be a LaTeX2 object, or a character string that will be
+#' can be a [LaTeX2] object, or a character string that will be
 #' converted to one.
 #' @examples
 #' rule(table, 2) <- "\\midrule"

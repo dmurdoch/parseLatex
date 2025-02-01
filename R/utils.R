@@ -1,8 +1,7 @@
 #' @title Miscellaneous utilities
-#' @rdname Utilities
-#' @name utils
-
-#' @param items A LaTeX2 object or list of items.
+#' @name Utilities
+#'
+#' @param items A [LaTeX2] object or list of items.
 #' @param which Which items to operate on.
 #' @returns `drop_items()` returns the list of items with specific items removed.
 #' @export
@@ -68,7 +67,7 @@ split_list <- function(items, splits) {
 #' @param splits Which items divide the parts?
 #' @returns `split_latex()` returns a list of pieces
 #' separated at the splits.  Each piece is marked as
-#' a LaTeX2 object.
+#' a [LaTeX2] object.
 #' @export
 split_latex <- function(items, splits) {
   lapply(split_list(items, splits), as_LaTeX2)

@@ -19,14 +19,14 @@ tableContent(table, asis = FALSE) <- value
 value?}
 
 \item{value}{The content to be inserted into the cell.  This
-can be a LaTeX2 object, or a character string that will be
+can be a \link{LaTeX2} object, or a character string that will be
 converted to one.}
 }
 \value{
 \code{find_tableContent()} returns the indices of the
 entries corresponding to content of the table.
 
-\code{tableContent()} returns a LaTeX2 object containing
+\code{tableContent()} returns a \link{LaTeX2} object containing
 all of the table content after the options.
 }
 \description{

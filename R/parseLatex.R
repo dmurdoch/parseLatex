@@ -2,19 +2,20 @@
 #' Parse LaTeX code
 #'
 #' The \code{parseLatex} function parses LaTeX source, producing a structured object.
+#' @aliases LaTeX2 LaTeX2item
 #' @param text A character vector containing LaTeX source code.
 #' @param verbose If \code{TRUE}, print debug error messages.
 #' @param verbatim A character vector containing the names of \LaTeX environments holding verbatim text.
 #' @param verb A character vector containing LaTeX macros that should be assumed to hold verbatim text.
-#' @param catcodes A list or dataframe holding LaTeX "catcodes"; see
-#' Details.
+#' @param catcodes A list or dataframe holding LaTeX "catcodes",
+#' such as [defaultCatcodes].
 #'
 #' @details
 #' Some versions of LaTeX such as `pdflatex` only handle ASCII
 #' inputs, while others such as `xelatex` allow Unicode input.
 #' `parseLatex` allows Unicode input.
 #'
-#' During processing of LaTeX input, the interpreter can change
+#' During processing of LaTeX input, an interpreter can change
 #' the handling of characters as it goes, using the `\catcode` macro
 #' or others such as `\makeatletter`.  However, `parseLatex()` is purely
 #' a parser, not an interpreter, so it can't do that, but
@@ -39,7 +40,7 @@
 #'  - as "other" (catcode 12) otherwise.
 #'
 #'
-#' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.
+#' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.  Items in the list have class `"LaTeX2item"`.
 #' @export
 #' @importFrom utils getParseData
 #' @importFrom tools deparseLatex
@@ -68,7 +69,8 @@ parseLatex <- function(text,
 
 }
 
-#' @rdname parseLatex
+#' The default "catcodes" used by [parseLatex].
+#' @name defaultCatcodes
 #' @details `defaultCatcodes` is a dataframe containing the
 #' default catcode definitions.
 #' @examples

@@ -16,15 +16,11 @@ find_pattern(items, pattern, ..., all = FALSE)
 \item{all}{Find all matching, or the first?}
 }
 \value{
-\code{find_pattern()} returns a \code{LaTeX2range} object
-or (if \code{all} is \code{TRUE}) a list of them.  \code{LaTeX2range}
-items are lists containing
-\code{path} and \code{range}, where \code{path} is the recursive path
-to the container holding the \code{range} of items
-matching the \code{pattern}, or a list of such lists.
+\code{find_pattern()} returns a \link{LaTeX2range} object
+or (if \code{all} is \code{TRUE}) a list of them.
 }
 \description{
-Searches a \code{LaTeX2} list for text using \code{grepl()} on deparsed versions of parts of the code.
+Searches a \link{LaTeX2} list for text using \code{grepl()} on deparsed versions of parts of the code.
 It attempts to find the narrowest match(es) that lie
 within a single container.
 }

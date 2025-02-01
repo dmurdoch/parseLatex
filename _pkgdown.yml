@@ -1,4 +1,42 @@
 url: https://dmurdoch.github.io/parseLatex/
 template:
   bootstrap: 5
-
+reference:
+- title: Main functions
+  desc: The main high-level functions
+  contents:
+  - parseLatex
+  - deparseLatex
+- title: Searching
+  desc: Functions to find and modify things
+  contents:
+  - finders
+  - find_pattern
+  - path_to
+  - set_range
+- title: Structures
+  desc: Working with structures in the document
+  contents:
+  - options
+- title: Tables
+  desc: Working with tables in the document
+  contents:
+  - tables
+  - tablecalcs
+  - tableOption
+  - tableContent
+  - tableRow
+  - tableCell
+  - tableRule
+  - vector_to_row
+- title: Utilities
+  desc: Functions for working with parsed LaTeX
+  contents:
+  - as_LaTeX2
+  - names
+  - tests
+  - get_contents
+  - LaTeX2range
+  - Utilities
+  - vector_to_latex2
+  - defaultCatcodes

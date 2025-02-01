@@ -11,9 +11,9 @@ is_Tabular(item)
 find_tabular(items, start = 1)
 }
 \arguments{
-\item{item}{An item from a LaTeX2 list object.}
+\item{item}{An item from a \link{LaTeX2} list object.}
 
-\item{items}{A LaTeX2 list object.}
+\item{items}{A \link{LaTeX2} list object.}
 
 \item{start}{Where to start looking.}
 }

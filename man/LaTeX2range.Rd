@@ -29,10 +29,10 @@ Ranges within LaTeX2 lists.
 }
 \details{
 LaTeX2range objects are lists with \code{path} and \code{range} entries.  \code{path} is a recursive index
-into a LaTeX2 list, and \code{range} is a range of
+into a \link{LaTeX2} list, and \code{range} is a range of
 entries in the result.
 
 If \code{path} is \code{NULL}, the object refers to the entire
 source object.  If \code{range} is \code{NULL}, it refers
-to the whole \code{LaTeX2item} given by the \code{path}.
+to the whole \link{LaTeX2item} given by the \code{path}.
 }

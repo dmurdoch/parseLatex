@@ -1,9 +1,8 @@
 #' Utility functions finding names and types of objects
-#' @rdname names
-#' @name Names
+#' @name names
 #' @param item A single latex item.
 #'
-#' @returns `latexTag()` returns the LaTeX2 tag for the item or `NULL`.
+#' @returns `latexTag()` returns the [LaTeX2] tag for the item or `NULL`.
 #' @export
 latexTag <- function(item) {
   attr(item, "latex_tag")

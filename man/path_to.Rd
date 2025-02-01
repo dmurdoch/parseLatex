@@ -29,7 +29,7 @@ get_which(path)
 
 \item{path}{Integer vector of subitems}
 
-\item{value}{A LaTeX2item to set as a value.}
+\item{value}{A \link{LaTeX2item} to set as a value.}
 }
 \value{
 \code{path_to()} returns the recursive path to the

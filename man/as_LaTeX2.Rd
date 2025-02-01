@@ -10,15 +10,15 @@ as_LaTeX2(x)
 latex2(...)
 }
 \arguments{
-\item{x}{An object to convert to a LaTeX2 object.}
+\item{x}{An object to convert to a \link{LaTeX2} object.}
 
 \item{...}{Objects to concatenate.}
 }
 \value{
-\code{as_LaTeX2()} converts \code{x} to a LaTeX2 object.
+\code{as_LaTeX2()} converts \code{x} to a \link{LaTeX2} object.
 
-\code{latex2()} converts the arguments to LaTeX2 objects
-and concatenates them into a new LaTeX2 object.
+\code{latex2()} converts the arguments to \link{LaTeX2} objects
+and concatenates them into a new \link{LaTeX2} object.
 }
 \description{
 Coerce to LaTeX2

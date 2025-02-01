@@ -1,5 +1,5 @@
 #' @title Work with table cells
-#' @rdname tablecell
+#' @name tableCell
 #' @param table A tabular-like environment to work with.
 #' @param row,col row and column in the table.
 #' @description
@@ -46,8 +46,8 @@ find_tableCell <- function(table, row, col) {
   result
 }
 
-#' @rdname tablecell
-#' @returns `tableCell()` returns a LaTeX2 object containing
+#' @rdname tableCell
+#' @returns `tableCell()` returns a [LaTeX2] object containing
 #' all of the table content in the cell (but not the &).
 #' @examples
 #' tableCell(table, 1, 2)
@@ -61,10 +61,10 @@ tableCell <- function(table, row, col) {
     as_LaTeX2(table[entries])
 }
 
-#' @rdname tablecell
+#' @rdname tableCell
 #' @param asis Should blanks be added around the value?
 #' @param value The content to be inserted into the cell.  This
-#' can be a LaTeX2 object, or a character string that will be
+#' can be a [LaTeX2] object, or a character string that will be
 #' converted to one.
 #' @details Unless `asis = TRUE`, `tableContent(table) <- value`
 #'  will add blanks

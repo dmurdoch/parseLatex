@@ -22,14 +22,14 @@ rows of labels.}
 value?}
 
 \item{value}{The content to be inserted into the cell.  This
-can be a LaTeX2 object, or a character string that will be
+can be a \link{LaTeX2} object, or a character string that will be
 converted to one.}
 }
 \value{
 \code{find_tableRow()} returns the indices of the
 entries corresponding to the content of row i of the table.
 
-\code{tableRow()} returns a LaTeX2 object containing
+\code{tableRow()} returns a \link{LaTeX2} object containing
 all of the table content in the row.
 }
 \description{

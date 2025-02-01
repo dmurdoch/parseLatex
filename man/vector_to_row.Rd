@@ -14,7 +14,7 @@ vector_to_row(cells, asis = FALSE, linebreak = TRUE)
 \item{linebreak}{If \code{TRUE}, add a line break marker.}
 }
 \value{
-A LaTeX2 object which could be a row
+A \link{LaTeX2} object which could be a row
 in a tabular object.
 }
 \description{

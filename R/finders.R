@@ -1,6 +1,7 @@
 
 #' @rdname finders
 #' @title Miscellaneous low-level finders
+#' @name finders
 #' @param items A list of latex items.
 #' @returns `find_whitespace()` returns the indices of
 #' whitespace in `items`.
@@ -109,7 +110,7 @@ get_item <- function(items, path)
   items[[path]]
 
 #' @rdname path_to
-#' @param value A LaTeX2item to set as a value.
+#' @param value A [LaTeX2item] to set as a value.
 #' @returns `set_item()` replaces the item at the given path, and returns the modified version of `items`.
 #' @export
 set_item <- function(items, path, value) {
@@ -147,7 +148,7 @@ get_which <- function(path)
 #' @param all Find all matching, or the first?
 #' @param pattern Pattern to use in `grepl()`.
 #' @param ... Additional parameters to pass to `grepl`.
-#' @description Searches a `LaTeX2` list for text using `grepl()` on deparsed versions of parts of the code.
+#' @description Searches a [LaTeX2] list for text using `grepl()` on deparsed versions of parts of the code.
 #' It attempts to find the narrowest match(es) that lie
 #' within a single container.
 #' @details `find_pattern()` does a recursive search in the order
@@ -156,12 +157,8 @@ get_which <- function(path)
 #' containers and dropping earlier and later items.
 #' It should always return syntactically correct LaTeX
 #' code in which the pattern appears.
-#' @returns `find_pattern()` returns a `LaTeX2range` object
-#' or (if `all` is `TRUE`) a list of them.  `LaTeX2range`
-#'  items are lists containing
-#' `path` and `range`, where `path` is the recursive path
-#' to the container holding the `range` of items
-#' matching the `pattern`, or a list of such lists.
+#' @returns `find_pattern()` returns a [LaTeX2range] object
+#' or (if `all` is `TRUE`) a list of them.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
 #' parsed <- parseLatex(latex)
@@ -221,17 +218,16 @@ find_pattern <- function(items, pattern, ..., all = FALSE) {
 }
 
 #' Ranges within LaTeX2 lists.
-#'
 #' @param path An integer vector to use as a path.
 #' @param range A range of values within the path.
 #' @details
 #' LaTeX2range objects are lists with `path` and `range` entries.  `path` is a recursive index
-#' into a LaTeX2 list, and `range` is a range of
+#' into a [LaTeX2] list, and `range` is a range of
 #' entries in the result.
 #'
 #' If `path` is `NULL`, the object refers to the entire
 #' source object.  If `range` is `NULL`, it refers
-#' to the whole `LaTeX2item` given by the `path`.
+#' to the whole [LaTeX2item] given by the `path`.
 #'
 #' @returns `LaTeX2range()` returns a constructed `LaTeX2range` object.
 #' @export
@@ -258,13 +254,13 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
   invisible(x)
 }
 
-#' Set items in a LaTeX2 object
-#' @param items A LaTeX2 object or other list of
-#' LaTeX2item objects.
-#' @param range A LaTeX2range object.
+#' Set items in a [LaTeX2] object
+#' @param items A [LaTeX2] object or other list of
+#' [LaTeX2item] objects.
+#' @param range A [LaTeX2range] object.
 #' @param values An object that can be coerced to
-#' a LaTeX2 object or (if `range$range` is `NULL`)
-#' a LaTeX2item.
+#' a [LaTeX2] object or (if `range$range` is `NULL`)
+#' a [LaTeX2item].
 #' @returns `set_range()` replaces the item(s) at the given path, and returns the modified version of `items`.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")

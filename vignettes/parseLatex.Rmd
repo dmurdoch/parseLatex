@@ -20,10 +20,12 @@ Parsing LaTeX is tricky, because LaTeX macros (in LaTeX packages, or
 in user code) can change the parsing rules as they go.  
 
 `parseLatex` is not a LaTeX interpreter, so it can't do that:  it uses
-the default parsing rules for all code that it looks at.  (A to-do
-item is to allow the user to specify different rules.)  
+the same parsing rules for all code that it looks at.  If you're
+using a LaTeX package that uses non-standard rules, you can 
+use those.
 
-However, subject to the limitation that the code only uses the default
+However, subject to the limitation that the code only uses one
+set of
 rules, `parseLatex` should be able to parse any LaTeX code.  It
 extends the base `tools::parseLatex()` function in a few ways:
 
@@ -35,6 +37,8 @@ output with class `"LaTeX2item"`.  This allows it to print things
 in a more readable way.
 3.  The `parseLatex` package includes a large selection of functions
 for extracting and modifying parts of the parsed LaTeX.
+
+More differences are listed below.
 
 ## Demo
 
