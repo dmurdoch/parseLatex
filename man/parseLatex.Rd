@@ -46,7 +46,7 @@ such as \link{defaultCatcodes}.}
 \description{
 The \code{parseLatex} function parses LaTeX source, producing a structured object.
 
-This package exports an enhanced version of the tools::parseLatex function, and handles more LaTeX syntax.
+Exports an enhanced version of the tools::parseLatex function that handles more LaTeX syntax. Also includes numerous functions for searching and modifying LaTeX source.
 }
 \details{
 Some versions of LaTeX such as \code{pdflatex} only handle ASCII

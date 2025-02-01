@@ -2,5 +2,5 @@ all: $(SHLIB)
 
 $(SHLIB): gramLatex.tab.c
 
-gramLatex.tab.c: gramLatex.y
-	bison gramLatex.y
+gramLatex.tab.c: parser/gramLatex.y
+	bison parser/gramLatex.y

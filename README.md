@@ -4,6 +4,10 @@
 # parseLatex
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/dmurdoch/parseLatex/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dmurdoch/parseLatex/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/parseLatex)](https://CRAN.R-project.org/package=parseLatex)
 <!-- badges: end -->
 
 The goal of `parseLatex` is to provide a parser for a subset of LaTeX
@@ -13,6 +17,9 @@ syntax that is more complete than what is handled by the
 Perhaps some day it will handle all LaTeX inputs, but that’s not likely.
 For now, I’m aiming to handle anything that `knitr::kable()` and the
 `kableExtra` functions will produce, plus related code.
+
+A website describing the current state is here:
+<https://dmurdoch.github.io/parseLatex> .
 
 ## Installation
 

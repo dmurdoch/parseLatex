@@ -9,8 +9,10 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: This package exports an enhanced version of the
-    tools::parseLatex function, and handles more LaTeX syntax.
+Description: Exports an enhanced version of the
+    tools::parseLatex function that handles more LaTeX syntax.  Also
+    includes numerous functions for searching and modifying
+    LaTeX source.
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://github.com/dmurdoch/parseLatex, https://dmurdoch.github.io/parseLatex/
