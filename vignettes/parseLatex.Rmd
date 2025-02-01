@@ -125,6 +125,7 @@ the content of that environment would be in `item` itself).
 - This package marks all items with class `"LaTeX2item"`.  `tools::parseLatex()` does not assign a class to items.
 - This package provides print methods for class `"LaTeX2item"`
 so that individual items print nicely.
+- Parsing errors are reported more informatively by this package.
 
 ## Work in progress!
 

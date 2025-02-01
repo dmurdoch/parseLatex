@@ -130,12 +130,13 @@ typedef struct yyltype
 
 /* Functions used in the parsing process */
 
-static void	GrowList(SEXP, SEXP);
-static int	KeywordLookup(const char *);
-static SEXP	NewList(void);
+static void     GrowList(SEXP, SEXP);
+static int      KeywordLookup(const char *);
+static SEXP     NewList(void);
 static SEXP     makeSrcref(YYLTYPE *);
-static UChar32	xxgetc(void);
-static int	xxungetc(int);
+static UChar32  xxgetc(void);
+static int      xxungetc(int);
+static void     xxincomplete(SEXP, YYLTYPE *);
 
 /* Internal lexer / parser state variables */
 
@@ -172,7 +173,7 @@ static SEXP	xxnewlist(SEXP);
 static SEXP	xxlist(SEXP, SEXP);
 static void	xxsavevalue(SEXP, YYLTYPE *);
 static SEXP	xxtag(SEXP, int, YYLTYPE *);
-static void xxgetEnvname(char *, size_t, SEXP);
+static void xxgettext(char *, size_t, SEXP);
 static SEXP xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP	xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP	xxblock(SEXP, YYLTYPE *);
@@ -245,13 +246,17 @@ environment:	BEGIN '{' envname '}' { xxSetInVerbEnv($3); }
                 Items END '{' envname '}' 	{ $$ = xxenv($3, $6, $9, &@$);
                                               RELEASE_SV($1);
                                               RELEASE_SV($7); }
+  |           BEGIN error { xxincomplete($1, &@1); }
 
-math:		'$' nonMath '$'			{ $$ = xxmath($2, &@$, FALSE); }
+math:		'$' nonMath '$'	  { $$ = xxmath($2, &@$, FALSE); }
+  |     '$' error         { xxincomplete(mkString("$"), &@1); }
 
 displaymath:    TWO_DOLLARS nonMath TWO_DOLLARS { $$ = xxmath($2, &@$, TRUE); }
+  |             TWO_DOLLARS error               { xxincomplete(mkString("$$"), &@1); }
 
-block:		'{' Items  '}'			{ $$ = xxblock($2, &@$); }
-	|	'{' '}'				{ $$ = xxblock(NULL, &@$); }
+block:		'{'  Items  '}'			{ $$ = xxblock($2, &@$); }
+	|	'{' '}'				            { $$ = xxblock(NULL, &@$); }
+	| '{' error                 { xxincomplete(mkString("{"), &@1); }
 
 %%
 
@@ -285,24 +290,30 @@ static SEXP xxlist(SEXP list, SEXP item)
     return list;
 }
 
-static void xxgetEnvname(char *buffer, size_t bufsize,
-                       SEXP envname) {
-  int len, done = 0;
-  envname = CDR(envname);
-  while (!isNull(envname)) {
-    len = snprintf(buffer + done, bufsize - done,
-                   "%s", CHAR(STRING_ELT(CAR(envname), 0)));
-    if (len > 0)
-      done += len;
-    envname = CDR(envname);
-  }
+static void xxgettext(char *buffer, size_t bufsize,
+                       SEXP object) {
+  if (TYPEOF(object) == LISTSXP) {
+    int len, done = 0;
+    object = CDR(object);
+    while (!isNull(object)) {
+      len = snprintf(buffer + done, bufsize - done,
+                     "%s", CHAR(STRING_ELT(CAR(object), 0)));
+      if (len > 0)
+        done += len;
+      object = CDR(object);
+    }
+  } else if (TYPEOF(object) == STRSXP)
+    snprintf(buffer, bufsize,
+             "%s", CHAR(STRING_ELT(object, 0)));
+  else
+    buffer[0] = '\0';
 }
 
 static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
 {
   SEXP ans;
   char ename[256];
-  xxgetEnvname(ename, sizeof(ename), begin);
+  xxgettext(ename, sizeof(ename), begin);
 
 #if DEBUGVALS
   Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
@@ -380,7 +391,7 @@ static void xxSetInVerbEnv(SEXP envname)
 {
   char buffer[256];
   char ename[256];
-  xxgetEnvname(ename, sizeof(ename), envname);
+  xxgettext(ename, sizeof(ename), envname);
 
   if (VerbatimLookup(ename)) {
     snprintf(buffer, sizeof(buffer), "\\end{%s}", ename);
@@ -706,6 +717,18 @@ static int KeywordLookup(const char *s)
   }
 
   return MACRO;
+}
+
+static void xxincomplete(SEXP what, YYLTYPE *where)
+{
+  char buffer[256], start[256];
+  PROTECT(what);
+  xxgettext(start, sizeof(start), what);
+  snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
+           R_ParseErrorMsg, start, where->first_line, where->first_column);
+  yyerror(buffer);
+  UNPROTECT(1);
+  parseError();
 }
 
 static void yyerror(const char *s)
