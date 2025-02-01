@@ -65,12 +65,13 @@
 <p>Parsing LaTeX is tricky, because LaTeX macros (in LaTeX packages, or
 in user code) can change the parsing rules as they go.</p>
 <p><code>parseLatex</code> is not a LaTeX interpreter, so it can’t do
-that: it uses the default parsing rules for all code that it looks at.
-(A to-do item is to allow the user to specify different rules.)</p>
-<p>However, subject to the limitation that the code only uses the
-default rules, <code>parseLatex</code> should be able to parse any LaTeX
-code. It extends the base <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> function in a
-few ways:</p>
+that: it uses the same parsing rules for all code that it looks at. If
+you’re using a LaTeX package that uses non-standard rules, you can use
+those.</p>
+<p>However, subject to the limitation that the code only uses one set of
+rules, <code>parseLatex</code> should be able to parse any LaTeX code.
+It extends the base <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> function in a few
+ways:</p>
 <ol style="list-style-type: decimal">
 <li>It classifies every character in the source file according to TeX
 “catcodes”. The base function only handles some of them.</li>
@@ -81,6 +82,7 @@ allows it to print things in a more readable way.</li>
 <li>The <code>parseLatex</code> package includes a large selection of
 functions for extracting and modifying parts of the parsed LaTeX.</li>
 </ol>
+<p>More differences are listed below.</p>
 </div>
 <div class="section level2">
 <h2 id="demo">Demo<a class="anchor" aria-label="anchor" href="#demo"></a>

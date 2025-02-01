@@ -32,9 +32,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="main-functions">Main functions<a class="anchor" aria-label="anchor" href="#main-functions"></a></h2>
 
-
+      <div class="section-desc"><p>The main high-level functions</p></div>
 
 
     </div><div class="section level2">
@@ -43,6 +43,164 @@
 
 
       <dl><dt>
+
+          <code><a href="parseLatex.html">parseLatex()</a></code> <code><a href="parseLatex.html">print(<i>&lt;LaTeX2item&gt;</i>)</a></code> <code><a href="parseLatex.html">print(<i>&lt;LaTeX2&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Parse LaTeX code</dd>
+      </dl><dl><dt>
+
+          <code><a href="deparseLatex.html">deparseLatex()</a></code>
+
+        </dt>
+        <dd>Convert latex object into character vector</dd>
+      </dl></div><div class="section level2">
+      <h2 id="searching">Searching<a class="anchor" aria-label="anchor" href="#searching"></a></h2>
+
+      <div class="section-desc"><p>Functions to find and modify things</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="finders.html">find_whitespace()</a></code> <code><a href="finders.html">find_env()</a></code> <code><a href="finders.html">find_macro()</a></code> <code><a href="finders.html">find_catcode()</a></code> <code><a href="finders.html">find_char()</a></code>
+
+        </dt>
+        <dd>Miscellaneous low-level finders</dd>
+      </dl><dl><dt>
+
+          <code><a href="find_pattern.html">find_pattern()</a></code>
+
+        </dt>
+        <dd>Find a pattern in deparsed items</dd>
+      </dl><dl><dt>
+
+          <code><a href="path_to.html">path_to()</a></code> <code><a href="path_to.html">get_item()</a></code> <code><a href="path_to.html">set_item()</a></code> <code><a href="path_to.html">get_container()</a></code> <code><a href="path_to.html">get_which()</a></code>
+
+        </dt>
+        <dd>Find path to a particular kind of item</dd>
+      </dl><dl><dt>
+
+          <code><a href="set_range.html">set_range()</a></code>
+
+        </dt>
+        <dd>Set items in a LaTeX2 object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="structures">Structures<a class="anchor" aria-label="anchor" href="#structures"></a></h2>
+
+      <div class="section-desc"><p>Working with structures in the document</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="options.html">find_bracket_options()</a></code> <code><a href="options.html">bracket_options()</a></code> <code><a href="options.html">`bracket_options&lt;-`()</a></code> <code><a href="options.html">find_brace_options()</a></code> <code><a href="options.html">brace_options()</a></code> <code><a href="options.html">`brace_options&lt;-`()</a></code>
+
+        </dt>
+        <dd>Find macro or environment options</dd>
+      </dl></div><div class="section level2">
+      <h2 id="tables">Tables<a class="anchor" aria-label="anchor" href="#tables"></a></h2>
+
+      <div class="section-desc"><p>Working with tables in the document</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="tables.html">is_Tabular()</a></code> <code><a href="tables.html">find_tabular()</a></code>
+
+        </dt>
+        <dd>Functions related to parsing LaTeX tables</dd>
+      </dl><dl><dt>
+
+          <code><a href="tablecalcs.html">tableNrow()</a></code> <code><a href="tablecalcs.html">tableNcol()</a></code> <code><a href="tablecalcs.html">tableDim()</a></code>
+
+        </dt>
+        <dd>Calculations on tables</dd>
+      </dl><dl><dt>
+
+          <code><a href="tableOption.html">find_posOption()</a></code> <code><a href="tableOption.html">posOption()</a></code> <code><a href="tableOption.html">`posOption&lt;-`()</a></code> <code><a href="tableOption.html">find_widthOption()</a></code> <code><a href="tableOption.html">widthOption()</a></code> <code><a href="tableOption.html">`widthOption&lt;-`()</a></code> <code><a href="tableOption.html">find_columnOptions()</a></code> <code><a href="tableOption.html">columnOptions()</a></code> <code><a href="tableOption.html">`columnOptions&lt;-`()</a></code>
+
+        </dt>
+        <dd>Functions related to table options.</dd>
+      </dl><dl><dt>
+
+          <code><a href="tableContent.html">find_tableContent()</a></code> <code><a href="tableContent.html">tableContent()</a></code> <code><a href="tableContent.html">`tableContent&lt;-`()</a></code>
+
+        </dt>
+        <dd>Functions relating to the data content of a table</dd>
+      </dl><dl><dt>
+
+          <code><a href="tableRow.html">find_tableRow()</a></code> <code><a href="tableRow.html">tableRow()</a></code> <code><a href="tableRow.html">`tableRow&lt;-`()</a></code>
+
+        </dt>
+        <dd>Functions to work with rows in tables</dd>
+      </dl><dl><dt>
+
+          <code><a href="tablecell.html">find_tableCell()</a></code> <code><a href="tablecell.html">tableCell()</a></code> <code><a href="tablecell.html">`tableCell&lt;-`()</a></code>
+
+        </dt>
+        <dd>Work with table cells</dd>
+      </dl><dl><dt>
+
+          <code><a href="tableRule.html">find_rules()</a></code> <code><a href="tableRule.html">rules()</a></code> <code><a href="tableRule.html">find_rule()</a></code> <code><a href="tableRule.html">rule()</a></code> <code><a href="tableRule.html">`rule&lt;-`()</a></code>
+
+        </dt>
+        <dd>Work with rules in tables</dd>
+      </dl><dl><dt>
+
+          <code><a href="vector_to_row.html">vector_to_row()</a></code>
+
+        </dt>
+        <dd>Convert vector to table row</dd>
+      </dl></div><div class="section level2">
+      <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
+
+      <div class="section-desc"><p>Functions for working with parsed LaTeX</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="as_LaTeX2.html">as_LaTeX2()</a></code> <code><a href="as_LaTeX2.html">latex2()</a></code>
+
+        </dt>
+        <dd>Coerce to LaTeX2</dd>
+      </dl><dl><dt>
+
+          <code><a href="names.html">latexTag()</a></code> <code><a href="names.html">catcode()</a></code> <code><a href="names.html">envName()</a></code> <code><a href="names.html">macroName()</a></code>
+
+        </dt>
+        <dd>Utility functions finding names and types of objects</dd>
+      </dl><dl><dt>
+
+          <code><a href="tests.html">is_env()</a></code> <code><a href="tests.html">is_macro()</a></code> <code><a href="tests.html">is_block()</a></code> <code><a href="tests.html">is_bracket()</a></code> <code><a href="tests.html">is_whitespace()</a></code>
+
+        </dt>
+        <dd>Test objects</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_contents.html">get_contents()</a></code>
+
+        </dt>
+        <dd>Convenience function to get contents from an item</dd>
+      </dl><dl><dt>
 
           <code><a href="LaTeX2range.html">LaTeX2range()</a></code> <code><a href="LaTeX2range.html">print(<i>&lt;LaTeX2range&gt;</i>)</a></code>
 
@@ -56,126 +214,19 @@
         <dd>Miscellaneous utilities</dd>
       </dl><dl><dt>
 
-          <code><a href="as_LaTeX2.html">as_LaTeX2()</a></code> <code><a href="as_LaTeX2.html">latex2()</a></code>
-
-        </dt>
-        <dd>Coerce to LaTeX2</dd>
-      </dl><dl><dt>
-
-          <code><a href="deparseLatex.html">deparseLatex()</a></code>
-
-        </dt>
-        <dd>Convert latex object into character vector</dd>
-      </dl><dl><dt>
-
-          <code><a href="find_pattern.html">find_pattern()</a></code>
-
-        </dt>
-        <dd>Find a pattern in deparsed items</dd>
-      </dl><dl><dt>
-
-          <code><a href="finders.html">find_whitespace()</a></code> <code><a href="finders.html">find_env()</a></code> <code><a href="finders.html">find_macro()</a></code> <code><a href="finders.html">find_catcode()</a></code> <code><a href="finders.html">find_char()</a></code>
-
-        </dt>
-        <dd>Miscellaneous low-level finders</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_contents.html">get_contents()</a></code>
-
-        </dt>
-        <dd>Convenience function to get contents from an item</dd>
-      </dl><dl><dt>
-
-          <code><a href="names.html">latexTag()</a></code> <code><a href="names.html">catcode()</a></code> <code><a href="names.html">envName()</a></code> <code><a href="names.html">macroName()</a></code>
-
-        </dt>
-        <dd>Utility functions finding names and types of objects</dd>
-      </dl><dl><dt>
-
-          <code><a href="options.html">find_bracket_options()</a></code> <code><a href="options.html">bracket_options()</a></code> <code><a href="options.html">`bracket_options&lt;-`()</a></code> <code><a href="options.html">find_brace_options()</a></code> <code><a href="options.html">brace_options()</a></code> <code><a href="options.html">`brace_options&lt;-`()</a></code>
-
-        </dt>
-        <dd>Find macro or environment options</dd>
-      </dl><dl><dt>
-
-          <code><a href="parseLatex.html">parseLatex()</a></code> <code><a href="parseLatex.html">defaultCatcodes</a></code> <code><a href="parseLatex.html">print(<i>&lt;LaTeX2item&gt;</i>)</a></code> <code><a href="parseLatex.html">print(<i>&lt;LaTeX2&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Parse LaTeX code</dd>
-      </dl><dl><dt>
-
-          <code><a href="path_to.html">path_to()</a></code> <code><a href="path_to.html">get_item()</a></code> <code><a href="path_to.html">set_item()</a></code> <code><a href="path_to.html">get_container()</a></code> <code><a href="path_to.html">get_which()</a></code>
-
-        </dt>
-        <dd>Find path to a particular kind of item</dd>
-      </dl><dl><dt>
-
-          <code><a href="set_range.html">set_range()</a></code>
-
-        </dt>
-        <dd>Set items in a LaTeX2 object</dd>
-      </dl><dl><dt>
-
-          <code><a href="tableContent.html">find_tableContent()</a></code> <code><a href="tableContent.html">tableContent()</a></code> <code><a href="tableContent.html">`tableContent&lt;-`()</a></code>
-
-        </dt>
-        <dd>Functions relating to the data content of a table</dd>
-      </dl><dl><dt>
-
-          <code><a href="tableOption.html">find_posOption()</a></code> <code><a href="tableOption.html">posOption()</a></code> <code><a href="tableOption.html">`posOption&lt;-`()</a></code> <code><a href="tableOption.html">find_widthOption()</a></code> <code><a href="tableOption.html">widthOption()</a></code> <code><a href="tableOption.html">`widthOption&lt;-`()</a></code> <code><a href="tableOption.html">find_columnOptions()</a></code> <code><a href="tableOption.html">columnOptions()</a></code> <code><a href="tableOption.html">`columnOptions&lt;-`()</a></code>
-
-        </dt>
-        <dd>Functions related to table options.</dd>
-      </dl><dl><dt>
-
-          <code><a href="tableRow.html">find_tableRow()</a></code> <code><a href="tableRow.html">tableRow()</a></code> <code><a href="tableRow.html">`tableRow&lt;-`()</a></code>
-
-        </dt>
-        <dd>Functions to work with rows in tables</dd>
-      </dl><dl><dt>
-
-          <code><a href="tableRule.html">find_rules()</a></code> <code><a href="tableRule.html">rules()</a></code> <code><a href="tableRule.html">find_rule()</a></code> <code><a href="tableRule.html">rule()</a></code> <code><a href="tableRule.html">`rule&lt;-`()</a></code>
-
-        </dt>
-        <dd>Work with rules in tables</dd>
-      </dl><dl><dt>
-
-          <code><a href="tablecalcs.html">tableNrow()</a></code> <code><a href="tablecalcs.html">tableNcol()</a></code> <code><a href="tablecalcs.html">tableDim()</a></code>
-
-        </dt>
-        <dd>Calculations on tables</dd>
-      </dl><dl><dt>
-
-          <code><a href="tablecell.html">find_tableCell()</a></code> <code><a href="tablecell.html">tableCell()</a></code> <code><a href="tablecell.html">`tableCell&lt;-`()</a></code>
-
-        </dt>
-        <dd>Work with table cells</dd>
-      </dl><dl><dt>
-
-          <code><a href="tables.html">is_Tabular()</a></code> <code><a href="tables.html">find_tabular()</a></code>
-
-        </dt>
-        <dd>Functions related to parsing LaTeX tables</dd>
-      </dl><dl><dt>
-
-          <code><a href="tests.html">is_env()</a></code> <code><a href="tests.html">is_macro()</a></code> <code><a href="tests.html">is_block()</a></code> <code><a href="tests.html">is_bracket()</a></code> <code><a href="tests.html">is_whitespace()</a></code>
-
-        </dt>
-        <dd>Test objects</dd>
-      </dl><dl><dt>
-
           <code><a href="vector_to_latex2.html">vector_to_latex2()</a></code>
 
         </dt>
         <dd>Convert vector to table row</dd>
       </dl><dl><dt>
 
-          <code><a href="vector_to_row.html">vector_to_row()</a></code>
+          <code><a href="defaultCatcodes.html">defaultCatcodes</a></code>
 
         </dt>
-        <dd>Convert vector to table row</dd>
+        <dd>The default "catcodes" used by parseLatex.</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

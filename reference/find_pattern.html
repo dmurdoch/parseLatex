@@ -38,7 +38,7 @@ within a single container."></head><body>
     </div>
 
     <div class="ref-description section level2">
-    <p>Searches a <code>LaTeX2</code> list for text using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl()</a></code> on deparsed versions of parts of the code.
+    <p>Searches a <a href="parseLatex.html">LaTeX2</a> list for text using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl()</a></code> on deparsed versions of parts of the code.
 It attempts to find the narrowest match(es) that lie
 within a single container.</p>
     </div>
@@ -70,12 +70,8 @@ within a single container.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>find_pattern()</code> returns a <code>LaTeX2range</code> object
-or (if <code>all</code> is <code>TRUE</code>) a list of them.  <code>LaTeX2range</code>
-items are lists containing
-<code>path</code> and <code>range</code>, where <code>path</code> is the recursive path
-to the container holding the <code>range</code> of items
-matching the <code>pattern</code>, or a list of such lists.</p>
+    <p><code>find_pattern()</code> returns a <a href="LaTeX2range.html">LaTeX2range</a> object
+or (if <code>all</code> is <code>TRUE</code>) a list of them.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
