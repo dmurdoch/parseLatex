@@ -1,0 +1,11 @@
+PKG_CPPFLAGS=-DPARSELATEX_WIN32
+
+# We don't assume bison is available on Windows.  Uncomment this
+# if it is and you want to modify the parser.
+
+# all: $(SHLIB)
+#
+# $(SHLIB): gramLatex.tab.c
+
+# gramLatex.tab.c: parser/gramLatex.y
+# 	bison parser/gramLatex.y

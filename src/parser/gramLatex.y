@@ -25,6 +25,9 @@
 #endif
 
 #define R_USE_SIGNALS 1
+#ifdef PARSELATEX_WIN32
+#include <wchar.h>
+#endif
 #include <unicode/uchar.h>
 #include <unicode/utf8.h>
 #include <Rinternals.h>
@@ -852,7 +855,11 @@ static int tex_catcode(UChar32 c) {
   for (int i = 0; i < length(parseState.xxCatcodes); i++)
     if (c == INTEGER(parseState.xxCodepoints)[i])
       return INTEGER(parseState.xxCatcodes)[i];
+#ifdef PARSELATEX_WIN32
+  if (iswalpha(c)) return 11;
+#else
   if (u_hasBinaryProperty(c, UCHAR_ALPHABETIC)) return 11;
+#endif
   if (c < 32) return 15;
   return 12;
 }
