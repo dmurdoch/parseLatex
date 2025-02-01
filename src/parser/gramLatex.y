@@ -60,7 +60,9 @@ static char	R_ParseContext[PARSE_CONTEXT_SIZE] = "";
 static int	R_ParseContextLast = 0; /* last character in context buffer */
 static int	R_ParseContextLine; /* Line in input of the above */
 
-static NORET void parseError()
+static NORET void parseError(void);
+
+static NORET void parseError(void)
 {
   error("parse error at %d:%d: %s", R_ParseError, R_ParseErrorCol, R_ParseErrorMsg);
 }
@@ -389,8 +391,8 @@ static int VerbatimLookup(const char *s)
 
 static void xxSetInVerbEnv(SEXP envname)
 {
-  char buffer[256];
-  char ename[256];
+  char buffer[512];
+  char ename[256];  // needs to be shorder than buffer to avoid warning
   xxgettext(ename, sizeof(ename), envname);
 
   if (VerbatimLookup(ename)) {
@@ -721,7 +723,7 @@ static int KeywordLookup(const char *s)
 
 static void xxincomplete(SEXP what, YYLTYPE *where)
 {
-  char buffer[256], start[256];
+  char buffer[512], start[32];
   PROTECT(what);
   xxgettext(start, sizeof(start), what);
   snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
@@ -824,6 +826,7 @@ static void yyerror(const char *s)
 	    st1 = stext;		    \
 	    bp = stext+nc; }		    \
 	U8_APPEND(stext, nc, nstext, c, isError);		    \
+	if (isError) error(_("UTF-8 encoding error at line %d"), parseState.xxlineno); \
   bp = stext+nc; \
 } while(0)
 
