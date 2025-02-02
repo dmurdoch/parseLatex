@@ -2,16 +2,25 @@
 % Please edit documentation in R/utils.R
 \name{get_contents}
 \alias{get_contents}
+\alias{set_contents}
 \title{Convenience function to get contents from an item}
 \usage{
 get_contents(item)
+
+set_contents(item, value)
 }
 \arguments{
 \item{item}{An item from a Latex list (or a list with one item).}
+
+\item{value}{An object that can be coerced to be
+a \link{LaTeX2} object.}
 }
 \value{
 \code{get_contents} returns the contents of the item as a Latex list, or as a
 character string.
+
+The original \code{item} with the contents
+replaced by \code{value}.
 }
 \description{
 Convenience function to get contents from an item
@@ -19,4 +28,5 @@ Convenience function to get contents from an item
 \examples{
 get_contents(parseLatex("{abc}"))
 
+set_contents(parseLatex("{abc}"), "def")
 }

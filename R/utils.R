@@ -99,6 +99,28 @@ get_contents <- function(item) {
     as.character(item)
 }
 
+#' @rdname get_contents
+#' @param value An object that can be coerced to be
+#' a [LaTeX2] object.
+#'
+#' @returns The original `item` with the contents
+#' replaced by `value`.
+#' @export
+#'
+#' @examples
+#' set_contents(parseLatex("{abc}"), "def")
+set_contents <- function(item, value) {
+  if (!inherits(item, "LaTeX2item") && is.list(item)) {
+    if (length(item) > 1)
+      warning("only using the first element")
+    item <- item[[1]]
+  }
+  stopifnot(inherits(item, "LaTeX2item") && is.list(item))
+  value <- as_LaTeX2(value)
+  range <- LaTeX2range(NULL, seq_along(item))
+  set_range(item, range, value)
+}
+
 #' @rdname Utilities
 #'
 #' @returns A BLOCK item containing the items.
