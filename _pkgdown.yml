@@ -11,8 +11,9 @@ reference:
 - title: Searching
   desc: Functions to find and modify things
   contents:
-  - finders
+  - find_sequence
   - find_pattern
+  - finders
   - path_to
   - set_range
 - title: Structures

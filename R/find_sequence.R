@@ -19,16 +19,9 @@ zap_whitespace <- function(items) {
     items
 }
 
-#' @rdname find_sequence
-#' @param items1, items2 Two [LaTeX2] or [LaTeX2item] objects.
-#' @returns `is_equal` returns a logical indicator of equality after removing source references.
-is_equal <- function(items1, items2) {
-  identical(zap_srcref(items1), zap_srcref(items2))
-}
-
 #' Find a code sequence
 #'
-#' @param items, sequence [LaTeX2] objects or lists.
+#' @param items,sequence [LaTeX2] objects or lists.
 #' @param all Whether to return all matches, or just the first.
 #' @param ignore_whitespace Whether to ignore whitespace in comparisons.
 #' @returns Returns a path or list of paths where `sequence`
@@ -51,7 +44,7 @@ find_sequence <- function(items, sequence, all = FALSE,
     idx <- seq_along(sequence) - 1
     for (i in seq_len(lendiff + 1)) {
       range <- i + idx
-      if (is_equal(as_LaTeX2(items[range]), sequence)) {
+      if (items_are_equal(as_LaTeX2(items[range]), sequence)) {
         if (ignore_whitespace)
           range <- attr(items, "origidx")[range]
         res <- LaTeX2range(numeric(), range)
@@ -79,4 +72,12 @@ find_sequence <- function(items, sequence, all = FALSE,
     }
   }
   result
+}
+
+#' @rdname find_sequence
+#' @param items1,items2 Two [LaTeX2] or [LaTeX2item] objects.
+#' @returns `items_are_equal` returns a logical indicator of equality after removing source references.
+#' @export
+items_are_equal <- function(items1, items2) {
+  identical(zap_srcref(items1), zap_srcref(items2))
 }
