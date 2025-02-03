@@ -10,14 +10,13 @@ get_contents(item)
 set_contents(item, value)
 }
 \arguments{
-\item{item}{An item from a Latex list (or a list with one item).}
+\item{item}{An item from a Latex list (or a \link{LaTeX2} list with one item).}
 
 \item{value}{An object that can be coerced to be
 a \link{LaTeX2} object.}
 }
 \value{
-\code{get_contents} returns the contents of the item as a Latex list, or as a
-character string.
+\code{get_contents} returns the contents of the item as a \link{LaTeX2} list.
 
 The original \code{item} with the contents
 replaced by \code{value}.

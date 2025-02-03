@@ -19,7 +19,7 @@ items_are_equal(items1, items2)
 \item{items1, items2}{Two \link{LaTeX2} or \link{LaTeX2item} objects.}
 }
 \value{
-Returns a path or list of paths where \code{sequence}
+\code{find_sequence()} returns a path or list of paths where \code{sequence}
 occurs within \code{items}.
 
 \code{items_are_equal} returns a logical indicator of equality after removing source references.

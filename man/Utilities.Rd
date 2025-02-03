@@ -37,7 +37,8 @@ new_block(items)
 
 \code{select_items()} returns the list of subsetted items.
 
-\code{drop_whitespace()} returns the list of items with whitespace (blanks, tabs, newlines) removed.
+\code{drop_whitespace()} returns the items with
+whitespace (blanks, tabs, newlines) removed.
 
 \code{include_whitespace()} returns \code{which} with
 following whitespace (blanks, tabs, newlines) included.
@@ -54,6 +55,13 @@ A BLOCK item containing the items.
 \description{
 Miscellaneous utilities
 }
+\note{
+\code{drop_whitespace()} will drop the whitespace that separates text items, so deparsing will merge
+them into a single item.
+}
 \examples{
 new_block(parseLatex("abc"))
+}
+\seealso{
+\code{drop_whitespace()} does not act recursively; use \link{reduce_whitespace} for that.
 }

@@ -40,5 +40,6 @@ reference:
   - get_contents
   - LaTeX2range
   - Utilities
+  - reduce_whitespace
   - vector_to_latex2
   - defaultCatcodes

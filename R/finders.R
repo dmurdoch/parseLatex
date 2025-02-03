@@ -48,6 +48,17 @@ find_catcode <- function(items, codes) {
 }
 
 #' @rdname finders
+#' @param tags Which tags to look for.
+#' @returns `find_tags()` returns the index within `items`.
+#' of items with tags matching `tags`.
+#' @export
+find_tags <- function(items, tags) {
+  which(sapply(seq_along(items),
+               function(i)
+                 latexTag(items[[i]]) %in% tags))
+}
+
+#' @rdname finders
 #' @param char Which character to look for.
 #' @returns `find_char()` returns the index within `items`
 #' of characters matching `char`.  Only characters
@@ -249,7 +260,10 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
   else {
     cat("path=")
     cat(x$path, sep = ",")
-    cat(" range=", min(x$range), ":", max(x$range), "\n", sep = "")
+    if (!is.null(x$range))
+      cat(" range=", min(x$range), ":", max(x$range), "\n", sep = "")
+    else
+      cat(" range=all\n")
   }
   invisible(x)
 }
@@ -272,24 +286,23 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
 set_range <- function(items, range, values) {
   path <- range$path
   range <- range$range
+  values <- as_LaTeX2(values)
+  if (!length(path))
+    item <- items
+  else
+    item <- items[[path]]
   if (!length(range))
-    items <- set_item(items, path, values)
-  else {
-    values <- as_LaTeX2(values)
-    if (!length(path))
-      item <- items
-    else
-      item <- items[[path]]
-    iold <- seq_along(item)
-    saveattr <- attributes(item)
-    item <- c(item[iold < min(range)],
-              values,
-              item[iold > max(range)])
-    attributes(item) <- saveattr
-    if (!length(path))
-      items <- item
-    else
-      items[[path]] <- item
-  }
+    range <- seq_along(item)
+  iold <- seq_along(item)
+  saveattr <- attributes(item)
+  item <- c(item[iold < min(range)],
+            values,
+            item[iold > max(range)])
+  attributes(item) <- saveattr
+  if (!length(path))
+    items <- item
+  else
+    items[[path]] <- item
+
   items
 }

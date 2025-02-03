@@ -89,7 +89,7 @@ replace_range <- function(items, i, value) {
         value <- c(as_LaTeX2("[]"), value)
     }
     if (!length(i))
-      i <- start + 0.5
+      i <- start - 0.5
   }
   replace_range(items, i, value)
 }

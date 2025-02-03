@@ -21,7 +21,13 @@ select_items <- function(items, which) {
 
 #' @rdname Utilities
 #'
-#' @returns `drop_whitespace()` returns the list of items with whitespace (blanks, tabs, newlines) removed.
+#' @returns `drop_whitespace()` returns the items with
+#'  whitespace (blanks, tabs, newlines) removed.
+
+#' @note `drop_whitespace()` will drop the whitespace that separates text items, so deparsing will merge
+#' them into a single item.
+#'
+#' @seealso `drop_whitespace()` does not act recursively; use [reduce_whitespace] for that.
 #' @export
 drop_whitespace <- function(items)
   drop_items(items, find_whitespace(items))
@@ -75,28 +81,24 @@ split_latex <- function(items, splits) {
 
 #' Convenience function to get contents from an item
 #'
-#' @param item An item from a Latex list (or a list with one item).
+#' @param item An item from a Latex list (or a [LaTeX2] list with one item).
 #'
-#' @returns `get_contents` returns the contents of the item as a Latex list, or as a
-#' character string.
+#' @returns `get_contents` returns the contents of the item as a [LaTeX2] list.
 #' @export
 #' @examples
 #' get_contents(parseLatex("{abc}"))
 #'
 get_contents <- function(item) {
-  tag <- latexTag(item)
-  if (is.null(tag) && is.list(item)) {
+
+  if (inherits(item, "LaTeX2")) {
     if (length(item) > 1)
       warning("only using the first element")
     item <- item[[1]]
-    tag <- latexTag(item)
   }
-  if (is.null(tag))
-    NULL
-  else if (tag %in% c("ENVIRONMENT", "BLOCK"))
+  if (is.list(item))
     as_LaTeX2(unclass(item))
   else
-    as.character(item)
+    NULL
 }
 
 #' @rdname get_contents

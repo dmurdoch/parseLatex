@@ -6,6 +6,7 @@
 \alias{find_env}
 \alias{find_macro}
 \alias{find_catcode}
+\alias{find_tags}
 \alias{find_char}
 \title{Miscellaneous low-level finders}
 \usage{
@@ -17,6 +18,8 @@ find_macro(items, macros)
 
 find_catcode(items, codes)
 
+find_tags(items, tags)
+
 find_char(items, char)
 }
 \arguments{
@@ -27,6 +30,8 @@ find_char(items, char)
 \item{macros}{Which types of macros to look for.}
 
 \item{codes}{Which codes to look for.}
+
+\item{tags}{Which tags to look for.}
 
 \item{char}{Which character to look for.}
 }
@@ -42,6 +47,9 @@ of instances in \code{macros}.
 
 \code{find_catcode()} returns the index within \code{items}.
 of specials matching \code{code}.
+
+\code{find_tags()} returns the index within \code{items}.
+of items with tags matching \code{tags}.
 
 \code{find_char()} returns the index within \code{items}
 of characters matching \code{char}.  Only characters

@@ -11,9 +11,9 @@ Authors@R: c(
     person("The R Core Team", role = c("ctb", "cph"))
   )
 Description: Exports an enhanced version of the
-    'tools::parseLatex()' function that handles more LaTeX syntax.  Also
-    includes numerous functions for searching and modifying
-    LaTeX source.
+    'tools::parseLatex()' function to handle 'LaTeX' syntax more
+    accurately.  Also includes numerous functions for searching and modifying
+    'LaTeX' source.
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://github.com/dmurdoch/parseLatex, https://dmurdoch.github.io/parseLatex/

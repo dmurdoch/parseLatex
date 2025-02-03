@@ -24,7 +24,7 @@ zap_whitespace <- function(items) {
 #' @param items,sequence [LaTeX2] objects or lists.
 #' @param all Whether to return all matches, or just the first.
 #' @param ignore_whitespace Whether to ignore whitespace in comparisons.
-#' @returns Returns a path or list of paths where `sequence`
+#' @returns `find_sequence()` returns a path or list of paths where `sequence`
 #' occurs within `items`.
 #' @export
 #' @examples
