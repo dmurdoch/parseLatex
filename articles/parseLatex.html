@@ -225,12 +225,18 @@ are</li>
 <td align="left">A verbatim environment</td>
 <td align="left">character</td>
 </tr>
+<tr class="even">
+<td align="left">DEFINITION</td>
+<td align="left">A command or environment definition</td>
+<td align="left">list</td>
+</tr>
 </tbody>
 </table>
 <ul>
 <li>The <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser does not have the
-<code>SPECIAL</code> tag; such characters are included in
-<code>TEXT</code>.</li>
+<code>SPECIAL</code>; such characters are included in <code>TEXT</code>.
+It also doesn’t have the <code>DEFINITION</code> tag. Definitions are
+treated as regular macros, which sometimes leads to parsing errors.</li>
 <li>In both implementations, some items (<code>COMMENT</code>,
 <code>MACRO</code>, <code>SPECIAL</code>, <code>TEXT</code>, and
 <code>VERB</code>) are stored as length 1 character vectors; the others

@@ -48,6 +48,8 @@
 <span></span>
 <span><span class="fu">find_catcode</span><span class="op">(</span><span class="va">items</span>, <span class="va">codes</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">find_tags</span><span class="op">(</span><span class="va">items</span>, <span class="va">tags</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">find_char</span><span class="op">(</span><span class="va">items</span>, <span class="va">char</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -71,6 +73,10 @@
 <dd><p>Which codes to look for.</p></dd>
 
 
+<dt id="arg-tags">tags<a class="anchor" aria-label="anchor" href="#arg-tags"></a></dt>
+<dd><p>Which tags to look for.</p></dd>
+
+
 <dt id="arg-char">char<a class="anchor" aria-label="anchor" href="#arg-char"></a></dt>
 <dd><p>Which character to look for.</p></dd>
 
@@ -85,6 +91,8 @@ of environments in <code>envtypes</code>.</p>
 of instances in <code>macros</code>.</p>
 <p><code>find_catcode()</code> returns the index within <code>items</code>.
 of specials matching <code>code</code>.</p>
+<p><code>find_tags()</code> returns the index within <code>items</code>.
+of items with tags matching <code>tags</code>.</p>
 <p><code>find_char()</code> returns the index within <code>items</code>
 of characters matching <code>char</code>.  Only characters
 marked as SPECIAL by the parser will be found.</p>

@@ -75,7 +75,8 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p><code>drop_items()</code> returns the list of items with specific items removed.</p>
 <p><code>select_items()</code> returns the list of subsetted items.</p>
-<p><code>drop_whitespace()</code> returns the list of items with whitespace (blanks, tabs, newlines) removed.</p>
+<p><code>drop_whitespace()</code> returns the items with
+whitespace (blanks, tabs, newlines) removed.</p>
 <p><code>include_whitespace()</code> returns <code>which</code> with
 following whitespace (blanks, tabs, newlines) included.</p>
 <p><code>split_list()</code> returns a list of pieces
@@ -84,6 +85,15 @@ separated at the splits.</p>
 separated at the splits.  Each piece is marked as
 a <a href="parseLatex_fn.html">LaTeX2</a> object.</p>
 <p>A BLOCK item containing the items.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
+    <p><code>drop_whitespace()</code> will drop the whitespace that separates text items, so deparsing will merge
+them into a single item.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code>drop_whitespace()</code> does not act recursively; use <a href="reduce_whitespace.html">reduce_whitespace</a> for that.</p></div>
     </div>
 
     <div class="section level2">
