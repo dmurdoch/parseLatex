@@ -126,6 +126,8 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
           cat("NEWLINE\n")
         else
           cat(catcodes[1 + attr(item, "catcode")], ":", item, "\n")
+      } else if (tag == "DEFINITION") {
+        lapply(item, showItem, indent + 2)
       } else
         cat(tag, ":", item, "\n")
     }
@@ -169,6 +171,7 @@ deparseLatex <- function(x, dropBraces = FALSE)
                          Recall(a)
                        else
                          c("{", Recall(a), "}"),
+                       DEFINITION = Recall(a),
                        ENVIRONMENT = c(
                          "\\begin{", envName(a), "}",
                          Recall(a),

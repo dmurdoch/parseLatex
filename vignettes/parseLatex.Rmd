@@ -100,7 +100,7 @@ package, and class `"LaTeX"` in `tools::parseLatex`.
 - All items have an attribute returned by the `latexTag()` function
 identifying the type of item.  In this package the possible tags are
 ```{r echo = FALSE}
-tags <- data.frame(Tag = c("BLOCK", "COMMENT", "DISPLAYMATH", "ENVIRONMENT", "MACRO", "MATH", "SPECIAL", "TEXT", "VERB"),
+tags <- data.frame(Tag = c("BLOCK", "COMMENT", "DISPLAYMATH", "ENVIRONMENT", "MACRO", "MATH", "SPECIAL", "TEXT", "VERB", "DEFINITION"),
         Description = c(
           "A block enclosed in curly braces",
           "A LaTeX comment",
@@ -110,13 +110,16 @@ tags <- data.frame(Tag = c("BLOCK", "COMMENT", "DISPLAYMATH", "ENVIRONMENT", "MA
           "An inline math block",
           "A non-alphabetic character",
           "Text (consisting of letters only)",
-          "A verbatim environment"),
+          "A verbatim environment",
+          "A command or environment definition"),
         Type = c("list", "character", "list", "list", "character",
-                 "list", "character", "character", "character"))
+                 "list", "character", "character", "character", "list"))
 knitr::kable(tags, booktabs = TRUE)
 ```
-- The `tools::parseLatex()` parser does not have the `SPECIAL` tag;
-such characters are included in `TEXT`.
+- The `tools::parseLatex()` parser does not have the `SPECIAL`;
+such characters are included in `TEXT`.  It also doesn't
+have the `DEFINITION` tag.  Definitions are treated
+as regular macros, which sometimes leads to parsing errors.
 - In both implementations, some items (`COMMENT`, `MACRO`, `SPECIAL`, `TEXT`, and `VERB`)
 are stored as length 1 character vectors; the others are stored
 as lists of items corresponding to their content.  

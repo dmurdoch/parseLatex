@@ -152,18 +152,19 @@ typedef struct ParseState ParseState;
 struct ParseState {
   int	xxlineno, xxbyteno, xxcolno;
   int	xxDebugTokens;  /* non-zero causes debug output to R console */
-SEXP	Value;
-int	xxinitvalue;
-SEXP	xxInVerbEnv;    /* Are we currently in a verbatim environment? If
+  SEXP	Value;
+  int	xxinitvalue;
+  SEXP	xxInVerbEnv;    /* Are we currently in a verbatim environment? If
  so, this is the string to end it. If not,
  this is NULL */
-SEXP	xxVerbatimList;/* A STRSXP containing all the verbatim environment names */
-SEXP	xxVerbList;    /* A STRSXP containing all the verbatim command names */
-SEXP  xxCodepoints;  /* A vector of codepoints with catcodes given */
-SEXP  xxCatcodes;    /* Corresponding catcodes */
+  SEXP	xxVerbatimList;/* A STRSXP containing all the verbatim environment names */
+  SEXP	xxVerbList;    /* A STRSXP containing all the verbatim command names */
+  SEXP  xxCodepoints;  /* A vector of codepoints with catcodes given */
+  SEXP  xxCatcodes;    /* Corresponding catcodes */
+  Rboolean xxIgnoreKeywords;
 
-SEXP mset; /* precious mset for protecting parser semantic values */
-ParseState *prevState;
+  SEXP mset; /* precious mset for protecting parser semantic values */
+  ParseState *prevState;
 };
 
 static Rboolean busy = FALSE;
@@ -180,9 +181,12 @@ static void	xxsavevalue(SEXP, YYLTYPE *);
 static SEXP	xxtag(SEXP, int, YYLTYPE *);
 static void xxgettext(char *, size_t, SEXP);
 static SEXP xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
+static SEXP xxnewdef(SEXP, SEXP, SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP	xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP	xxblock(SEXP, YYLTYPE *);
 static void	xxSetInVerbEnv(SEXP);
+static SEXP xxpushMode(Rboolean);
+static void xxpopMode(SEXP);
 
 static int	mkMarkup(int);
 static int	mkText(int);
@@ -204,7 +208,7 @@ static SEXP R_LatexTagSymbol = NULL;
 %token		END_OF_INPUT ERROR
 %token		MACRO
 %token		TEXT COMMENT
-%token	  BEGIN END VERB VERB2
+%token	  BEGIN END VERB VERB2 NEWENV NEWCMD
 %token    TWO_DOLLARS
 %token    SPECIAL
 
@@ -233,19 +237,22 @@ Items:		Item				{ $$ = xxnewlist($1); }
 nonMath:	Item				{ $$ = xxnewlist($1); }
 	|	nonMath Item			{ $$ = xxlist($1, $2); }
 
-Item:		TEXT				{ $$ = xxtag($1, TEXT, &@$); }
+defItem:		TEXT				{ $$ = xxtag($1, TEXT, &@$); }
 	|	COMMENT				{ $$ = xxtag($1, COMMENT, &@$); }
 	|	MACRO				{ $$ = xxtag($1, MACRO, &@$); }
 	| SPECIAL     { $$ = xxtag($1, SPECIAL, &@$); }
 	|	VERB				{ $$ = xxtag($1, VERB, &@$); }
 	|	VERB2				{ $$ = xxtag($1, VERB, &@$); }
-	|	environment			{ $$ = $1; }
 	|	block				{ $$ = $1; }
 
-envname: TEXT    { $$ = xxnewlist($1); }
-  |      SPECIAL { $$ = xxnewlist($1); }
-  |      envname TEXT { $$ = xxlist($1, $2); }
-  |      envname SPECIAL { $$ = xxlist($1, $2); }
+Item:   defItem { $$ = $1; }
+	|	environment	{ $$ = $1; }
+	| newenvironment { $$ = $1; }
+
+envname: TEXT    { $$ = xxnewlist(xxtag($1, TEXT, &@1)); }
+  |      SPECIAL { $$ = xxnewlist(xxtag($1, SPECIAL, &@1)); }
+  |      envname TEXT { $$ = xxlist($1, xxtag($2, TEXT, &@2)); }
+  |      envname SPECIAL { $$ = xxlist($1, xxtag($2, SPECIAL, &@2)); }
 
 environment:	BEGIN '{' envname '}' { xxSetInVerbEnv($3); }
                 Items END '{' envname '}' 	{ $$ = xxenv($3, $6, $9, &@$);
@@ -262,6 +269,40 @@ displaymath:    TWO_DOLLARS nonMath TWO_DOLLARS { $$ = xxmath($2, &@$, TRUE); }
 block:		'{'  Items  '}'			{ $$ = xxblock($2, &@$); }
 	|	'{' '}'				            { $$ = xxblock(NULL, &@$); }
 	| '{' error                 { xxincomplete(mkString("{"), &@1); }
+
+goDefmode: /* empty */			  { $$ = xxpushMode(TRUE); }
+
+count:  SPECIAL SPECIAL SPECIAL { $$ = xxlist(
+                                       xxlist(
+                                       xxnewlist(
+                                       xxtag($1, SPECIAL, &@1)),
+                                       xxtag($2, SPECIAL, &@2)),
+                                       xxtag($3, SPECIAL, &@3)); }
+  |     count SPECIAL           { $$ = xxlist($1,
+                                       xxtag($2, SPECIAL, &@2)); }
+
+newcommand:  NEWCMD goDefmode block block
+                        {  xxpopMode($2);
+                           $$ = xxnewdef(xxtag($1, MACRO, &@1),
+                                        $3, NULL, $4,
+                                        NULL, &@$); }
+  |          NEWCMD goDefmode block count block
+                        {  xxpopMode($2);
+                           $$ = xxnewdef(xxtag($1, MACRO, &@1),
+                                        $3, $4, $5,
+                                        NULL, &@$); }
+
+newenvironment:  NEWENV goDefmode block block block
+                        {  xxpopMode($2);
+                           $$ = xxnewdef(xxtag($1, MACRO, &@1),
+                                        $3, NULL, $4,
+                                        $5, &@$); }
+  |              NEWENV goDefmode block count
+                        block block
+                        {  xxpopMode($2);
+                           $$ = xxnewdef(xxtag($1, MACRO, &@1),
+                                        $3, $4, $5,
+                                        $6, &@$); }
 
 %%
 
@@ -341,6 +382,56 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   Rprintf(" result: %p\n", ans);
 #endif
   return ans;
+}
+
+static SEXP xxnewdef(SEXP cmd, SEXP name, SEXP count,
+                     SEXP begin, SEXP end,
+                     YYLTYPE *lloc)
+{
+  SEXP ans, temp;
+  int n, args = end ? 4 : 3;
+
+  if (count) {
+    PRESERVE_SV(temp = PairToVectorList(CDR(count)));
+    RELEASE_SV(count);
+    n = length(temp);
+    PRESERVE_SV(ans = allocVector(VECSXP, n + args));
+    for (int i=0; i < n; i++)
+      SET_VECTOR_ELT(ans, i + 2, VECTOR_ELT(temp, i));
+    RELEASE_SV(temp);
+  } else{
+    PRESERVE_SV(ans = allocVector(VECSXP, args));
+    n = 0;
+  }
+  SET_VECTOR_ELT(ans, 0, cmd);
+  RELEASE_SV(cmd);
+  SET_VECTOR_ELT(ans, 1, name);
+  RELEASE_SV(name);
+  SET_VECTOR_ELT(ans, n + 2, begin);
+  RELEASE_SV(begin);
+  if (end) {
+    SET_VECTOR_ELT(ans, n + 3, end);
+    RELEASE_SV(end);
+  }
+  setAttrib(ans, install("srcref"), makeSrcref(lloc));
+  setAttrib(ans, R_LatexTagSymbol, mkString("DEFINITION"));
+  setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
+
+  return ans;
+}
+
+static SEXP xxpushMode(Rboolean ignoreKeywords) {
+    SEXP ans;
+
+    PRESERVE_SV(ans = allocVector(INTSXP, 1));
+    INTEGER(ans)[0] = parseState.xxIgnoreKeywords;
+    parseState.xxIgnoreKeywords = ignoreKeywords;
+    return ans;
+}
+
+static void xxpopMode(SEXP oldmode) {
+  parseState.xxIgnoreKeywords = INTEGER(oldmode)[0];
+  RELEASE_SV(oldmode);
 }
 
 static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
@@ -701,6 +792,11 @@ static keywords[] = {
     { "\\begin",  BEGIN },
     { "\\end",    END },
     { "\\verb",   VERB },
+    { "\\newenvironment", NEWENV },
+    { "\\renewenvironment", NEWENV },
+    { "\\newcommand", NEWCMD },
+    { "\\renewcommand", NEWCMD },
+    { "\\providecommand", NEWCMD },
     { 0,	   0	      }
     /* All other markup macros are rejected. */
 };
@@ -711,6 +807,9 @@ static keywords[] = {
 static int KeywordLookup(const char *s)
 {
   int i;
+  if (parseState.xxIgnoreKeywords)
+    return MACRO;
+
   for (i = 0; keywords[i].name; i++) {
     if (strcmp(keywords[i].name, s) == 0)
       return keywords[i].token;
