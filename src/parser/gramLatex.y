@@ -159,9 +159,13 @@ struct ParseState {
  this is NULL */
   SEXP	xxVerbatimList;/* A STRSXP containing all the verbatim environment names */
   SEXP	xxVerbList;    /* A STRSXP containing all the verbatim command names */
-  SEXP  xxCodepoints;  /* A vector of codepoints with catcodes given */
-  SEXP  xxCatcodes;    /* Corresponding catcodes */
-  Rboolean xxIgnoreKeywords;
+  SEXP  xxCodepoints;   /* A vector of codepoints with catcodes given */
+  SEXP  xxCatcodes;     /* Corresponding catcodes */
+  int xxGetArgs;        /* Collecting args to macro */
+  int xxIgnoreKeywords; /* Ignore keywords while getting args */
+  int xxBraceDepth;    /* Brace depth important while
+                          collecting args */
+  int xxBracketDepth;  /* So is bracket depth */
 
   SEXP mset; /* precious mset for protecting parser semantic values */
   ParseState *prevState;
@@ -181,12 +185,15 @@ static void	xxsavevalue(SEXP, YYLTYPE *);
 static SEXP	xxtag(SEXP, int, YYLTYPE *);
 static void xxgettext(char *, size_t, SEXP);
 static SEXP xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
-static SEXP xxnewdef(SEXP, SEXP, SEXP, SEXP, SEXP, YYLTYPE *);
+static SEXP xxnewdef(SEXP, SEXP, YYLTYPE *);
 static SEXP	xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP	xxblock(SEXP, YYLTYPE *);
 static void	xxSetInVerbEnv(SEXP);
-static SEXP xxpushMode(Rboolean);
+static SEXP xxpushMode(int, int);
 static void xxpopMode(SEXP);
+static void xxArg(SEXP);
+
+#define END_OF_ARGS_CHAR 0xFFFE /* not a legal character */
 
 static int	mkMarkup(int);
 static int	mkText(int);
@@ -208,7 +215,7 @@ static SEXP R_LatexTagSymbol = NULL;
 %token		END_OF_INPUT ERROR
 %token		MACRO
 %token		TEXT COMMENT
-%token	  BEGIN END VERB VERB2 NEWENV NEWCMD
+%token	  BEGIN END VERB VERB2 NEWENV NEWCMD ENDBRACE END_OF_ARGS
 %token    TWO_DOLLARS
 %token    SPECIAL
 
@@ -229,7 +236,7 @@ Init:		Items END_OF_INPUT		{ xxsavevalue($1, &@$); YYACCEPT; }
 
 Items:		Item				{ $$ = xxnewlist($1); }
 	|	math				{ $$ = xxnewlist($1); }
-	|       displaymath			{ $$ = xxnewlist($1); }
+	| displaymath			{ $$ = xxnewlist($1); }
 	|	Items Item			{ $$ = xxlist($1, $2); }
 	|	Items math			{ $$ = xxlist($1, $2); }
 	|	Items displaymath		{ $$ = xxlist($1, $2); }
@@ -237,17 +244,15 @@ Items:		Item				{ $$ = xxnewlist($1); }
 nonMath:	Item				{ $$ = xxnewlist($1); }
 	|	nonMath Item			{ $$ = xxlist($1, $2); }
 
-defItem:		TEXT				{ $$ = xxtag($1, TEXT, &@$); }
+Item:		TEXT				{ xxArg(NULL); $$ = xxtag($1, TEXT, &@$); }
 	|	COMMENT				{ $$ = xxtag($1, COMMENT, &@$); }
-	|	MACRO				{ $$ = xxtag($1, MACRO, &@$); }
-	| SPECIAL     { $$ = xxtag($1, SPECIAL, &@$); }
+	|	MACRO				{ xxArg(NULL); $$ = xxtag($1, MACRO, &@$); }
+	| SPECIAL     { xxArg($1); $$ = xxtag($1, SPECIAL, &@$); }
 	|	VERB				{ $$ = xxtag($1, VERB, &@$); }
 	|	VERB2				{ $$ = xxtag($1, VERB, &@$); }
-	|	block				{ $$ = $1; }
-
-Item:   defItem { $$ = $1; }
-	|	environment	{ $$ = $1; }
-	| newenvironment { $$ = $1; }
+	|	block				{ xxArg(NULL); $$ = $1; }
+  |	environment	{ $$ = $1; }
+  | newdefine   { $$ = $1; }
 
 envname: TEXT    { $$ = xxnewlist(xxtag($1, TEXT, &@1)); }
   |      SPECIAL { $$ = xxnewlist(xxtag($1, SPECIAL, &@1)); }
@@ -270,39 +275,16 @@ block:		'{'  Items  '}'			{ $$ = xxblock($2, &@$); }
 	|	'{' '}'				            { $$ = xxblock(NULL, &@$); }
 	| '{' error                 { xxincomplete(mkString("{"), &@1); }
 
-goDefmode: /* empty */			  { $$ = xxpushMode(TRUE); }
-
-count:  SPECIAL SPECIAL SPECIAL { $$ = xxlist(
-                                       xxlist(
-                                       xxnewlist(
-                                       xxtag($1, SPECIAL, &@1)),
-                                       xxtag($2, SPECIAL, &@2)),
-                                       xxtag($3, SPECIAL, &@3)); }
-  |     count SPECIAL           { $$ = xxlist($1,
-                                       xxtag($2, SPECIAL, &@2)); }
-
-newcommand:  NEWCMD goDefmode block block
+newdefine :  NEWCMD { $$ = xxpushMode(2, 1); }
+               Items END_OF_ARGS
                         {  xxpopMode($2);
                            $$ = xxnewdef(xxtag($1, MACRO, &@1),
-                                        $3, NULL, $4,
-                                        NULL, &@$); }
-  |          NEWCMD goDefmode block count block
+                                        $3, &@$); }
+  |          NEWENV { $$ = xxpushMode(3, 1); }
+                   Items END_OF_ARGS
                         {  xxpopMode($2);
                            $$ = xxnewdef(xxtag($1, MACRO, &@1),
-                                        $3, $4, $5,
-                                        NULL, &@$); }
-
-newenvironment:  NEWENV goDefmode block block block
-                        {  xxpopMode($2);
-                           $$ = xxnewdef(xxtag($1, MACRO, &@1),
-                                        $3, NULL, $4,
-                                        $5, &@$); }
-  |              NEWENV goDefmode block count
-                        block block
-                        {  xxpopMode($2);
-                           $$ = xxnewdef(xxtag($1, MACRO, &@1),
-                                        $3, $4, $5,
-                                        $6, &@$); }
+                                        $3, &@$); }
 
 %%
 
@@ -384,35 +366,22 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   return ans;
 }
 
-static SEXP xxnewdef(SEXP cmd, SEXP name, SEXP count,
-                     SEXP begin, SEXP end,
+static SEXP xxnewdef(SEXP cmd, SEXP items,
                      YYLTYPE *lloc)
 {
   SEXP ans, temp;
-  int n, args = end ? 4 : 3;
+  int n;
 
-  if (count) {
-    PRESERVE_SV(temp = PairToVectorList(CDR(count)));
-    RELEASE_SV(count);
-    n = length(temp);
-    PRESERVE_SV(ans = allocVector(VECSXP, n + args));
-    for (int i=0; i < n; i++)
-      SET_VECTOR_ELT(ans, i + 2, VECTOR_ELT(temp, i));
-    RELEASE_SV(temp);
-  } else{
-    PRESERVE_SV(ans = allocVector(VECSXP, args));
-    n = 0;
-  }
+  PRESERVE_SV(temp = PairToVectorList(CDR(items)));
+  RELEASE_SV(items);
+  n = length(temp);
+  PRESERVE_SV(ans = allocVector(VECSXP, n + 1));
+  for (int i=0; i < n; i++)
+    SET_VECTOR_ELT(ans, i + 1, VECTOR_ELT(temp, i));
+  RELEASE_SV(temp);
   SET_VECTOR_ELT(ans, 0, cmd);
   RELEASE_SV(cmd);
-  SET_VECTOR_ELT(ans, 1, name);
-  RELEASE_SV(name);
-  SET_VECTOR_ELT(ans, n + 2, begin);
-  RELEASE_SV(begin);
-  if (end) {
-    SET_VECTOR_ELT(ans, n + 3, end);
-    RELEASE_SV(end);
-  }
+
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
   setAttrib(ans, R_LatexTagSymbol, mkString("DEFINITION"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
@@ -420,18 +389,56 @@ static SEXP xxnewdef(SEXP cmd, SEXP name, SEXP count,
   return ans;
 }
 
-static SEXP xxpushMode(Rboolean ignoreKeywords) {
+static SEXP xxpushMode(int getArgs,
+                       int ignoreKeywords) {
     SEXP ans;
 
-    PRESERVE_SV(ans = allocVector(INTSXP, 1));
-    INTEGER(ans)[0] = parseState.xxIgnoreKeywords;
+    PRESERVE_SV(ans = allocVector(INTSXP, 4));
+    INTEGER(ans)[0] = parseState.xxGetArgs;
+    INTEGER(ans)[1] = parseState.xxIgnoreKeywords;
+    INTEGER(ans)[2] = parseState.xxBraceDepth;
+    INTEGER(ans)[3] = parseState.xxBracketDepth;
+    parseState.xxGetArgs = getArgs;
     parseState.xxIgnoreKeywords = ignoreKeywords;
+    parseState.xxBraceDepth = 0;
+    parseState.xxBracketDepth = 0;
     return ans;
 }
 
 static void xxpopMode(SEXP oldmode) {
-  parseState.xxIgnoreKeywords = INTEGER(oldmode)[0];
+  parseState.xxGetArgs = INTEGER(oldmode)[0];
+  parseState.xxIgnoreKeywords = INTEGER(oldmode)[1];
+  parseState.xxBraceDepth = INTEGER(oldmode)[2];
+  parseState.xxBracketDepth = INTEGER(oldmode)[3];
   RELEASE_SV(oldmode);
+}
+
+static void xxArg(SEXP arg) {
+  if (parseState.xxGetArgs == 0 ||
+      parseState.xxBraceDepth > 0 ||
+      parseState.xxBracketDepth > 0) return;
+  /* arg is only non-NULL for SPECIALS */
+  if (arg) {
+    int catcode = INTEGER(getAttrib(arg, install("catcode")))[0];
+    switch (catcode) {
+    case 5:
+    case 9:
+    case 10:
+      break;    /* ignore whitespace */
+    case 4:
+    case 7:
+    case 8:
+      parseState.xxGetArgs--;  /* &, ^ and _ can be args */
+      break;
+    }
+  } else {
+    parseState.xxGetArgs--;
+  }
+
+  if (parseState.xxGetArgs == 0) {
+  /* We've just completed the final arg we were waiting for */
+    xxungetc(END_OF_ARGS_CHAR);  /* push a non-character to signal the end */
+  }
 }
 
 static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
@@ -689,6 +696,10 @@ static void PutState(ParseState *state) {
     state->xxInVerbEnv = parseState.xxInVerbEnv;
     state->xxVerbatimList = parseState.xxVerbatimList;
     state->xxVerbList = parseState.xxVerbList;
+    state->xxGetArgs = parseState.xxGetArgs;
+    state->xxIgnoreKeywords = parseState.xxIgnoreKeywords;
+    state->xxBraceDepth = parseState.xxBraceDepth;
+    state->xxBracketDepth = parseState.xxBracketDepth;
     state->prevState = parseState.prevState;
 }
 
@@ -719,6 +730,10 @@ static SEXP ParseLatex(ParseStatus *status)
     R_ParseContext[0] = '\0';
 
     parseState.xxInVerbEnv = NULL;
+    parseState.xxGetArgs = 0;
+    parseState.xxIgnoreKeywords = 0;
+    parseState.xxBraceDepth = 0;
+    parseState.xxBracketDepth = 0;
 
     parseState.xxlineno = 1;
     parseState.xxcolno = 1;
@@ -988,12 +1003,21 @@ static int token(void)
 
     c = xxgetc();
 
+    if (c == END_OF_ARGS_CHAR)
+      return END_OF_ARGS;
+
     cat = tex_catcode(c);
 
     switch (cat) {
     	case 0:  return mkMarkup(c);
-    	case 1:  return '{';
-    	case 2:  return '}';
+    	case 1:  {
+    	  parseState.xxBraceDepth++;
+    	  return '{';
+    	}
+    	case 2:  {
+    	  parseState.xxBraceDepth--;
+    	  return '}';
+    	}
     	case 3:  return mkDollar(c);
     	case 11: return mkText(c);
     	case 14: return mkComment(c);
@@ -1013,12 +1037,17 @@ static int mkText(int c)
     uint8_t *stext = st0, *bp = st0;
     UBool isError = false;
 
-    do {
-    	TEXT_PUSH(c);
-    	c = xxgetc();
-    } while (tex_catcode(c) == 11);
-
-    xxungetc(c);
+    if (parseState.xxGetArgs > 0 &&
+        parseState.xxBraceDepth == 0 &&
+        parseState.xxBracketDepth == 0) {
+        TEXT_PUSH(c);
+    } else {
+      do {
+    	  TEXT_PUSH(c);
+    	  c = xxgetc();
+      } while (tex_catcode(c) == 11);
+      xxungetc(c);
+    }
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
     if(st1) free(st1);
     return TEXT;
@@ -1106,6 +1135,12 @@ static int mkSpecial(int c, int cat)
   unsigned int nstext = INITBUFSIZE;
   uint8_t *stext = st0, *bp = st0;
   UBool isError = false;
+  if (cat == 12) {
+    if (c == '[')
+      parseState.xxBracketDepth++;
+    else if (c == ']')
+      parseState.xxBracketDepth--;
+  }
   TEXT_PUSH(c);
   PRESERVE_SV(yylval = mkString2(stext, bp - stext));
   setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
