@@ -263,6 +263,10 @@ environment:	BEGIN '{' envname '}' { xxSetInVerbEnv($3); }
                 Items END '{' envname '}' 	{ $$ = xxenv($3, $6, $9, &@$);
                                               RELEASE_SV($1);
                                               RELEASE_SV($7); }
+  |           BEGIN '{' envname '}' END '{' envname '}'
+                           { $$ = xxenv($3, NULL, $7, &@$);
+                             RELEASE_SV($1);
+                             RELEASE_SV($5); }
   |           BEGIN error { xxincomplete($1, &@1); }
 
 math:		'$' nonMath '$'	  { $$ = xxmath($2, &@$, FALSE); }
@@ -349,7 +353,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
 #if DEBUGVALS
   Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
 #endif
-  if (!isNull(body)) {
+  if (body && !isNull(body)) {
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
   } else
