@@ -830,6 +830,7 @@ static keywords[] = {
     { "\\newcommand", NEWCMD },
     { "\\renewcommand", NEWCMD },
     { "\\providecommand", NEWCMD },
+    { "\\def", NEWCMD },
     { 0,	   0	      }
     /* All other markup macros are rejected. */
 };

@@ -164,6 +164,16 @@ The `\begin{oldenv}` part of the definition shouldn't be
 interpreted here as the start of an `oldenv` environment,
 because `\end{oldenv}` isn't in the same `{}` block.
 
+One plain TeX version of these macros is `\def`.  It is
+recognized and an attempt is made to handle it, but there's
+some really arcane syntax possible with `\def`.  If you use
+that, it probably won't be parsed properly.  Stick with
+simple syntax like
+
+    \def\bea{\begin{eqnarray*}}
+    
+and you should be okay.    
+
 ## Work in progress!
 
 This is a work in progress, so if you have a use for something like
