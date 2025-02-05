@@ -16,7 +16,7 @@
 #' text <- "\\begin{document}\n\\end{document}\nnotes"
 #' get_leftovers(text)
 get_leftovers <- function(text, items = parseLatex(text)) {
-  text <- strsplit(paste(text, collapse = "\n"), "\n")[[1]]
+  text <- readLines(textConnection(text))
 
   lastitem <- items[[length(items)]]
   srcref <- getSrcref(lastitem)
