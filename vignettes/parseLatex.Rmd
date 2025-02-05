@@ -19,7 +19,9 @@ knitr::opts_chunk$set(
 Parsing LaTeX is tricky, because LaTeX macros (in LaTeX packages, or
 in user code) can change the parsing rules as they go.  
 
-`parseLatex` is not a LaTeX interpreter, so it can't do that:  it uses
+`parseLatex` is not a LaTeX interpreter (at least
+mostly it isn't, but see the detailed comparison below), 
+so it can't do that:  it uses
 the same parsing rules for all code that it looks at.  If you're
 using a LaTeX package that uses non-standard rules, you can 
 use those.
@@ -137,6 +139,30 @@ the content of that environment would be in `item` itself).
 - This package provides print methods for class `"LaTeX2item"`
 so that individual items print nicely.
 - Parsing errors are reported more informatively by this package.
+
+As mentioned above, `parseLatex()` does a little bit more
+than parsing.  Both versions recognize LaTeX environments
+and verbatim code.
+
+The parser in this package also takes special action 
+when it sees the `document` environment:  it stops
+parsing at `\end{document}`. (You can use the
+`get_leftovers()` function to see what parts of the input
+were skipped.) 
+
+It also changes the rules
+a bit when it sees macros 
+defining things:  `\newenvironment`, `\renewenvironment`,
+`\newcommand`, `\renewcommand` and `\providecommand`.  The 
+arguments to these macros are parsed but not interpreted,
+allowing definitions to parse without triggering
+a syntax error.  For example:
+
+    \newenvironment{newenv}{\begin{oldenv}}{\end{oldenv}}
+    
+The `\begin{oldenv}` part of the definition shouldn't be
+interpreted here as the start of an `oldenv` environment,
+because `\end{oldenv}` isn't in the same `{}` block.
 
 ## Work in progress!
 
