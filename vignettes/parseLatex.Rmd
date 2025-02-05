@@ -120,6 +120,10 @@ knitr::kable(tags, booktabs = TRUE)
 such characters are included in `TEXT`.  It also doesn't
 have the `DEFINITION` tag.  Definitions are treated
 as regular macros, which sometimes leads to parsing errors.
+- This parser stops when it reaches `\end{document}`, just
+as LaTeX does.  The `tools::parseLatex()` parser continues
+parsing beyond that, often leading to parsing errors as
+it tries to parse things that LaTeX would ignore.
 - In both implementations, some items (`COMMENT`, `MACRO`, `SPECIAL`, `TEXT`, and `VERB`)
 are stored as length 1 character vectors; the others are stored
 as lists of items corresponding to their content.  

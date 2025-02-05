@@ -2155,7 +2155,10 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   SEXP ans;
   char ename[256];
   xxgettext(ename, sizeof(ename), begin);
-
+  if (strcmp("document", ename) == 0) {
+    PRESERVE_SV(yylval = mkString("\\end{document}"));
+    xxungetc(R_EOF);  /* Stop reading after \end{document} */
+  }
 #if DEBUGVALS
   Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
 #endif
@@ -3019,10 +3022,10 @@ static int mkVerbEnv(void)
     	    matched = 0;
     }
     if ( !CHAR(STRING_ELT(parseState.xxInVerbEnv, 0))[matched] ) {
-      xxungetc(c);
-      for (i = matched-1; i >= 0; i--)
-    	  xxungetc(*(--bp));
-	    RELEASE_SV(parseState.xxInVerbEnv);
+        xxungetc(c);
+    	for (i = matched-1; i >= 0; i--)
+    	    xxungetc(*(--bp));
+	RELEASE_SV(parseState.xxInVerbEnv);
     	parseState.xxInVerbEnv = NULL;
     }
 

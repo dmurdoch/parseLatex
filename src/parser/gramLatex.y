@@ -342,7 +342,10 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   SEXP ans;
   char ename[256];
   xxgettext(ename, sizeof(ename), begin);
-
+  if (strcmp("document", ename) == 0) {
+    PRESERVE_SV(yylval = mkString("\\end{document}"));
+    xxungetc(R_EOF);  /* Stop reading after \end{document} */
+  }
 #if DEBUGVALS
   Rprintf("xxenv(begin=%p, body=%p, end=%p)", begin, body, end);
 #endif
