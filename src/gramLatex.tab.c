@@ -163,9 +163,9 @@ typedef enum {
 static int	R_ParseError = 0; /* Line where parse error occurred */
 static int	R_ParseErrorCol;  /* Column of start of token where parse error occurred */
 /* the next is currently unused */
-#define PARSE_ERROR_SIZE 256	    /* Parse error messages saved here */
+#define PARSE_ERROR_SIZE 1024	    /* Parse error messages saved here */
 static char	R_ParseErrorMsg[PARSE_ERROR_SIZE] = "";
-#define PARSE_CONTEXT_SIZE 256	    /* Recent parse context kept in a circular buffer */
+#define PARSE_CONTEXT_SIZE 1024	    /* Recent parse context kept in a circular buffer */
 static char	R_ParseContext[PARSE_CONTEXT_SIZE] = "";
 static int	R_ParseContextLast = 0; /* last character in context buffer */
 static int	R_ParseContextLine; /* Line in input of the above */
@@ -2168,9 +2168,20 @@ static void xxgettext(char *buffer, size_t bufsize,
 static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
 {
   SEXP ans;
-  char ename[256];
-  xxgettext(ename, sizeof(ename), begin);
-  if (strcmp("document", ename) == 0) {
+  char ename1[256], ename2[256];
+  xxgettext(ename1, sizeof(ename1), begin);
+  xxgettext(ename2, sizeof(ename2), end);
+  if (strncmp(ename1, ename2, sizeof(ename1)) != 0) {
+    char buffer[PARSE_ERROR_SIZE];
+    snprintf(buffer, PARSE_ERROR_SIZE,
+             "\\begin{%s} at %d:%d ended by \\end{%s}",
+             ename1, lloc->first_line, lloc->first_column,
+             ename2);
+    yyerror(buffer);
+    parseError();
+  }
+
+  if (strcmp("document", ename1) == 0) {
     PRESERVE_SV(yylval = mkString("\\end{document}"));
     xxungetc(R_EOF);  /* Stop reading after \end{document} */
   }
@@ -2183,8 +2194,8 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   } else
     PRESERVE_SV(ans = allocVector(VECSXP, 0));
 
-  /* FIXME:  check that begin and end match */
-  setAttrib(ans, install("envname"), mkString(ename));
+
+  setAttrib(ans, install("envname"), mkString(ename1));
   RELEASE_SV(begin);
   if (!isNull(end))
     RELEASE_SV(end);
