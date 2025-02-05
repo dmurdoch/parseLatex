@@ -65,9 +65,10 @@
 </h2>
 <p>Parsing LaTeX is tricky, because LaTeX macros (in LaTeX packages, or
 in user code) can change the parsing rules as they go.</p>
-<p><code>parseLatex</code> is not a LaTeX interpreter, so it can’t do
-that: it uses the same parsing rules for all code that it looks at. If
-you’re using a LaTeX package that uses non-standard rules, you can use
+<p><code>parseLatex</code> is not a LaTeX interpreter (at least mostly
+it isn’t, but see the detailed comparison below), so it can’t do that:
+it uses the same parsing rules for all code that it looks at. If you’re
+using a LaTeX package that uses non-standard rules, you can use
 those.</p>
 <p>However, subject to the limitation that the code only uses one set of
 rules, <code>parseLatex</code> should be able to parse any LaTeX code.
@@ -258,6 +259,25 @@ the content directly (e.g. the content of that environment would be in
 <code>"LaTeX2item"</code> so that individual items print nicely.</li>
 <li>Parsing errors are reported more informatively by this package.</li>
 </ul>
+<p>As mentioned above, <code><a href="../reference/parseLatex_fn.html">parseLatex()</a></code> does a little bit more
+than parsing. Both versions recognize LaTeX environments and verbatim
+code.</p>
+<p>The parser in this package also takes special action when it sees the
+<code>document</code> environment: it stops parsing at
+<code>\end{document}</code>. (You can use the
+<code><a href="../reference/get_leftovers.html">get_leftovers()</a></code> function to see what parts of the input
+were skipped.)</p>
+<p>It also changes the rules a bit when it sees macros defining things:
+<code>\newenvironment</code>, <code>\renewenvironment</code>,
+<code>\newcommand</code>, <code>\renewcommand</code> and
+<code>\providecommand</code>. The arguments to these macros are parsed
+but not interpreted, allowing definitions to parse without triggering a
+syntax error. For example:</p>
+<pre><code>\newenvironment{newenv}{\begin{oldenv}}{\end{oldenv}}</code></pre>
+<p>The <code>\begin{oldenv}</code> part of the definition shouldn’t be
+interpreted here as the start of an <code>oldenv</code> environment,
+because <code>\end{oldenv}</code> isn’t in the same <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>
+block.</p>
 </div>
 <div class="section level2">
 <h2 id="work-in-progress">Work in progress!<a class="anchor" aria-label="anchor" href="#work-in-progress"></a>
