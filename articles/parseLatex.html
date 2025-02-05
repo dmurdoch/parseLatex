@@ -237,6 +237,10 @@ are</li>
 <code>SPECIAL</code>; such characters are included in <code>TEXT</code>.
 It also doesn’t have the <code>DEFINITION</code> tag. Definitions are
 treated as regular macros, which sometimes leads to parsing errors.</li>
+<li>This parser stops when it reaches <code>\end{document}</code>, just
+as LaTeX does. The <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser continues
+parsing beyond that, often leading to parsing errors as it tries to
+parse things that LaTeX would ignore.</li>
 <li>In both implementations, some items (<code>COMMENT</code>,
 <code>MACRO</code>, <code>SPECIAL</code>, <code>TEXT</code>, and
 <code>VERB</code>) are stored as length 1 character vectors; the others

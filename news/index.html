@@ -36,7 +36,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="parselatex-020">parseLatex 0.2.0<a class="anchor" aria-label="anchor" href="#parselatex-020"></a></h2>
 <ul><li>Added <code><a href="../reference/find_sequence.html">find_sequence()</a></code>, <code><a href="../reference/get_contents.html">set_contents()</a></code>.</li>
-<li>Add <code>DEFINITION</code> tag to allow <code>\begin</code> etc. to be temporarily ignored.</li>
+<li>Add <code>DEFINITION</code> tag to allow <code>\begin</code> etc. to be temporarily ignored. This allows parseLatex to parse <code>\newenvironment</code> and related macros that create definitions.</li>
+<li>
+<code><a href="../reference/parseLatex_fn.html">parseLatex()</a></code> now stops parsing after <code>\end{document}</code> just as LaTeX does. The <code><a href="../reference/get_leftovers.html">get_leftovers()</a></code> function can retrieve the unparsed text.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="parselatex-010">parseLatex 0.1.0<a class="anchor" aria-label="anchor" href="#parselatex-010"></a></h2>
