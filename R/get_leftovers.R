@@ -10,7 +10,7 @@
 #' other than a single newline, named according to the
 #'  original line numbers.
 #' @export
-#'
+#' @importFrom utils getSrcref
 #' @examples
 #' # line:  1                  2                3
 #' text <- "\\begin{document}\n\\end{document}\nnotes"
