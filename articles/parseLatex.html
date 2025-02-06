@@ -258,6 +258,8 @@ the content directly (e.g. the content of that environment would be in
 <li>This package provides print methods for class
 <code>"LaTeX2item"</code> so that individual items print nicely.</li>
 <li>Parsing errors are reported more informatively by this package.</li>
+<li>This parser supports “magic comments”. See the next section for
+details.</li>
 </ul>
 <p>As mentioned above, <code><a href="../reference/parseLatex_fn.html">parseLatex()</a></code> does a little bit more
 than parsing. Both versions recognize LaTeX environments and verbatim
@@ -278,6 +280,48 @@ syntax error. For example:</p>
 interpreted here as the start of an <code>oldenv</code> environment,
 because <code>\end{oldenv}</code> isn’t in the same <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>
 block.</p>
+<p>One plain TeX version of these macros is <code>\def</code>. It is
+recognized and an attempt is made to handle it, but there’s some really
+arcane syntax possible with <code>\def</code>. If you use that, it
+probably won’t be parsed properly. Stick with simple syntax like</p>
+<pre><code>\def\bea{\begin{eqnarray*}}</code></pre>
+<p>and you should be okay.</p>
+</div>
+<div class="section level2">
+<h2 id="magic-comments">Magic Comments<a class="anchor" aria-label="anchor" href="#magic-comments"></a>
+</h2>
+<p>The <code><a href="../reference/parseLatex_fn.html">parseLatex::parseLatex()</a></code> parser can parse most LaTeX
+inputs, but not all. To allow it to be used on files that contain
+unsupported syntax, it allows “magic comments” to be inserted to control
+its actions.</p>
+<p>Several LaTeX editors support magic comments of the form
+<code>% !TEX ...</code>, and those were the model for
+<code>parseLatex</code> magic comment support. There are 4 magic
+comments supported in this parser:</p>
+<ul>
+<li>
+<code>% !parser off</code> This tells the parser to absorb all
+following text as part of the comment, so anything that would be classed
+as a parsing error is never seen.</li>
+<li>
+<code>% !parser on</code> This tells it to resume normal
+parsing.</li>
+<li>
+<code>% !parser verb [name]</code> This tells the parser to add the
+name to the list of macros holding verbatim text, i.e. the list given by
+the <code>verb</code> argument when <code><a href="../reference/parseLatex_fn.html">parseLatex()</a></code> was
+called. The name should include the backslash, e.g.<br><br><code>% !parser verb \Sexpr</code><br><br>
+would add the default verb macro.</li>
+<li>
+<code>% !parser verbatim [name]</code> This tells the parser to add
+the name to the list of environments holding verbatim text, i.e. the
+list given by the <code>verbatim</code> argument. For example<br><br><code>% !parser verbatim Sinput</code><br><br>
+would add one of the default verbatim environments.</li>
+</ul>
+<p>The parser is quite strict about the format of the magic comments.
+The whitespace between parts of it must be spaces, not tabs, and nothing
+else can appear in the comment after the magic text other than more
+spaces.</p>
 </div>
 <div class="section level2">
 <h2 id="work-in-progress">Work in progress!<a class="anchor" aria-label="anchor" href="#work-in-progress"></a>
