@@ -193,6 +193,9 @@ static SEXP xxpushMode(int, int);
 static void xxpopMode(SEXP);
 static void xxArg(SEXP);
 
+static int magicComment(const uint8_t *, int);
+static SEXP addToList(const uint8_t *, size_t, SEXP);
+
 #define END_OF_ARGS_CHAR 0xFFFE /* not a legal character */
 
 static int	mkMarkup(int);
@@ -1090,9 +1093,105 @@ static int mkComment(int c)
     if (cat == -1) xxungetc(c);
     else TEXT_PUSH(c);
 
+    int magic = magicComment(stext, bp - stext);
+    if (magic == 1) {
+
+      // want to loop until we find a type 2 magic comment.
+      do {
+        c = xxgetc();
+        cat = tex_catcode(c);
+        if (cat == 14) { // have a comment
+          int start = bp - stext;
+          do {
+            TEXT_PUSH(c);
+            c = xxgetc();
+            cat = tex_catcode(c);
+          } while (cat != 5 && cat != -1);
+          if (cat == -1) xxungetc(c);
+          else {
+            TEXT_PUSH(c);
+            if (magicComment(stext + start, bp - stext - start) == 2)
+              break;
+          }
+        } else if (cat != -1)
+          TEXT_PUSH(c);
+      } while (cat != -1);
+    }
+
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
+
     if(st1) free(st1);
     return COMMENT;
+}
+
+static SEXP addToList(const uint8_t *string,
+                      size_t len,
+                      SEXP strings) {
+  size_t n = length(strings);
+  SEXP temp;
+  PRESERVE_SV(temp = allocVector(STRSXP, n + 1));
+  for (int i=0; i < n; i++)
+    SET_STRING_ELT(temp, i, STRING_ELT(strings, i));
+  RELEASE_SV(strings);
+  SET_STRING_ELT(temp, n,
+                 mkCharLenCE((const char *)string, len, CE_UTF8));
+  return temp;
+}
+
+/* magic comment codes:
+ * 0 = not magic
+ * 1 = % !parser off
+ * 2 = % !parser on
+ * 3 = % !parser verb \macro
+ * 4 = % !parser verbatim envname
+ */
+static int magicComment(const uint8_t *s, int len)
+{
+  const uint8_t *text, *name;
+
+  for (text = s + 1; text - s < len && *text == ' '; text++) {};
+  if (text - s == len) return 0;
+  int n = strlen("!parser ");
+  if (text - s + n >= len ||
+      strncmp((char *)text, "!parser ", n) != 0) return 0;
+  for (text += n; text - s < len && *text == ' '; text++) {};
+  if (text - s + 2 >= len) return 0;
+  if (strncmp((char *)text, "on", 2) == 0) {
+    text += 2;
+    for (; text - s < len && *text == ' '; text++) {};
+    return (*text == '\n' || text - s >= len) ? 2 : 0;
+  }
+  if (text - s + 3 >= len) return 0;
+  if (strncmp((char *)text, "off", 3) == 0) {
+    text += 3;
+    for (; text - s < len && *text == ' '; text++) {};
+    return (*text == '\n' || text - s >= len) ? 1 : 0;
+  }
+  if (text - s + 5 >= len) return 0;
+  if (strncmp((char *)text, "verb ", 5) == 0) {
+    text += 5;
+    for (; text - s < len && *text == ' '; text++) {};
+    if (*text == '\n' || text - s >= len) return 0;
+    name = text;
+    for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
+    if (text - s < len) {
+      parseState.xxVerbList = addToList(name, text - name, parseState.xxVerbList);
+      return 3;
+    }
+  }
+  if (text - s + 9 >= len) return 0;
+  if (strncmp((char *)text, "verbatim ", 9) == 0) {
+    text += 9;
+    for (; text - s < len && *text == ' '; text++) {};
+    if (*text == '\n' || text - s >= len) return 0;
+    name = text;
+    for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
+    if (text - s < len) {
+      parseState.xxVerbatimList = addToList(name, text - name, parseState.xxVerbatimList);
+      return 4;
+    }
+  }
+  return 0;
 }
 
 static int mkDollar(int c)

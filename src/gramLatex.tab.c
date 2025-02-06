@@ -300,6 +300,9 @@ static SEXP xxpushMode(int, int);
 static void xxpopMode(SEXP);
 static void xxArg(SEXP);
 
+static int magicComment(const uint8_t *, int);
+static SEXP addToList(const uint8_t *, size_t, SEXP);
+
 #define END_OF_ARGS_CHAR 0xFFFE /* not a legal character */
 
 static int	mkMarkup(int);
@@ -360,7 +363,7 @@ typedef struct YYLTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 364 "gramLatex.tab.c"
+#line 367 "gramLatex.tab.c"
 
 #ifdef short
 # undef short
@@ -660,11 +663,11 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   232,   232,   233,   234,   237,   238,   239,   240,   241,
-     242,   244,   245,   247,   248,   249,   250,   251,   252,   253,
-     254,   255,   257,   258,   259,   260,   262,   262,   266,   270,
-     272,   273,   275,   276,   278,   279,   280,   282,   282,   287,
-     287
+       0,   235,   235,   236,   237,   240,   241,   242,   243,   244,
+     245,   247,   248,   250,   251,   252,   253,   254,   255,   256,
+     257,   258,   260,   261,   262,   263,   265,   265,   269,   273,
+     275,   276,   278,   279,   281,   282,   283,   285,   285,   290,
+     290
 };
 #endif
 
@@ -1344,29 +1347,29 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
   switch (yytype)
     {
       case 5: /* "MACRO" */
-#line 228 "parser/gramLatex.y"
+#line 231 "parser/gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1350 "gramLatex.tab.c"
+#line 1353 "gramLatex.tab.c"
 	break;
       case 6: /* "TEXT" */
-#line 228 "parser/gramLatex.y"
+#line 231 "parser/gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1355 "gramLatex.tab.c"
+#line 1358 "gramLatex.tab.c"
 	break;
       case 7: /* "COMMENT" */
-#line 228 "parser/gramLatex.y"
+#line 231 "parser/gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1360 "gramLatex.tab.c"
+#line 1363 "gramLatex.tab.c"
 	break;
       case 8: /* "BEGIN" */
-#line 228 "parser/gramLatex.y"
+#line 231 "parser/gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1365 "gramLatex.tab.c"
+#line 1368 "gramLatex.tab.c"
 	break;
       case 9: /* "END" */
-#line 228 "parser/gramLatex.y"
+#line 231 "parser/gramLatex.y"
 	{ RELEASE_SV((*yyvaluep)); };
-#line 1370 "gramLatex.tab.c"
+#line 1373 "gramLatex.tab.c"
 	break;
 
       default:
@@ -1689,203 +1692,203 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 232 "parser/gramLatex.y"
+#line 235 "parser/gramLatex.y"
     { xxsavevalue((yyvsp[(1) - (2)]), &(yyloc)); YYACCEPT; ;}
     break;
 
   case 3:
-#line 233 "parser/gramLatex.y"
+#line 236 "parser/gramLatex.y"
     { xxsavevalue(NULL, &(yyloc)); YYACCEPT; ;}
     break;
 
   case 4:
-#line 234 "parser/gramLatex.y"
+#line 237 "parser/gramLatex.y"
     { PRESERVE_SV(parseState.Value = R_NilValue);  YYABORT; ;}
     break;
 
   case 5:
-#line 237 "parser/gramLatex.y"
+#line 240 "parser/gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
   case 6:
-#line 238 "parser/gramLatex.y"
+#line 241 "parser/gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
   case 7:
-#line 239 "parser/gramLatex.y"
+#line 242 "parser/gramLatex.y"
     { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
     break;
 
   case 8:
-#line 240 "parser/gramLatex.y"
+#line 243 "parser/gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
   case 9:
-#line 241 "parser/gramLatex.y"
+#line 244 "parser/gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
   case 10:
-#line 242 "parser/gramLatex.y"
-    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
-    break;
-
-  case 11:
-#line 244 "parser/gramLatex.y"
-    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
-    break;
-
-  case 12:
 #line 245 "parser/gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
     break;
 
-  case 13:
+  case 11:
 #line 247 "parser/gramLatex.y"
+    { (yyval) = xxnewlist((yyvsp[(1) - (1)])); ;}
+    break;
+
+  case 12:
+#line 248 "parser/gramLatex.y"
+    { (yyval) = xxlist((yyvsp[(1) - (2)]), (yyvsp[(2) - (2)])); ;}
+    break;
+
+  case 13:
+#line 250 "parser/gramLatex.y"
     { xxArg(NULL); (yyval) = xxtag((yyvsp[(1) - (1)]), TEXT, &(yyloc)); ;}
     break;
 
   case 14:
-#line 248 "parser/gramLatex.y"
+#line 251 "parser/gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), COMMENT, &(yyloc)); ;}
     break;
 
   case 15:
-#line 249 "parser/gramLatex.y"
+#line 252 "parser/gramLatex.y"
     { xxArg(NULL); (yyval) = xxtag((yyvsp[(1) - (1)]), MACRO, &(yyloc)); ;}
     break;
 
   case 16:
-#line 250 "parser/gramLatex.y"
+#line 253 "parser/gramLatex.y"
     { xxArg((yyvsp[(1) - (1)])); (yyval) = xxtag((yyvsp[(1) - (1)]), SPECIAL, &(yyloc)); ;}
     break;
 
   case 17:
-#line 251 "parser/gramLatex.y"
+#line 254 "parser/gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
     break;
 
   case 18:
-#line 252 "parser/gramLatex.y"
+#line 255 "parser/gramLatex.y"
     { (yyval) = xxtag((yyvsp[(1) - (1)]), VERB, &(yyloc)); ;}
     break;
 
   case 19:
-#line 253 "parser/gramLatex.y"
+#line 256 "parser/gramLatex.y"
     { xxArg(NULL); (yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
   case 20:
-#line 254 "parser/gramLatex.y"
+#line 257 "parser/gramLatex.y"
     { (yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
   case 21:
-#line 255 "parser/gramLatex.y"
+#line 258 "parser/gramLatex.y"
     { (yyval) = (yyvsp[(1) - (1)]); ;}
     break;
 
   case 22:
-#line 257 "parser/gramLatex.y"
+#line 260 "parser/gramLatex.y"
     { (yyval) = xxnewlist(xxtag((yyvsp[(1) - (1)]), TEXT, &(yylsp[(1) - (1)]))); ;}
     break;
 
   case 23:
-#line 258 "parser/gramLatex.y"
+#line 261 "parser/gramLatex.y"
     { (yyval) = xxnewlist(xxtag((yyvsp[(1) - (1)]), SPECIAL, &(yylsp[(1) - (1)]))); ;}
     break;
 
   case 24:
-#line 259 "parser/gramLatex.y"
+#line 262 "parser/gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), xxtag((yyvsp[(2) - (2)]), TEXT, &(yylsp[(2) - (2)]))); ;}
     break;
 
   case 25:
-#line 260 "parser/gramLatex.y"
+#line 263 "parser/gramLatex.y"
     { (yyval) = xxlist((yyvsp[(1) - (2)]), xxtag((yyvsp[(2) - (2)]), SPECIAL, &(yylsp[(2) - (2)]))); ;}
     break;
 
   case 26:
-#line 262 "parser/gramLatex.y"
+#line 265 "parser/gramLatex.y"
     { xxSetInVerbEnv((yyvsp[(3) - (4)])); ;}
     break;
 
   case 27:
-#line 263 "parser/gramLatex.y"
+#line 266 "parser/gramLatex.y"
     { (yyval) = xxenv((yyvsp[(3) - (10)]), (yyvsp[(6) - (10)]), (yyvsp[(9) - (10)]), &(yyloc));
                                               RELEASE_SV((yyvsp[(1) - (10)]));
                                               RELEASE_SV((yyvsp[(7) - (10)])); ;}
     break;
 
   case 28:
-#line 267 "parser/gramLatex.y"
+#line 270 "parser/gramLatex.y"
     { (yyval) = xxenv((yyvsp[(3) - (8)]), NULL, (yyvsp[(7) - (8)]), &(yyloc));
                              RELEASE_SV((yyvsp[(1) - (8)]));
                              RELEASE_SV((yyvsp[(5) - (8)])); ;}
     break;
 
   case 29:
-#line 270 "parser/gramLatex.y"
+#line 273 "parser/gramLatex.y"
     { xxincomplete((yyvsp[(1) - (2)]), &(yylsp[(1) - (2)])); ;}
     break;
 
   case 30:
-#line 272 "parser/gramLatex.y"
+#line 275 "parser/gramLatex.y"
     { (yyval) = xxmath((yyvsp[(2) - (3)]), &(yyloc), FALSE); ;}
     break;
 
   case 31:
-#line 273 "parser/gramLatex.y"
+#line 276 "parser/gramLatex.y"
     { xxincomplete(mkString("$"), &(yylsp[(1) - (2)])); ;}
     break;
 
   case 32:
-#line 275 "parser/gramLatex.y"
+#line 278 "parser/gramLatex.y"
     { (yyval) = xxmath((yyvsp[(2) - (3)]), &(yyloc), TRUE); ;}
     break;
 
   case 33:
-#line 276 "parser/gramLatex.y"
+#line 279 "parser/gramLatex.y"
     { xxincomplete(mkString("$$"), &(yylsp[(1) - (2)])); ;}
     break;
 
   case 34:
-#line 278 "parser/gramLatex.y"
+#line 281 "parser/gramLatex.y"
     { (yyval) = xxblock((yyvsp[(2) - (3)]), &(yyloc)); ;}
     break;
 
   case 35:
-#line 279 "parser/gramLatex.y"
+#line 282 "parser/gramLatex.y"
     { (yyval) = xxblock(NULL, &(yyloc)); ;}
     break;
 
   case 36:
-#line 280 "parser/gramLatex.y"
+#line 283 "parser/gramLatex.y"
     { xxincomplete(mkString("{"), &(yylsp[(1) - (2)])); ;}
     break;
 
   case 37:
-#line 282 "parser/gramLatex.y"
+#line 285 "parser/gramLatex.y"
     { (yyval) = xxpushMode(2, 1); ;}
     break;
 
   case 38:
-#line 284 "parser/gramLatex.y"
+#line 287 "parser/gramLatex.y"
     {  xxpopMode((yyvsp[(2) - (4)]));
                            (yyval) = xxnewdef(xxtag((yyvsp[(1) - (4)]), MACRO, &(yylsp[(1) - (4)])),
                                         (yyvsp[(3) - (4)]), &(yyloc)); ;}
     break;
 
   case 39:
-#line 287 "parser/gramLatex.y"
+#line 290 "parser/gramLatex.y"
     { (yyval) = xxpushMode(3, 1); ;}
     break;
 
   case 40:
-#line 289 "parser/gramLatex.y"
+#line 292 "parser/gramLatex.y"
     {  xxpopMode((yyvsp[(2) - (4)]));
                            (yyval) = xxnewdef(xxtag((yyvsp[(1) - (4)]), MACRO, &(yylsp[(1) - (4)])),
                                         (yyvsp[(3) - (4)]), &(yyloc)); ;}
@@ -1893,7 +1896,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1897 "gramLatex.tab.c"
+#line 1900 "gramLatex.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2113,7 +2116,7 @@ yyreturn:
 }
 
 
-#line 293 "parser/gramLatex.y"
+#line 296 "parser/gramLatex.y"
 
 
 static SEXP xxnewlist(SEXP item)
@@ -2914,9 +2917,105 @@ static int mkComment(int c)
     if (cat == -1) xxungetc(c);
     else TEXT_PUSH(c);
 
+    int magic = magicComment(stext, bp - stext);
+    if (magic == 1) {
+
+      // want to loop until we find a type 2 magic comment.
+      do {
+        c = xxgetc();
+        cat = tex_catcode(c);
+        if (cat == 14) { // have a comment
+          int start = bp - stext;
+          do {
+            TEXT_PUSH(c);
+            c = xxgetc();
+            cat = tex_catcode(c);
+          } while (cat != 5 && cat != -1);
+          if (cat == -1) xxungetc(c);
+          else {
+            TEXT_PUSH(c);
+            if (magicComment(stext + start, bp - stext - start) == 2)
+              break;
+          }
+        } else if (cat != -1)
+          TEXT_PUSH(c);
+      } while (cat != -1);
+    }
+
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
+
     if(st1) free(st1);
     return COMMENT;
+}
+
+static SEXP addToList(const uint8_t *string,
+                      size_t len,
+                      SEXP strings) {
+  size_t n = length(strings);
+  SEXP temp;
+  PRESERVE_SV(temp = allocVector(STRSXP, n + 1));
+  for (int i=0; i < n; i++)
+    SET_STRING_ELT(temp, i, STRING_ELT(strings, i));
+  RELEASE_SV(strings);
+  SET_STRING_ELT(temp, n,
+                 mkCharLenCE((const char *)string, len, CE_UTF8));
+  return temp;
+}
+
+/* magic comment codes:
+ * 0 = not magic
+ * 1 = % !parser off
+ * 2 = % !parser on
+ * 3 = % !parser verb \macro
+ * 4 = % !parser verbatim envname
+ */
+static int magicComment(const uint8_t *s, int len)
+{
+  const uint8_t *text, *name;
+
+  for (text = s + 1; text - s < len && *text == ' '; text++) {};
+  if (text - s == len) return 0;
+  int n = strlen("!parser ");
+  if (text - s + n >= len ||
+      strncmp((char *)text, "!parser ", n) != 0) return 0;
+  for (text += n; text - s < len && *text == ' '; text++) {};
+  if (text - s + 2 >= len) return 0;
+  if (strncmp((char *)text, "on", 2) == 0) {
+    text += 2;
+    for (; text - s < len && *text == ' '; text++) {};
+    return (*text == '\n' || text - s >= len) ? 2 : 0;
+  }
+  if (text - s + 3 >= len) return 0;
+  if (strncmp((char *)text, "off", 3) == 0) {
+    text += 3;
+    for (; text - s < len && *text == ' '; text++) {};
+    return (*text == '\n' || text - s >= len) ? 1 : 0;
+  }
+  if (text - s + 5 >= len) return 0;
+  if (strncmp((char *)text, "verb ", 5) == 0) {
+    text += 5;
+    for (; text - s < len && *text == ' '; text++) {};
+    if (*text == '\n' || text - s >= len) return 0;
+    name = text;
+    for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
+    if (text - s < len) {
+      parseState.xxVerbList = addToList(name, text - name, parseState.xxVerbList);
+      return 3;
+    }
+  }
+  if (text - s + 9 >= len) return 0;
+  if (strncmp((char *)text, "verbatim ", 9) == 0) {
+    text += 9;
+    for (; text - s < len && *text == ' '; text++) {};
+    if (*text == '\n' || text - s >= len) return 0;
+    name = text;
+    for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
+    if (text - s < len) {
+      parseState.xxVerbatimList = addToList(name, text - name, parseState.xxVerbatimList);
+      return 4;
+    }
+  }
+  return 0;
 }
 
 static int mkDollar(int c)

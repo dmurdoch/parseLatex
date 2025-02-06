@@ -139,6 +139,7 @@ the content of that environment would be in `item` itself).
 - This package provides print methods for class `"LaTeX2item"`
 so that individual items print nicely.
 - Parsing errors are reported more informatively by this package.
+- This parser supports "magic comments".  See the next section for details.
 
 As mentioned above, `parseLatex()` does a little bit more
 than parsing.  Both versions recognize LaTeX environments
@@ -172,7 +173,46 @@ simple syntax like
 
     \def\bea{\begin{eqnarray*}}
     
-and you should be okay.    
+and you should be okay.  
+
+## Magic Comments
+
+The `parseLatex::parseLatex()` parser can parse most
+LaTeX inputs, but not all.  To allow it to be used on
+files that contain unsupported syntax, it allows "magic
+comments" to be inserted to control its actions.
+
+Several LaTeX editors support magic comments of the form 
+`% !TEX ...`, and those were the model for `parseLatex`
+magic comment support.  There are 4 magic comments supported
+in this parser:
+
+- `% !parser off` This tells the parser to absorb all following
+text as part of the comment, so anything that would be
+classed as a parsing error is never seen.
+- `% !parser on` This tells it to resume normal parsing.
+- `% !parser verb [name]` This tells the parser
+to add the name to the list of macros holding verbatim
+text, i.e. the list given by the `verb` argument when
+`parseLatex()` was called.  The name should include the 
+backslash, e.g.\
+\
+`  % !parser verb \Sexpr`\
+\
+would add the default verb macro.
+- `% !parser verbatim [name]` This tells the parser
+to add the name to the list of environments holding verbatim
+text, i.e. the list given by the `verbatim` argument. 
+For example\
+\
+`  % !parser verbatim Sinput`\
+\
+would add one of the default verbatim environments.
+
+The parser is quite strict about the format of the magic
+comments.  The whitespace between parts of it must be
+spaces, not tabs, and nothing else can appear in the comment
+after the magic text other than more spaces.
 
 ## Work in progress!
 
