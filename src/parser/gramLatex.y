@@ -56,9 +56,9 @@ typedef enum {
 static int	R_ParseError = 0; /* Line where parse error occurred */
 static int	R_ParseErrorCol;  /* Column of start of token where parse error occurred */
 /* the next is currently unused */
-#define PARSE_ERROR_SIZE 1024	    /* Parse error messages saved here */
+#define PARSE_ERROR_SIZE 512	    /* Parse error messages saved here */
 static char	R_ParseErrorMsg[PARSE_ERROR_SIZE] = "";
-#define PARSE_CONTEXT_SIZE 1024	    /* Recent parse context kept in a circular buffer */
+#define PARSE_CONTEXT_SIZE 512	    /* Recent parse context kept in a circular buffer */
 static char	R_ParseContext[PARSE_CONTEXT_SIZE] = "";
 static int	R_ParseContextLast = 0; /* last character in context buffer */
 static int	R_ParseContextLine; /* Line in input of the above */
@@ -262,15 +262,16 @@ envname: TEXT    { $$ = xxnewlist(xxtag($1, TEXT, &@1)); }
   |      envname TEXT { $$ = xxlist($1, xxtag($2, TEXT, &@2)); }
   |      envname SPECIAL { $$ = xxlist($1, xxtag($2, SPECIAL, &@2)); }
 
-environment:	BEGIN '{' envname '}' { xxSetInVerbEnv($3); }
-                Items END '{' envname '}' 	{ $$ = xxenv($3, $6, $9, &@$);
-                                              RELEASE_SV($1);
-                                              RELEASE_SV($7); }
-  |           BEGIN '{' envname '}' END '{' envname '}'
-                           { $$ = xxenv($3, NULL, $7, &@$);
-                             RELEASE_SV($1);
-                             RELEASE_SV($5); }
-  |           BEGIN error { xxincomplete($1, &@1); }
+begin:   BEGIN '{' envname '}' { xxSetInVerbEnv($3);
+                                 RELEASE_SV($1);
+                                 $$ = $3; }
+
+environment:	begin Items END '{' envname '}' 	{ $$ = xxenv($1, $2, $5, &@$);
+                                              RELEASE_SV($1); }
+  |            begin END '{' envname '}'
+                           { $$ = xxenv($1, NULL, $4, &@$);
+                             RELEASE_SV($2);}
+  |            begin error { xxincomplete($1, &@1); }
 
 math:		'$' nonMath '$'	  { $$ = xxmath($2, &@$, FALSE); }
   |     '$' error         { xxincomplete(mkString("$"), &@1); }
@@ -351,8 +352,8 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   xxgettext(ename1, sizeof(ename1), begin);
   xxgettext(ename2, sizeof(ename2), end);
   if (strncmp(ename1, ename2, sizeof(ename1)) != 0) {
-    char buffer[PARSE_ERROR_SIZE];
-    snprintf(buffer, PARSE_ERROR_SIZE,
+    char buffer[PARSE_ERROR_SIZE + 2*sizeof(ename1) + 40];
+    snprintf(buffer, sizeof(buffer),
              "\\begin{%s} at %d:%d ended by \\end{%s}",
              ename1, lloc->first_line, lloc->first_column,
              ename2);
@@ -513,8 +514,8 @@ static int VerbatimLookup(const char *s)
 
 static void xxSetInVerbEnv(SEXP envname)
 {
-  char buffer[512];
-  char ename[256];  // needs to be shorder than buffer to avoid warning
+  char ename[256];
+  char buffer[sizeof(ename) + 10];
   xxgettext(ename, sizeof(ename), envname);
 
   if (VerbatimLookup(ename)) {
@@ -862,7 +863,8 @@ static int KeywordLookup(const char *s)
 
 static void xxincomplete(SEXP what, YYLTYPE *where)
 {
-  char buffer[512], start[32];
+  char start[32];
+  char buffer[PARSE_ERROR_SIZE + sizeof(start) + 100];
   PROTECT(what);
   xxgettext(start, sizeof(start), what);
   snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
@@ -1323,8 +1325,9 @@ static int mkVerbEnv(void)
     	else
     	    matched = 0;
     }
-    if ( !CHAR(STRING_ELT(parseState.xxInVerbEnv, 0))[matched] ) {
-        xxungetc(c);
+
+    if (c == R_EOF || !CHAR(STRING_ELT(parseState.xxInVerbEnv, 0))[matched] ) {
+      xxungetc(c);
     	for (i = matched-1; i >= 0; i--)
     	    xxungetc(*(--bp));
 	RELEASE_SV(parseState.xxInVerbEnv);
