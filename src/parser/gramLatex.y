@@ -780,6 +780,8 @@ static SEXP ParseLatex(ParseStatus *status)
 
     parseState.Value = R_NilValue;
 
+    PRESERVE_SV(yylval = mkString(""));
+
     if (yyparse()) *status = PARSE_ERROR;
     else *status = PARSE_OK;
 
@@ -1307,13 +1309,25 @@ static int mkVerb2(const uint8_t *s, int c)
     unsigned int nstext = INITBUFSIZE;
     uint8_t *stext = st0, *bp = st0;
     UBool isError = false;
-    int delim = '}';
+    int depth = 1;
+    const uint8_t *macro = s;
 
     while (*s) TEXT_PUSH(*s++);
 
-    TEXT_PUSH(c);
-    while (((c = xxgetc()) != delim) && c != R_EOF) TEXT_PUSH(c);
-    if (c != R_EOF) TEXT_PUSH(c);
+    do {
+      TEXT_PUSH(c);
+      c = xxgetc();
+      if (c == '{') depth++;
+      else if (c == '}') depth--;
+    } while (depth > 0 && c != R_EOF);
+
+    if (c == R_EOF) {
+      char buffer[256];
+      snprintf(buffer, sizeof(buffer), "unexpected END_OF_INPUT\n'%s' is still open", macro);
+      yyerror(buffer);
+      parseError();
+    } else
+      TEXT_PUSH(c);
 
     PRESERVE_SV(yylval = mkString2(stext, bp - stext));
     if(st1) free(st1);

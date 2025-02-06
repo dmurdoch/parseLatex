@@ -9,6 +9,8 @@ as LaTeX does.  The `get_leftovers()` function can retrieve
 the unparsed text.
 * Added support for "magic comments".  See the vignette
 for details.
+* `verb` macros now allow embedded braces as long as
+they are balanced.
 
 # parseLatex 0.1.0
 

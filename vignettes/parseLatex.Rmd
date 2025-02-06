@@ -140,6 +140,17 @@ the content of that environment would be in `item` itself).
 so that individual items print nicely.
 - Parsing errors are reported more informatively by this package.
 - This parser supports "magic comments".  See the next section for details.
+- This parser is more flexible in handling `verb` macros
+like `\Sexpr`.  The `tools::parseLatex()` parser assumed
+there would be no braces within the macro (which is the
+case for legal `Sweave()` source).  This parser assumes 
+any braces within the macro are balanced, e.g. this would 
+be legal:\
+\
+`\Sexpr{1 + {x <- 2; x + 1}}`\
+\
+whereas unbalanced braces would not be.
+
 
 As mentioned above, `parseLatex()` does a little bit more
 than parsing.  Both versions recognize LaTeX environments
