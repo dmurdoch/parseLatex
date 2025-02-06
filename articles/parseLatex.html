@@ -260,6 +260,12 @@ the content directly (e.g. the content of that environment would be in
 <li>Parsing errors are reported more informatively by this package.</li>
 <li>This parser supports “magic comments”. See the next section for
 details.</li>
+<li>This parser is more flexible in handling <code>verb</code> macros
+like <code>\Sexpr</code>. The <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser
+assumed there would be no braces within the macro (which is the case for
+legal <code><a href="https://rdrr.io/r/utils/Sweave.html" class="external-link">Sweave()</a></code> source). This parser assumes any braces
+within the macro are balanced, e.g. this would be legal:<br><br><code>\Sexpr{1 + {x &lt;- 2; x + 1}}</code><br><br>
+whereas unbalanced braces would not be.</li>
 </ul>
 <p>As mentioned above, <code><a href="../reference/parseLatex_fn.html">parseLatex()</a></code> does a little bit more
 than parsing. Both versions recognize LaTeX environments and verbatim
