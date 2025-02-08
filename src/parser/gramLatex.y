@@ -277,7 +277,7 @@ begin:   BEGIN '{' envname '}' { xxSetInVerbEnv($3);
 
 environment:  begin Items END '{' envname '}'
                           { $$ = xxenv($1, $2, $5, &@$);
-                            RELEASE_SV($1); }
+                            RELEASE_SV($3); }
   |           begin END '{' envname '}'
                           { $$ = xxenv($1, NULL, $4, &@$);
                             RELEASE_SV($2); }
