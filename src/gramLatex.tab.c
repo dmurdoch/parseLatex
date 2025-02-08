@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "parser/gramLatex.y"
+#line 2 "parser/gramLatex.y"
 
 /*
  *  R : A Computer Language for Statistical Data Analysis
@@ -123,22 +123,19 @@ typedef enum {
   PARSE_EOF
 } ParseStatus;
 
-static int   R_ParseError = 0; /* Line where parse error occurred */
-static int   R_ParseErrorCol;  /* Column of start of token where parse error occurred */
-/* the next is currently unused */
-#define      PARSE_ERROR_SIZE 512      /* Parse error messages saved here */
-static char  R_ParseErrorMsg[PARSE_ERROR_SIZE] = "";
-#define      PARSE_CONTEXT_SIZE 512      /* Recent parse context kept in a circular buffer */
-static char  R_ParseContext[PARSE_CONTEXT_SIZE] = "";
-static int   R_ParseContextLast = 0; /* last character in context buffer */
-static int   R_ParseContextLine; /* Line in input of the above */
+static int   ParseErrorLine = 0; /* Line where parse error occurred */
+static int   ParseErrorCol;      /* Column of start of token where parse error occurred */
+
+#define PARSE_ERROR_SIZE 512
+
+static char  ParseErrorMsg[PARSE_ERROR_SIZE];
 
 static NORET void parseError(void);
 
 static NORET void parseError(void)
 {
-  error("parse error at %d:%d: %s", R_ParseError,
-        R_ParseErrorCol, R_ParseErrorMsg);
+  error("Parse error at %d:%d: %s", ParseErrorLine,
+        ParseErrorCol, ParseErrorMsg);
 }
 
 /* end of internal replacements */
@@ -213,6 +210,7 @@ static SEXP     makeSrcref(YYLTYPE *);
 static UChar32  xxgetc(void);
 static int      xxungetc(int);
 static void     xxincomplete(SEXP, YYLTYPE *);
+static void     xxincompleteBegin(SEXP, YYLTYPE *);
 
 /* Internal lexer / parser state variables */
 
@@ -281,12 +279,12 @@ static int  mkVerb2(const uint8_t *, int);
 static int  mkVerbEnv(void);
 static int  mkDollar(int);
 
-static SEXP R_LatexTagSymbol = NULL;
+static SEXP LatexTagSymbol = NULL;
 
 #define YYSTYPE    SEXP
 
 
-#line 290 "gramLatex.tab.c"
+#line 288 "gramLatex.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -609,7 +607,7 @@ typedef int yy_state_fast_t;
 
 #define YY_ASSERT(E) ((void) (0 && (E)))
 
-#if !defined yyoverflow
+#if 1
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -674,7 +672,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 # endif
-#endif /* !defined yyoverflow */
+#endif /* 1 */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
@@ -802,18 +800,18 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   239,   239,   241,   243,   247,   248,   249,   250,   251,
-     252,   254,   255,   257,   258,   259,   261,   263,   264,   265,
-     266,   267,   269,   270,   271,   272,   274,   278,   281,   284,
-     286,   287,   289,   291,   294,   295,   296,   298,   298,   303,
-     303
+       0,   238,   238,   240,   242,   246,   247,   248,   249,   250,
+     251,   253,   254,   256,   257,   258,   260,   262,   263,   264,
+     265,   266,   268,   269,   270,   271,   273,   277,   280,   283,
+     285,   286,   288,   290,   293,   294,   295,   297,   297,   302,
+     302
 };
 #endif
 
 /** Accessing symbol of state STATE.  */
 #define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
 
-#if YYDEBUG || 1
+#if 1
 /* The user-facing name of the symbol whose (internal) number is
    YYSYMBOL.  No bounds checking.  */
 static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
@@ -1249,8 +1247,276 @@ int yydebug;
 #endif
 
 
+/* Context of a parse error.  */
+typedef struct
+{
+  yy_state_t *yyssp;
+  yysymbol_kind_t yytoken;
+  YYLTYPE *yylloc;
+} yypcontext_t;
+
+/* Put in YYARG at most YYARGN of the expected tokens given the
+   current YYCTX, and return the number of tokens stored in YYARG.  If
+   YYARG is null, return the number of expected tokens (guaranteed to
+   be less than YYNTOKENS).  Return YYENOMEM on memory exhaustion.
+   Return 0 if there are more than YYARGN expected tokens, yet fill
+   YYARG up to YYARGN. */
+static int
+yypcontext_expected_tokens (const yypcontext_t *yyctx,
+                            yysymbol_kind_t yyarg[], int yyargn)
+{
+  /* Actual size of YYARG. */
+  int yycount = 0;
+  int yyn = yypact[+*yyctx->yyssp];
+  if (!yypact_value_is_default (yyn))
+    {
+      /* Start YYX at -YYN if negative to avoid negative indexes in
+         YYCHECK.  In other words, skip the first -YYN actions for
+         this state because they are default actions.  */
+      int yyxbegin = yyn < 0 ? -yyn : 0;
+      /* Stay within bounds of both yycheck and yytname.  */
+      int yychecklim = YYLAST - yyn + 1;
+      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+      int yyx;
+      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+        if (yycheck[yyx + yyn] == yyx && yyx != YYSYMBOL_YYerror
+            && !yytable_value_is_error (yytable[yyx + yyn]))
+          {
+            if (!yyarg)
+              ++yycount;
+            else if (yycount == yyargn)
+              return 0;
+            else
+              yyarg[yycount++] = YY_CAST (yysymbol_kind_t, yyx);
+          }
+    }
+  if (yyarg && yycount == 0 && 0 < yyargn)
+    yyarg[0] = YYSYMBOL_YYEMPTY;
+  return yycount;
+}
 
 
+
+
+#ifndef yystrlen
+# if defined __GLIBC__ && defined _STRING_H
+#  define yystrlen(S) (YY_CAST (YYPTRDIFF_T, strlen (S)))
+# else
+/* Return the length of YYSTR.  */
+static YYPTRDIFF_T
+yystrlen (const char *yystr)
+{
+  YYPTRDIFF_T yylen;
+  for (yylen = 0; yystr[yylen]; yylen++)
+    continue;
+  return yylen;
+}
+# endif
+#endif
+
+#ifndef yystpcpy
+# if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
+#  define yystpcpy stpcpy
+# else
+/* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
+   YYDEST.  */
+static char *
+yystpcpy (char *yydest, const char *yysrc)
+{
+  char *yyd = yydest;
+  const char *yys = yysrc;
+
+  while ((*yyd++ = *yys++) != '\0')
+    continue;
+
+  return yyd - 1;
+}
+# endif
+#endif
+
+#ifndef yytnamerr
+/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
+   quotes and backslashes, so that it's suitable for yyerror.  The
+   heuristic is that double-quoting is unnecessary unless the string
+   contains an apostrophe, a comma, or backslash (other than
+   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
+   null, do not copy; instead, return the length of what the result
+   would have been.  */
+static YYPTRDIFF_T
+yytnamerr (char *yyres, const char *yystr)
+{
+  if (*yystr == '"')
+    {
+      YYPTRDIFF_T yyn = 0;
+      char const *yyp = yystr;
+      for (;;)
+        switch (*++yyp)
+          {
+          case '\'':
+          case ',':
+            goto do_not_strip_quotes;
+
+          case '\\':
+            if (*++yyp != '\\')
+              goto do_not_strip_quotes;
+            else
+              goto append;
+
+          append:
+          default:
+            if (yyres)
+              yyres[yyn] = *yyp;
+            yyn++;
+            break;
+
+          case '"':
+            if (yyres)
+              yyres[yyn] = '\0';
+            return yyn;
+          }
+    do_not_strip_quotes: ;
+    }
+
+  if (yyres)
+    return yystpcpy (yyres, yystr) - yyres;
+  else
+    return yystrlen (yystr);
+}
+#endif
+
+
+static int
+yy_syntax_error_arguments (const yypcontext_t *yyctx,
+                           yysymbol_kind_t yyarg[], int yyargn)
+{
+  /* Actual size of YYARG. */
+  int yycount = 0;
+  /* There are many possibilities here to consider:
+     - If this state is a consistent state with a default action, then
+       the only way this function was invoked is if the default action
+       is an error action.  In that case, don't check for expected
+       tokens because there are none.
+     - The only way there can be no lookahead present (in yychar) is if
+       this state is a consistent state with a default action.  Thus,
+       detecting the absence of a lookahead is sufficient to determine
+       that there is no unexpected or expected token to report.  In that
+       case, just report a simple "syntax error".
+     - Don't assume there isn't a lookahead just because this state is a
+       consistent state with a default action.  There might have been a
+       previous inconsistent state, consistent state with a non-default
+       action, or user semantic action that manipulated yychar.
+     - Of course, the expected token list depends on states to have
+       correct lookahead information, and it depends on the parser not
+       to perform extra reductions after fetching a lookahead from the
+       scanner and before detecting a syntax error.  Thus, state merging
+       (from LALR or IELR) and default reductions corrupt the expected
+       token list.  However, the list is correct for canonical LR with
+       one exception: it will still contain any token that will not be
+       accepted due to an error action in a later state.
+  */
+  if (yyctx->yytoken != YYSYMBOL_YYEMPTY)
+    {
+      int yyn;
+      if (yyarg)
+        yyarg[yycount] = yyctx->yytoken;
+      ++yycount;
+      yyn = yypcontext_expected_tokens (yyctx,
+                                        yyarg ? yyarg + 1 : yyarg, yyargn - 1);
+      if (yyn == YYENOMEM)
+        return YYENOMEM;
+      else
+        yycount += yyn;
+    }
+  return yycount;
+}
+
+/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
+   about the unexpected token YYTOKEN for the state stack whose top is
+   YYSSP.
+
+   Return 0 if *YYMSG was successfully written.  Return -1 if *YYMSG is
+   not large enough to hold the message.  In that case, also set
+   *YYMSG_ALLOC to the required number of bytes.  Return YYENOMEM if the
+   required number of bytes is too large to store.  */
+static int
+yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
+                const yypcontext_t *yyctx)
+{
+  enum { YYARGS_MAX = 5 };
+  /* Internationalized format string. */
+  const char *yyformat = YY_NULLPTR;
+  /* Arguments of yyformat: reported tokens (one for the "unexpected",
+     one per "expected"). */
+  yysymbol_kind_t yyarg[YYARGS_MAX];
+  /* Cumulated lengths of YYARG.  */
+  YYPTRDIFF_T yysize = 0;
+
+  /* Actual size of YYARG. */
+  int yycount = yy_syntax_error_arguments (yyctx, yyarg, YYARGS_MAX);
+  if (yycount == YYENOMEM)
+    return YYENOMEM;
+
+  switch (yycount)
+    {
+#define YYCASE_(N, S)                       \
+      case N:                               \
+        yyformat = S;                       \
+        break
+    default: /* Avoid compiler warnings. */
+      YYCASE_(0, YY_("syntax error"));
+      YYCASE_(1, YY_("syntax error, unexpected %s"));
+      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+#undef YYCASE_
+    }
+
+  /* Compute error message size.  Don't count the "%s"s, but reserve
+     room for the terminator.  */
+  yysize = yystrlen (yyformat) - 2 * yycount + 1;
+  {
+    int yyi;
+    for (yyi = 0; yyi < yycount; ++yyi)
+      {
+        YYPTRDIFF_T yysize1
+          = yysize + yytnamerr (YY_NULLPTR, yytname[yyarg[yyi]]);
+        if (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
+          yysize = yysize1;
+        else
+          return YYENOMEM;
+      }
+  }
+
+  if (*yymsg_alloc < yysize)
+    {
+      *yymsg_alloc = 2 * yysize;
+      if (! (yysize <= *yymsg_alloc
+             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
+        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
+      return -1;
+    }
+
+  /* Avoid sprintf, as that infringes on the user's name space.
+     Don't have undefined behavior even if the translation
+     produced a string with the wrong number of "%s"s.  */
+  {
+    char *yyp = *yymsg;
+    int yyi = 0;
+    while ((*yyp = *yyformat) != '\0')
+      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
+        {
+          yyp += yytnamerr (yyp, yytname[yyarg[yyi++]]);
+          yyformat += 2;
+        }
+      else
+        {
+          ++yyp;
+          ++yyformat;
+        }
+  }
+  return 0;
+}
 
 
 /*-----------------------------------------------.
@@ -1271,33 +1537,33 @@ yydestruct (const char *yymsg,
   switch (yykind)
     {
     case YYSYMBOL_MACRO: /* MACRO  */
-#line 235 "parser/gramLatex.y"
+#line 234 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1277 "gramLatex.tab.c"
+#line 1543 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_TEXT: /* TEXT  */
-#line 235 "parser/gramLatex.y"
+#line 234 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1283 "gramLatex.tab.c"
+#line 1549 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_COMMENT: /* COMMENT  */
-#line 235 "parser/gramLatex.y"
+#line 234 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1289 "gramLatex.tab.c"
+#line 1555 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_BEGIN: /* BEGIN  */
-#line 235 "parser/gramLatex.y"
+#line 234 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1295 "gramLatex.tab.c"
+#line 1561 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_END: /* END  */
-#line 235 "parser/gramLatex.y"
+#line 234 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1301 "gramLatex.tab.c"
+#line 1567 "gramLatex.tab.c"
         break;
 
       default:
@@ -1369,7 +1635,10 @@ yyparse (void)
   /* The locations where the error started and ended.  */
   YYLTYPE yyerror_range[3];
 
-
+  /* Buffer for error messages, and its allocated size.  */
+  char yymsgbuf[128];
+  char *yymsg = yymsgbuf;
+  YYPTRDIFF_T yymsg_alloc = sizeof yymsgbuf;
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N), yylsp -= (N))
 
@@ -1590,254 +1859,254 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Init: Items END_OF_INPUT  */
-#line 239 "parser/gramLatex.y"
+#line 238 "parser/gramLatex.y"
                                { xxsavevalue(yyvsp[-1], &(yyloc));
                                  YYACCEPT; }
-#line 1597 "gramLatex.tab.c"
+#line 1866 "gramLatex.tab.c"
     break;
 
   case 3: /* Init: END_OF_INPUT  */
-#line 241 "parser/gramLatex.y"
+#line 240 "parser/gramLatex.y"
                                { xxsavevalue(NULL, &(yyloc));
                                  YYACCEPT; }
-#line 1604 "gramLatex.tab.c"
+#line 1873 "gramLatex.tab.c"
     break;
 
   case 4: /* Init: error  */
-#line 243 "parser/gramLatex.y"
+#line 242 "parser/gramLatex.y"
                                { PRESERVE_SV(parseState.Value = R_NilValue);
                                  YYABORT; }
-#line 1611 "gramLatex.tab.c"
+#line 1880 "gramLatex.tab.c"
     break;
 
   case 5: /* Items: Item  */
-#line 247 "parser/gramLatex.y"
+#line 246 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1617 "gramLatex.tab.c"
+#line 1886 "gramLatex.tab.c"
     break;
 
   case 6: /* Items: math  */
-#line 248 "parser/gramLatex.y"
+#line 247 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1623 "gramLatex.tab.c"
+#line 1892 "gramLatex.tab.c"
     break;
 
   case 7: /* Items: displaymath  */
-#line 249 "parser/gramLatex.y"
+#line 248 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1629 "gramLatex.tab.c"
+#line 1898 "gramLatex.tab.c"
     break;
 
   case 8: /* Items: Items Item  */
-#line 250 "parser/gramLatex.y"
+#line 249 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1635 "gramLatex.tab.c"
+#line 1904 "gramLatex.tab.c"
     break;
 
   case 9: /* Items: Items math  */
-#line 251 "parser/gramLatex.y"
+#line 250 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1641 "gramLatex.tab.c"
+#line 1910 "gramLatex.tab.c"
     break;
 
   case 10: /* Items: Items displaymath  */
-#line 252 "parser/gramLatex.y"
+#line 251 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1647 "gramLatex.tab.c"
+#line 1916 "gramLatex.tab.c"
     break;
 
   case 11: /* nonMath: Item  */
-#line 254 "parser/gramLatex.y"
+#line 253 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1653 "gramLatex.tab.c"
+#line 1922 "gramLatex.tab.c"
     break;
 
   case 12: /* nonMath: nonMath Item  */
-#line 255 "parser/gramLatex.y"
+#line 254 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1659 "gramLatex.tab.c"
+#line 1928 "gramLatex.tab.c"
     break;
 
   case 13: /* Item: TEXT  */
-#line 257 "parser/gramLatex.y"
+#line 256 "parser/gramLatex.y"
                     { xxArg(NULL); yyval = xxtag(yyvsp[0], TEXT, &(yyloc)); }
-#line 1665 "gramLatex.tab.c"
+#line 1934 "gramLatex.tab.c"
     break;
 
   case 14: /* Item: COMMENT  */
-#line 258 "parser/gramLatex.y"
+#line 257 "parser/gramLatex.y"
                     { yyval = xxtag(yyvsp[0], COMMENT, &(yyloc)); }
-#line 1671 "gramLatex.tab.c"
+#line 1940 "gramLatex.tab.c"
     break;
 
   case 15: /* Item: MACRO  */
-#line 259 "parser/gramLatex.y"
+#line 258 "parser/gramLatex.y"
                     { xxArg(NULL);
                       yyval = xxtag(yyvsp[0], MACRO, &(yyloc)); }
-#line 1678 "gramLatex.tab.c"
+#line 1947 "gramLatex.tab.c"
     break;
 
   case 16: /* Item: SPECIAL  */
-#line 261 "parser/gramLatex.y"
+#line 260 "parser/gramLatex.y"
                     { xxArg(yyvsp[0]);
                       yyval = xxtag(yyvsp[0], SPECIAL, &(yyloc)); }
-#line 1685 "gramLatex.tab.c"
+#line 1954 "gramLatex.tab.c"
     break;
 
   case 17: /* Item: VERB  */
-#line 263 "parser/gramLatex.y"
+#line 262 "parser/gramLatex.y"
                     { yyval = xxtag(yyvsp[0], VERB, &(yyloc)); }
-#line 1691 "gramLatex.tab.c"
+#line 1960 "gramLatex.tab.c"
     break;
 
   case 18: /* Item: VERB2  */
-#line 264 "parser/gramLatex.y"
+#line 263 "parser/gramLatex.y"
                     { yyval = xxtag(yyvsp[0], VERB, &(yyloc)); }
-#line 1697 "gramLatex.tab.c"
+#line 1966 "gramLatex.tab.c"
     break;
 
   case 19: /* Item: block  */
-#line 265 "parser/gramLatex.y"
+#line 264 "parser/gramLatex.y"
                     { xxArg(NULL); yyval = yyvsp[0]; }
-#line 1703 "gramLatex.tab.c"
+#line 1972 "gramLatex.tab.c"
     break;
 
   case 20: /* Item: environment  */
-#line 266 "parser/gramLatex.y"
+#line 265 "parser/gramLatex.y"
                     { yyval = yyvsp[0]; }
-#line 1709 "gramLatex.tab.c"
+#line 1978 "gramLatex.tab.c"
     break;
 
   case 21: /* Item: newdefine  */
-#line 267 "parser/gramLatex.y"
+#line 266 "parser/gramLatex.y"
                     { yyval = yyvsp[0]; }
-#line 1715 "gramLatex.tab.c"
+#line 1984 "gramLatex.tab.c"
     break;
 
   case 22: /* envname: TEXT  */
-#line 269 "parser/gramLatex.y"
+#line 268 "parser/gramLatex.y"
                  { yyval = xxnewlist(xxtag(yyvsp[0], TEXT, &(yylsp[0]))); }
-#line 1721 "gramLatex.tab.c"
+#line 1990 "gramLatex.tab.c"
     break;
 
   case 23: /* envname: SPECIAL  */
-#line 270 "parser/gramLatex.y"
+#line 269 "parser/gramLatex.y"
                  { yyval = xxnewlist(xxtag(yyvsp[0], SPECIAL, &(yylsp[0]))); }
-#line 1727 "gramLatex.tab.c"
+#line 1996 "gramLatex.tab.c"
     break;
 
   case 24: /* envname: envname TEXT  */
-#line 271 "parser/gramLatex.y"
+#line 270 "parser/gramLatex.y"
                          { yyval = xxlist(yyvsp[-1], xxtag(yyvsp[0], TEXT, &(yylsp[0]))); }
-#line 1733 "gramLatex.tab.c"
+#line 2002 "gramLatex.tab.c"
     break;
 
   case 25: /* envname: envname SPECIAL  */
-#line 272 "parser/gramLatex.y"
+#line 271 "parser/gramLatex.y"
                          { yyval = xxlist(yyvsp[-1], xxtag(yyvsp[0], SPECIAL, &(yylsp[0]))); }
-#line 1739 "gramLatex.tab.c"
+#line 2008 "gramLatex.tab.c"
     break;
 
   case 26: /* begin: BEGIN '{' envname '}'  */
-#line 274 "parser/gramLatex.y"
+#line 273 "parser/gramLatex.y"
                                { xxSetInVerbEnv(yyvsp[-1]);
                                  RELEASE_SV(yyvsp[-3]);
                                  yyval = yyvsp[-1]; }
-#line 1747 "gramLatex.tab.c"
+#line 2016 "gramLatex.tab.c"
     break;
 
   case 27: /* environment: begin Items END '{' envname '}'  */
-#line 279 "parser/gramLatex.y"
+#line 278 "parser/gramLatex.y"
                           { yyval = xxenv(yyvsp[-5], yyvsp[-4], yyvsp[-1], &(yyloc));
                             RELEASE_SV(yyvsp[-3]); }
-#line 1754 "gramLatex.tab.c"
+#line 2023 "gramLatex.tab.c"
     break;
 
   case 28: /* environment: begin END '{' envname '}'  */
-#line 282 "parser/gramLatex.y"
+#line 281 "parser/gramLatex.y"
                           { yyval = xxenv(yyvsp[-4], NULL, yyvsp[-1], &(yyloc));
                             RELEASE_SV(yyvsp[-3]); }
-#line 1761 "gramLatex.tab.c"
+#line 2030 "gramLatex.tab.c"
     break;
 
   case 29: /* environment: begin error  */
-#line 284 "parser/gramLatex.y"
-                          { xxincomplete(yyvsp[-1], &(yylsp[-1])); }
-#line 1767 "gramLatex.tab.c"
+#line 283 "parser/gramLatex.y"
+                          { xxincompleteBegin(yyvsp[-1], &(yylsp[-1])); }
+#line 2036 "gramLatex.tab.c"
     break;
 
   case 30: /* math: '$' nonMath '$'  */
-#line 286 "parser/gramLatex.y"
+#line 285 "parser/gramLatex.y"
                           { yyval = xxmath(yyvsp[-1], &(yyloc), FALSE); }
-#line 1773 "gramLatex.tab.c"
+#line 2042 "gramLatex.tab.c"
     break;
 
   case 31: /* math: '$' error  */
-#line 287 "parser/gramLatex.y"
+#line 286 "parser/gramLatex.y"
                           { xxincomplete(mkString("$"), &(yylsp[-1])); }
-#line 1779 "gramLatex.tab.c"
+#line 2048 "gramLatex.tab.c"
     break;
 
   case 32: /* displaymath: TWO_DOLLARS nonMath TWO_DOLLARS  */
-#line 290 "parser/gramLatex.y"
+#line 289 "parser/gramLatex.y"
                           { yyval = xxmath(yyvsp[-1], &(yyloc), TRUE); }
-#line 1785 "gramLatex.tab.c"
+#line 2054 "gramLatex.tab.c"
     break;
 
   case 33: /* displaymath: TWO_DOLLARS error  */
-#line 292 "parser/gramLatex.y"
+#line 291 "parser/gramLatex.y"
                           { xxincomplete(mkString("$$"), &(yylsp[-1])); }
-#line 1791 "gramLatex.tab.c"
+#line 2060 "gramLatex.tab.c"
     break;
 
   case 34: /* block: '{' Items '}'  */
-#line 294 "parser/gramLatex.y"
+#line 293 "parser/gramLatex.y"
                           { yyval = xxblock(yyvsp[-1], &(yyloc)); }
-#line 1797 "gramLatex.tab.c"
+#line 2066 "gramLatex.tab.c"
     break;
 
   case 35: /* block: '{' '}'  */
-#line 295 "parser/gramLatex.y"
+#line 294 "parser/gramLatex.y"
                           { yyval = xxblock(NULL, &(yyloc)); }
-#line 1803 "gramLatex.tab.c"
+#line 2072 "gramLatex.tab.c"
     break;
 
   case 36: /* block: '{' error  */
-#line 296 "parser/gramLatex.y"
+#line 295 "parser/gramLatex.y"
                           { xxincomplete(mkString("{"), &(yylsp[-1])); }
-#line 1809 "gramLatex.tab.c"
+#line 2078 "gramLatex.tab.c"
     break;
 
   case 37: /* @1: %empty  */
-#line 298 "parser/gramLatex.y"
+#line 297 "parser/gramLatex.y"
                           { yyval = xxpushMode(2, 1); }
-#line 1815 "gramLatex.tab.c"
+#line 2084 "gramLatex.tab.c"
     break;
 
   case 38: /* newdefine: NEWCMD @1 Items END_OF_ARGS  */
-#line 300 "parser/gramLatex.y"
+#line 299 "parser/gramLatex.y"
                           { xxpopMode(yyvsp[-2]);
                             yyval = xxnewdef(xxtag(yyvsp[-3], MACRO, &(yylsp[-3])),
                                         yyvsp[-1], &(yyloc)); }
-#line 1823 "gramLatex.tab.c"
+#line 2092 "gramLatex.tab.c"
     break;
 
   case 39: /* @2: %empty  */
-#line 303 "parser/gramLatex.y"
+#line 302 "parser/gramLatex.y"
                           { yyval = xxpushMode(3, 1); }
-#line 1829 "gramLatex.tab.c"
+#line 2098 "gramLatex.tab.c"
     break;
 
   case 40: /* newdefine: NEWENV @2 Items END_OF_ARGS  */
-#line 305 "parser/gramLatex.y"
+#line 304 "parser/gramLatex.y"
                           {  xxpopMode(yyvsp[-2]);
                              yyval = xxnewdef(xxtag(yyvsp[-3], MACRO, &(yylsp[-3])),
                                         yyvsp[-1], &(yyloc)); }
-#line 1837 "gramLatex.tab.c"
+#line 2106 "gramLatex.tab.c"
     break;
 
 
-#line 1841 "gramLatex.tab.c"
+#line 2110 "gramLatex.tab.c"
 
       default: break;
     }
@@ -1885,7 +2154,37 @@ yyerrlab:
   if (!yyerrstatus)
     {
       ++yynerrs;
-      yyerror (YY_("syntax error"));
+      {
+        yypcontext_t yyctx
+          = {yyssp, yytoken, &yylloc};
+        char const *yymsgp = YY_("syntax error");
+        int yysyntax_error_status;
+        yysyntax_error_status = yysyntax_error (&yymsg_alloc, &yymsg, &yyctx);
+        if (yysyntax_error_status == 0)
+          yymsgp = yymsg;
+        else if (yysyntax_error_status == -1)
+          {
+            if (yymsg != yymsgbuf)
+              YYSTACK_FREE (yymsg);
+            yymsg = YY_CAST (char *,
+                             YYSTACK_ALLOC (YY_CAST (YYSIZE_T, yymsg_alloc)));
+            if (yymsg)
+              {
+                yysyntax_error_status
+                  = yysyntax_error (&yymsg_alloc, &yymsg, &yyctx);
+                yymsgp = yymsg;
+              }
+            else
+              {
+                yymsg = yymsgbuf;
+                yymsg_alloc = sizeof yymsgbuf;
+                yysyntax_error_status = YYENOMEM;
+              }
+          }
+        yyerror (yymsgp);
+        if (yysyntax_error_status == YYENOMEM)
+          YYNOMEM;
+      }
     }
 
   yyerror_range[1] = yylloc;
@@ -2031,11 +2330,12 @@ yyreturnlab:
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-
+  if (yymsg != yymsgbuf)
+    YYSTACK_FREE (yymsg);
   return yyresult;
 }
 
-#line 309 "parser/gramLatex.y"
+#line 308 "parser/gramLatex.y"
 
 
 static SEXP xxnewlist(SEXP item)
@@ -2122,7 +2422,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   if (!isNull(end))
     RELEASE_SV(end);
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, R_LatexTagSymbol, mkString("ENVIRONMENT"));
+  setAttrib(ans, LatexTagSymbol, mkString("ENVIRONMENT"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
@@ -2147,7 +2447,7 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
   RELEASE_SV(cmd);
 
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, R_LatexTagSymbol, mkString("DEFINITION"));
+  setAttrib(ans, LatexTagSymbol, mkString("DEFINITION"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 
   return ans;
@@ -2214,7 +2514,7 @@ static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
     setAttrib(ans, install("srcref"), makeSrcref(lloc));
-    setAttrib(ans, R_LatexTagSymbol,
+    setAttrib(ans, LatexTagSymbol,
     mkString(display ? "DISPLAYMATH" : "MATH"));
     setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
@@ -2236,7 +2536,7 @@ static SEXP xxblock(SEXP body, YYLTYPE *lloc)
     RELEASE_SV(body);
   }
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, R_LatexTagSymbol, mkString("BLOCK"));
+  setAttrib(ans, LatexTagSymbol, mkString("BLOCK"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
@@ -2274,7 +2574,7 @@ static void xxsavevalue(SEXP items, YYLTYPE *lloc)
     } else {
       PRESERVE_SV(parseState.Value = allocVector(VECSXP, 1));
       SET_VECTOR_ELT(parseState.Value, 0, ScalarString(mkChar("")));
-      setAttrib(VECTOR_ELT(parseState.Value, 0), R_LatexTagSymbol, mkString("TEXT"));
+      setAttrib(VECTOR_ELT(parseState.Value, 0), LatexTagSymbol, mkString("TEXT"));
       setAttrib(VECTOR_ELT(parseState.Value, 0), R_ClassSymbol,
         mkString("LaTeX2item"));
     }
@@ -2286,7 +2586,7 @@ static void xxsavevalue(SEXP items, YYLTYPE *lloc)
 
 static SEXP xxtag(SEXP item, int type, YYLTYPE *lloc)
 {
-    setAttrib(item, R_LatexTagSymbol, mkString(yytname[YYTRANSLATE(type)]));
+    setAttrib(item, LatexTagSymbol, mkString(yytname[YYTRANSLATE(type)]));
     setAttrib(item, install("srcref"), makeSrcref(lloc));
     setAttrib(item, R_ClassSymbol, mkString("LaTeX2item"));
     return item;
@@ -2357,9 +2657,6 @@ static UChar32 xxgetc(void)
 
   if (c == EOF) return R_EOF;
 
-  R_ParseContextLast = (R_ParseContextLast + 1) % PARSE_CONTEXT_SIZE;
-  R_ParseContext[R_ParseContextLast] = (char) c;
-
   if (c == '\n') {
     parseState.xxlineno += 1;
     parseState.xxcolno = 1;
@@ -2370,8 +2667,6 @@ static UChar32 xxgetc(void)
   }
 
   if (c == '\t') parseState.xxcolno = ((parseState.xxcolno + 6) & ~7) + 1;
-
-  R_ParseContextLine = parseState.xxlineno;
 
   return c;
 }
@@ -2384,12 +2679,6 @@ static UChar32 xxungetc(int c)
     parseState.xxcolno  = prevcols[prevpos];
     prevpos = (prevpos + PUSHBACK_BUFSIZE - 1) % PUSHBACK_BUFSIZE;
 
-    R_ParseContextLine = parseState.xxlineno;
-
-    R_ParseContext[R_ParseContextLast] = '\0';
-    /* macOS requires us to keep this non-negative */
-    R_ParseContextLast = (R_ParseContextLast + PARSE_CONTEXT_SIZE - 1)
-  % PARSE_CONTEXT_SIZE;
     if(npush >= PUSHBACK_BUFSIZE - 2) return R_EOF;
     pushback[npush++] = c;
     return c;
@@ -2481,18 +2770,9 @@ static void UseState(ParseState *state) {
     parseState.prevState = state->prevState;
 }
 
-static void InitSymbols(void)
-{
-  if (!R_LatexTagSymbol)
-    R_LatexTagSymbol = install("latex_tag");
-}
-
 static SEXP ParseLatex(ParseStatus *status)
 {
-    InitSymbols();
-
-    R_ParseContextLast = 0;
-    R_ParseContext[0] = '\0';
+    LatexTagSymbol = install("latex_tag");
 
     parseState.xxInVerbEnv = NULL;
     parseState.xxGetArgs = 0;
@@ -2538,13 +2818,6 @@ static int char_getc(void)
       nextchar_parse--;
     }
     return (c);
-}
-
-static SEXP R_ParseLatex(SEXP text, ParseStatus *status)
-{
-    nextchar_parse = translateCharUTF8(STRING_ELT(text, 0));
-    ptr_getc = char_getc;
-    return ParseLatex(status);
 }
 
 /*----------------------------------------------------------------------------
@@ -2607,15 +2880,23 @@ static int KeywordLookup(const char *s)
 
 static void xxincomplete(SEXP what, YYLTYPE *where)
 {
-  char start[32];
-  char buffer[PARSE_ERROR_SIZE + sizeof(start) + 100];
-  PROTECT(what);
-  xxgettext(start, sizeof(start), what);
+  char buffer[PARSE_ERROR_SIZE + 32];
   snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
-           R_ParseErrorMsg, start, where->first_line, where->first_column);
+           ParseErrorMsg,
+           CHAR(STRING_ELT(what, 0)),
+           where->first_line, where->first_column);
   yyerror(buffer);
-  UNPROTECT(1);
   parseError();
+}
+
+static void xxincompleteBegin(SEXP what, YYLTYPE *where)
+{
+  char start[64] = "\\begin{";
+  PROTECT(what);
+  xxgettext(start + strlen(start), sizeof(start) - strlen(start) - 1, what);
+  start[strlen(start) + 1] = 0;
+  start[strlen(start)] = '}';
+  xxincomplete(mkString(start), where);
 }
 
 static void yyerror(const char *s)
@@ -2640,8 +2921,8 @@ static void yyerror(const char *s)
   static char const yylongunexpected[] = "unexpected %s '%s'";
   char *expecting;
 
-  R_ParseError     = yylloc.first_line;
-  R_ParseErrorCol  = yylloc.first_column;
+  ParseErrorLine     = yylloc.first_line;
+  ParseErrorCol      = yylloc.first_column;
 
   if (!strncmp(s, yyunexpected, sizeof yyunexpected -1)) {
     int i, translated = FALSE;
@@ -2650,13 +2931,13 @@ static void yyerror(const char *s)
     if (expecting) *expecting = '\0';
     for (i = 0; yytname_translations[i]; i += 2) {
       if (!strcmp(s + sizeof yyunexpected - 1, yytname_translations[i])) {
-        if (yychar < 256)
-          snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+        if (yychar < 256 || yychar == END_OF_INPUT)
+          snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                    _(yyshortunexpected),
                    i/2 < YYENGLISH ? _(yytname_translations[i+1])
                      : yytname_translations[i+1]);
         else
-          snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+          snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                    _(yylongunexpected),
                    i/2 < YYENGLISH ? _(yytname_translations[i+1])
                      : yytname_translations[i+1],
@@ -2666,12 +2947,12 @@ static void yyerror(const char *s)
       }
     }
     if (!translated) {
-      if (yychar < 256)
-        snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+      if (yychar < 256 || yychar == END_OF_INPUT)
+        snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                  _(yyshortunexpected),
                  s + sizeof yyunexpected - 1);
       else
-        snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+        snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                  _(yylongunexpected),
                  s + sizeof yyunexpected - 1, CHAR(STRING_ELT(yylval, 0)));
     }
@@ -2679,23 +2960,23 @@ static void yyerror(const char *s)
       translated = FALSE;
       for (i = 0; yytname_translations[i]; i += 2) {
         if (!strcmp(expecting + sizeof yyexpecting - 1, yytname_translations[i])) {
-          strcat(R_ParseErrorMsg, _(yyexpecting));
-          strcat(R_ParseErrorMsg, i/2 < YYENGLISH ? _(yytname_translations[i+1])
+          strcat(ParseErrorMsg, _(yyexpecting));
+          strcat(ParseErrorMsg, i/2 < YYENGLISH ? _(yytname_translations[i+1])
                    : yytname_translations[i+1]);
           translated = TRUE;
           break;
         }
       }
       if (!translated) {
-        strcat(R_ParseErrorMsg, _(yyexpecting));
-        strcat(R_ParseErrorMsg, expecting + sizeof yyexpecting - 1);
+        strcat(ParseErrorMsg, _(yyexpecting));
+        strcat(ParseErrorMsg, expecting + sizeof yyexpecting - 1);
       }
     }
   } else if (!strncmp(s, yyunknown, sizeof yyunknown-1)) {
-    snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+    snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
              "%s '%s'", s, CHAR(STRING_ELT(yylval, 0)));
   } else {
-    snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,"%s", s);
+    snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,"%s", s);
   }
 }
 
@@ -3141,8 +3422,8 @@ SEXP parseLatex(SEXP args)
   yydebug = 1;
 #endif
 
-  R_ParseError = 0;
-  R_ParseErrorMsg[0] = '\0';
+  ParseErrorLine = 0;
+  ParseErrorMsg[0] = '\0';
 
   PushState();
 
@@ -3157,7 +3438,9 @@ SEXP parseLatex(SEXP args)
   parseState.xxCodepoints = CAR(args); args = CDR(args);
   parseState.xxCatcodes = CAR(args); args = CDR(args);
 
-  s = R_ParseLatex(text, &status);
+  nextchar_parse = translateCharUTF8(STRING_ELT(text, 0));
+  ptr_getc = char_getc;
+  s = ParseLatex(&status);
 
   PopState();
 

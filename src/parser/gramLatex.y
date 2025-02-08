@@ -1,3 +1,4 @@
+%define parse.error verbose
 %{
 /*
  *  R : A Computer Language for Statistical Data Analysis
@@ -53,22 +54,19 @@ typedef enum {
   PARSE_EOF
 } ParseStatus;
 
-static int   R_ParseError = 0; /* Line where parse error occurred */
-static int   R_ParseErrorCol;  /* Column of start of token where parse error occurred */
-/* the next is currently unused */
-#define      PARSE_ERROR_SIZE 512      /* Parse error messages saved here */
-static char  R_ParseErrorMsg[PARSE_ERROR_SIZE] = "";
-#define      PARSE_CONTEXT_SIZE 512      /* Recent parse context kept in a circular buffer */
-static char  R_ParseContext[PARSE_CONTEXT_SIZE] = "";
-static int   R_ParseContextLast = 0; /* last character in context buffer */
-static int   R_ParseContextLine; /* Line in input of the above */
+static int   ParseErrorLine = 0; /* Line where parse error occurred */
+static int   ParseErrorCol;      /* Column of start of token where parse error occurred */
+
+#define PARSE_ERROR_SIZE 512
+
+static char  ParseErrorMsg[PARSE_ERROR_SIZE];
 
 static NORET void parseError(void);
 
 static NORET void parseError(void)
 {
-  error("parse error at %d:%d: %s", R_ParseError,
-        R_ParseErrorCol, R_ParseErrorMsg);
+  error("Parse error at %d:%d: %s", ParseErrorLine,
+        ParseErrorCol, ParseErrorMsg);
 }
 
 /* end of internal replacements */
@@ -143,6 +141,7 @@ static SEXP     makeSrcref(YYLTYPE *);
 static UChar32  xxgetc(void);
 static int      xxungetc(int);
 static void     xxincomplete(SEXP, YYLTYPE *);
+static void     xxincompleteBegin(SEXP, YYLTYPE *);
 
 /* Internal lexer / parser state variables */
 
@@ -211,7 +210,7 @@ static int  mkVerb2(const uint8_t *, int);
 static int  mkVerbEnv(void);
 static int  mkDollar(int);
 
-static SEXP R_LatexTagSymbol = NULL;
+static SEXP LatexTagSymbol = NULL;
 
 #define YYSTYPE    SEXP
 
@@ -281,7 +280,7 @@ environment:  begin Items END '{' envname '}'
   |           begin END '{' envname '}'
                           { $$ = xxenv($1, NULL, $4, &@$);
                             RELEASE_SV($2); }
-  |           begin error { xxincomplete($1, &@1); }
+  |           begin error { xxincompleteBegin($1, &@1); }
 
 math:   '$' nonMath '$'   { $$ = xxmath($2, &@$, FALSE); }
   |     '$' error         { xxincomplete(mkString("$"), &@1); }
@@ -392,7 +391,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
   if (!isNull(end))
     RELEASE_SV(end);
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, R_LatexTagSymbol, mkString("ENVIRONMENT"));
+  setAttrib(ans, LatexTagSymbol, mkString("ENVIRONMENT"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
@@ -417,7 +416,7 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
   RELEASE_SV(cmd);
 
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, R_LatexTagSymbol, mkString("DEFINITION"));
+  setAttrib(ans, LatexTagSymbol, mkString("DEFINITION"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 
   return ans;
@@ -484,7 +483,7 @@ static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
     setAttrib(ans, install("srcref"), makeSrcref(lloc));
-    setAttrib(ans, R_LatexTagSymbol,
+    setAttrib(ans, LatexTagSymbol,
     mkString(display ? "DISPLAYMATH" : "MATH"));
     setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
@@ -506,7 +505,7 @@ static SEXP xxblock(SEXP body, YYLTYPE *lloc)
     RELEASE_SV(body);
   }
   setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, R_LatexTagSymbol, mkString("BLOCK"));
+  setAttrib(ans, LatexTagSymbol, mkString("BLOCK"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
@@ -544,7 +543,7 @@ static void xxsavevalue(SEXP items, YYLTYPE *lloc)
     } else {
       PRESERVE_SV(parseState.Value = allocVector(VECSXP, 1));
       SET_VECTOR_ELT(parseState.Value, 0, ScalarString(mkChar("")));
-      setAttrib(VECTOR_ELT(parseState.Value, 0), R_LatexTagSymbol, mkString("TEXT"));
+      setAttrib(VECTOR_ELT(parseState.Value, 0), LatexTagSymbol, mkString("TEXT"));
       setAttrib(VECTOR_ELT(parseState.Value, 0), R_ClassSymbol,
         mkString("LaTeX2item"));
     }
@@ -556,7 +555,7 @@ static void xxsavevalue(SEXP items, YYLTYPE *lloc)
 
 static SEXP xxtag(SEXP item, int type, YYLTYPE *lloc)
 {
-    setAttrib(item, R_LatexTagSymbol, mkString(yytname[YYTRANSLATE(type)]));
+    setAttrib(item, LatexTagSymbol, mkString(yytname[YYTRANSLATE(type)]));
     setAttrib(item, install("srcref"), makeSrcref(lloc));
     setAttrib(item, R_ClassSymbol, mkString("LaTeX2item"));
     return item;
@@ -627,9 +626,6 @@ static UChar32 xxgetc(void)
 
   if (c == EOF) return R_EOF;
 
-  R_ParseContextLast = (R_ParseContextLast + 1) % PARSE_CONTEXT_SIZE;
-  R_ParseContext[R_ParseContextLast] = (char) c;
-
   if (c == '\n') {
     parseState.xxlineno += 1;
     parseState.xxcolno = 1;
@@ -640,8 +636,6 @@ static UChar32 xxgetc(void)
   }
 
   if (c == '\t') parseState.xxcolno = ((parseState.xxcolno + 6) & ~7) + 1;
-
-  R_ParseContextLine = parseState.xxlineno;
 
   return c;
 }
@@ -654,12 +648,6 @@ static UChar32 xxungetc(int c)
     parseState.xxcolno  = prevcols[prevpos];
     prevpos = (prevpos + PUSHBACK_BUFSIZE - 1) % PUSHBACK_BUFSIZE;
 
-    R_ParseContextLine = parseState.xxlineno;
-
-    R_ParseContext[R_ParseContextLast] = '\0';
-    /* macOS requires us to keep this non-negative */
-    R_ParseContextLast = (R_ParseContextLast + PARSE_CONTEXT_SIZE - 1)
-  % PARSE_CONTEXT_SIZE;
     if(npush >= PUSHBACK_BUFSIZE - 2) return R_EOF;
     pushback[npush++] = c;
     return c;
@@ -751,18 +739,9 @@ static void UseState(ParseState *state) {
     parseState.prevState = state->prevState;
 }
 
-static void InitSymbols(void)
-{
-  if (!R_LatexTagSymbol)
-    R_LatexTagSymbol = install("latex_tag");
-}
-
 static SEXP ParseLatex(ParseStatus *status)
 {
-    InitSymbols();
-
-    R_ParseContextLast = 0;
-    R_ParseContext[0] = '\0';
+    LatexTagSymbol = install("latex_tag");
 
     parseState.xxInVerbEnv = NULL;
     parseState.xxGetArgs = 0;
@@ -808,13 +787,6 @@ static int char_getc(void)
       nextchar_parse--;
     }
     return (c);
-}
-
-static SEXP R_ParseLatex(SEXP text, ParseStatus *status)
-{
-    nextchar_parse = translateCharUTF8(STRING_ELT(text, 0));
-    ptr_getc = char_getc;
-    return ParseLatex(status);
 }
 
 /*----------------------------------------------------------------------------
@@ -877,15 +849,23 @@ static int KeywordLookup(const char *s)
 
 static void xxincomplete(SEXP what, YYLTYPE *where)
 {
-  char start[32];
-  char buffer[PARSE_ERROR_SIZE + sizeof(start) + 100];
-  PROTECT(what);
-  xxgettext(start, sizeof(start), what);
+  char buffer[PARSE_ERROR_SIZE + 32];
   snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
-           R_ParseErrorMsg, start, where->first_line, where->first_column);
+           ParseErrorMsg,
+           CHAR(STRING_ELT(what, 0)),
+           where->first_line, where->first_column);
   yyerror(buffer);
-  UNPROTECT(1);
   parseError();
+}
+
+static void xxincompleteBegin(SEXP what, YYLTYPE *where)
+{
+  char start[64] = "\\begin{";
+  PROTECT(what);
+  xxgettext(start + strlen(start), sizeof(start) - strlen(start) - 1, what);
+  start[strlen(start) + 1] = 0;
+  start[strlen(start)] = '}';
+  xxincomplete(mkString(start), where);
 }
 
 static void yyerror(const char *s)
@@ -910,8 +890,8 @@ static void yyerror(const char *s)
   static char const yylongunexpected[] = "unexpected %s '%s'";
   char *expecting;
 
-  R_ParseError     = yylloc.first_line;
-  R_ParseErrorCol  = yylloc.first_column;
+  ParseErrorLine     = yylloc.first_line;
+  ParseErrorCol      = yylloc.first_column;
 
   if (!strncmp(s, yyunexpected, sizeof yyunexpected -1)) {
     int i, translated = FALSE;
@@ -920,13 +900,13 @@ static void yyerror(const char *s)
     if (expecting) *expecting = '\0';
     for (i = 0; yytname_translations[i]; i += 2) {
       if (!strcmp(s + sizeof yyunexpected - 1, yytname_translations[i])) {
-        if (yychar < 256)
-          snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+        if (yychar < 256 || yychar == END_OF_INPUT)
+          snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                    _(yyshortunexpected),
                    i/2 < YYENGLISH ? _(yytname_translations[i+1])
                      : yytname_translations[i+1]);
         else
-          snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+          snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                    _(yylongunexpected),
                    i/2 < YYENGLISH ? _(yytname_translations[i+1])
                      : yytname_translations[i+1],
@@ -936,12 +916,12 @@ static void yyerror(const char *s)
       }
     }
     if (!translated) {
-      if (yychar < 256)
-        snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+      if (yychar < 256 || yychar == END_OF_INPUT)
+        snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                  _(yyshortunexpected),
                  s + sizeof yyunexpected - 1);
       else
-        snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+        snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
                  _(yylongunexpected),
                  s + sizeof yyunexpected - 1, CHAR(STRING_ELT(yylval, 0)));
     }
@@ -949,23 +929,23 @@ static void yyerror(const char *s)
       translated = FALSE;
       for (i = 0; yytname_translations[i]; i += 2) {
         if (!strcmp(expecting + sizeof yyexpecting - 1, yytname_translations[i])) {
-          strcat(R_ParseErrorMsg, _(yyexpecting));
-          strcat(R_ParseErrorMsg, i/2 < YYENGLISH ? _(yytname_translations[i+1])
+          strcat(ParseErrorMsg, _(yyexpecting));
+          strcat(ParseErrorMsg, i/2 < YYENGLISH ? _(yytname_translations[i+1])
                    : yytname_translations[i+1]);
           translated = TRUE;
           break;
         }
       }
       if (!translated) {
-        strcat(R_ParseErrorMsg, _(yyexpecting));
-        strcat(R_ParseErrorMsg, expecting + sizeof yyexpecting - 1);
+        strcat(ParseErrorMsg, _(yyexpecting));
+        strcat(ParseErrorMsg, expecting + sizeof yyexpecting - 1);
       }
     }
   } else if (!strncmp(s, yyunknown, sizeof yyunknown-1)) {
-    snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,
+    snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,
              "%s '%s'", s, CHAR(STRING_ELT(yylval, 0)));
   } else {
-    snprintf(R_ParseErrorMsg, PARSE_ERROR_SIZE,"%s", s);
+    snprintf(ParseErrorMsg, PARSE_ERROR_SIZE,"%s", s);
   }
 }
 
@@ -1411,8 +1391,8 @@ SEXP parseLatex(SEXP args)
   yydebug = 1;
 #endif
 
-  R_ParseError = 0;
-  R_ParseErrorMsg[0] = '\0';
+  ParseErrorLine = 0;
+  ParseErrorMsg[0] = '\0';
 
   PushState();
 
@@ -1427,7 +1407,9 @@ SEXP parseLatex(SEXP args)
   parseState.xxCodepoints = CAR(args); args = CDR(args);
   parseState.xxCatcodes = CAR(args); args = CDR(args);
 
-  s = R_ParseLatex(text, &status);
+  nextchar_parse = translateCharUTF8(STRING_ELT(text, 0));
+  ptr_getc = char_getc;
+  s = ParseLatex(&status);
 
   PopState();
 
