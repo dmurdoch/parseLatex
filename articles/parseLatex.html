@@ -68,11 +68,12 @@ in user code) can change the parsing rules as they go.</p>
 <p><code>parseLatex</code> is not a LaTeX interpreter (at least mostly
 it isn’t, but see the detailed comparison below), so it can’t do that:
 it uses the same parsing rules for all code that it looks at. If you’re
-using a LaTeX package that uses non-standard rules, you can use
-those.</p>
-<p>However, subject to the limitation that the code only uses one set of
-rules, <code>parseLatex</code> should be able to parse any LaTeX code.
-It extends the base <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> function in a few
+using a LaTeX package that uses non-standard rules, you can use those,
+but they have to apply to the whole section of code passed to
+<code><a href="../reference/parseLatex_fn.html">parseLatex()</a></code>.</p>
+<p>Subject to the limitation that the code only uses one set of rules,
+<code>parseLatex</code> should be able to parse any LaTeX code. It
+extends the base <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> function in a few
 ways:</p>
 <ol style="list-style-type: decimal">
 <li>It classifies every character in the source file according to TeX
