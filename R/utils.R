@@ -79,7 +79,7 @@ split_latex <- function(items, splits) {
   lapply(split_list(items, splits), as_LaTeX2)
 }
 
-#' Convenience function to get contents from an item
+#' Convenience functions to get or set contents of item
 #'
 #' @param item An item from a Latex list (or a [LaTeX2] list with one item).
 #'

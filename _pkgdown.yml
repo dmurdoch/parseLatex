@@ -7,7 +7,6 @@ reference:
   contents:
   - parseLatex_fn
   - deparseLatex
-  - parseLatex_pkg
 - title: Searching
   desc: Functions to find and modify things
   contents:
@@ -16,9 +15,6 @@ reference:
   - finders
   - path_to
   - set_range
-- title: Structures
-  desc: Working with structures in the document
-  contents:
   - options
 - title: Tables
   desc: Working with tables in the document
@@ -38,9 +34,13 @@ reference:
   - names
   - tests
   - get_contents
-  - LaTeX2range
   - Utilities
   - reduce_whitespace
+- title: Miscellaneous
+  desc: Some more documentation
+  contents:
+  - parseLatex_pkg
+  - LaTeX2range
   - vector_to_latex2
   - defaultCatcodes
   - get_leftovers

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tableRow.R
 \name{vector_to_latex2}
 \alias{vector_to_latex2}
-\title{Convert vector to table row}
+\title{Convert vector to items}
 \usage{
 vector_to_latex2(x)
 }
@@ -14,8 +14,8 @@ A \link{LaTeX2} object containing the entries
 of \code{x} concatenated.
 }
 \description{
-Convert vector to table row
+Convert vector to items
 }
 \examples{
-vector_to_latex2(1:3)
+print(vector_to_latex2(1:3), tags = TRUE)
 }

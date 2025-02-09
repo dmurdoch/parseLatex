@@ -1,6 +1,6 @@
 #' @rdname options
 #' @name options
-#' @title Find macro or environment options
+#' @title Find or modify macro or environment options
 #' @param items A list of latex items.
 #' @param start Start looking at `items[[start]]`.
 #' @param which Which options do you want?  Some

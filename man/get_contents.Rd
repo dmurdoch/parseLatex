@@ -3,7 +3,7 @@
 \name{get_contents}
 \alias{get_contents}
 \alias{set_contents}
-\title{Convenience function to get contents from an item}
+\title{Convenience functions to get or set contents of item}
 \usage{
 get_contents(item)
 
@@ -22,7 +22,7 @@ The original \code{item} with the contents
 replaced by \code{value}.
 }
 \description{
-Convenience function to get contents from an item
+Convenience functions to get or set contents of item
 }
 \examples{
 get_contents(parseLatex("{abc}"))

@@ -8,7 +8,7 @@
 \alias{find_brace_options}
 \alias{brace_options}
 \alias{brace_options<-}
-\title{Find macro or environment options}
+\title{Find or modify macro or environment options}
 \usage{
 find_bracket_options(items, which = 1, start = 1)
 

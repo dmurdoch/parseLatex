@@ -123,9 +123,9 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
       } else if (tag == "SPECIAL") {
         code <- attr(item, "catcode")
         if (code == NEWLINE)
-          cat("NEWLINE\n")
+          cat("SPECIAL(NEWLINE)\n")
         else
-          cat(catcodes[1 + attr(item, "catcode")], ":", item, "\n")
+          cat(tag, "(", catcodes[1 + attr(item, "catcode")], "): ", item, "\n", sep = "")
       } else if (tag == "DEFINITION") {
         lapply(item, showItem, indent + 2)
       } else

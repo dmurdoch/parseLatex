@@ -133,7 +133,7 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
   as_LaTeX2(result)
 }
 
-#' @title Convert vector to table row
+#' @title Convert vector to items
 #'
 #' @param x A list or vector to convert.
 #' @returns A [LaTeX2] object containing the entries
@@ -141,7 +141,7 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 #' @export
 #'
 #' @examples
-#' vector_to_latex2(1:3)
+#' print(vector_to_latex2(1:3), tags = TRUE)
 vector_to_latex2 <- function(x) {
   as_LaTeX2(do.call(c, lapply(x, as_LaTeX2)))
 }
