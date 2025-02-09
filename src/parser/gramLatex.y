@@ -1,10 +1,12 @@
+// This grammar assumes bison v. 3.x or higher.
+
 %define parse.error verbose
 %{
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995, 1996, 1997  Robert Gentleman and Ross Ihaka
  *  Copyright (C) 1997--2024  The R Core Team
- *  Copyright (C) 2010 Duncan Murdoch
+ *  Copyright (C) 2010--2025  Duncan Murdoch
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1416,6 +1418,8 @@ SEXP parseLatex(SEXP args)
   if (status != PARSE_OK) parseError();
   return s;
 }
+
+/* R package initialization code */
 
 static const R_ExternalMethodDef ExtEntries[] = {
   {"C_parseLatex", (DL_FUNC) &parseLatex, 6},

@@ -23,10 +23,11 @@ in user code) can change the parsing rules as they go.
 mostly it isn't, but see the detailed comparison below), 
 so it can't do that:  it uses
 the same parsing rules for all code that it looks at.  If you're
-using a LaTeX package that uses non-standard rules, you can 
-use those.
+using a LaTeX package that uses non-standard rules, you can use
+those, but they have to apply to the whole section of code
+passed to `parseLatex()`.
 
-However, subject to the limitation that the code only uses one
+Subject to the limitation that the code only uses one
 set of
 rules, `parseLatex` should be able to parse any LaTeX code.  It
 extends the base `tools::parseLatex()` function in a few ways:
