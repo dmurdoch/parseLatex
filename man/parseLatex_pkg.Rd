@@ -6,7 +6,7 @@
 \alias{parseLatex_pkg}
 \title{The parseLatex package}
 \description{
-Exports an enhanced version of the 'tools::parseLatex()' function to handle 'LaTeX' syntax more accurately. Also includes numerous functions for searching and modifying 'LaTeX' source.
+Exports an enhanced version of the tools::parseLatex() function to handle 'LaTeX' syntax more accurately. Also includes numerous functions for searching and modifying 'LaTeX' source.
 }
 \seealso{
 Useful links:

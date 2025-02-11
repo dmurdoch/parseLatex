@@ -45,8 +45,6 @@
 #' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.  Items in the list have class `"LaTeX2item"`.
 #' @seealso LaTeX2, LaTeX2item
 #' @export
-#' @importFrom utils getParseData
-#' @importFrom tools deparseLatex
 #'
 #' @examples
 #' parsed <- parseLatex(r"(fran\c{c}ais)")

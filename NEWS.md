@@ -1,3 +1,7 @@
+# parseLatex 0.2.1
+
+* Minor modifications for CRAN submission.
+
 # parseLatex 0.2.0
 
 * Added `find_sequence()`, `set_contents()`.
