@@ -1,7 +1,8 @@
-# parseLatex 0.2.2
+# parseLatex 0.2.3
 
 * Added `stdbool.h` to the includes for compatibility with older
 `gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
+* Added a configure script to check for bison (on Unix-alike only).
 
 # parseLatex 0.2.1
 

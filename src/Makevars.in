@@ -4,5 +4,5 @@ $(SHLIB): gramLatex.tab.c
 
 # To edit the grammar, you'll need bison v. 3.x or higher.
 
-gramLatex.tab.c: parser/gramLatex.y
-	bison parser/gramLatex.y
+@BISON_OK@ gramLatex.tab.c: parser/gramLatex.y
+@BISON_OK@	bison parser/gramLatex.y

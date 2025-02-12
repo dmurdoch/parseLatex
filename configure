@@ -1,0 +1,28 @@
+#!/bin/sh
+
+echo "Checking for Bison 3.x ..."
+
+# Find bison in PATH
+BISON=$(command -v bison)
+
+if [ -z "$BISON" ]; then
+    echo "Bison not found."
+    BISON_OK=#
+else
+    # Get the version number
+    BISON_VERSION=$($BISON --version | head -n 1 | awk '{print $4}')
+    MAJOR_VERSION=$(echo "$BISON_VERSION" | cut -d. -f1)
+
+    # Ensure major version is 3 or greater
+    if [ "$MAJOR_VERSION" -ge 3 ]; then
+        echo "Bison version $BISON_VERSION found."
+        BISON_OK=
+    else
+        echo "Bison version $BISON_VERSION found, but 3.x or higher is needed"
+        echo "to process changes to src/parser/gramLatex.y."
+        echo "Will use existing src/gramLatex.tab.c."
+        BISON_OK=#
+    fi
+fi
+
+sed "s/@BISON_OK@/$BISON_OK/g" src/Makevars.in >src/Makevars
