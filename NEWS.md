@@ -1,3 +1,8 @@
+# parseLatex 0.2.2
+
+* Added `stdbool.h` to the includes for compatibility with older
+`gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
+
 # parseLatex 0.2.1
 
 * Minor modifications for CRAN submission.
