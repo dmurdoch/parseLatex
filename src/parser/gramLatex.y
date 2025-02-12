@@ -31,6 +31,7 @@
 #ifdef PARSELATEX_WIN32
 #include <wchar.h>
 #endif
+#include <stdbool.h>
 #include <unicode/uchar.h>
 #include <unicode/utf8.h>
 #include <Rinternals.h>
