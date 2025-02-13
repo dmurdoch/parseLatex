@@ -1,8 +1,9 @@
-# parseLatex 0.2.3
+# parseLatex 0.2.4
 
 * Added `stdbool.h` to the includes for compatibility with older
 `gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
 * Added a configure script to check for bison (on Unix-alike only).
+* Adjacent math environments were treated as a syntax error.
 
 # parseLatex 0.2.1
 

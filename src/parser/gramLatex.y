@@ -172,6 +172,7 @@ struct ParseState {
   int   xxBraceDepth;     /* Brace depth important while
                              collecting args */
   int   xxBracketDepth;   /* So is bracket depth */
+  int   xxMathMode;       /* In single $ mode */
 
   SEXP  mset; /* precious mset for protecting parser semantic values */
   ParseState *prevState;
@@ -193,6 +194,7 @@ static void  xxgettext(char *, size_t, SEXP);
 static SEXP  xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP  xxnewdef(SEXP, SEXP, YYLTYPE *);
 static SEXP  xxmath(SEXP, YYLTYPE *, Rboolean);
+static SEXP  xxenterMathMode();
 static SEXP  xxblock(SEXP, YYLTYPE *);
 static void  xxSetInVerbEnv(SEXP);
 static SEXP  xxpushMode(int, int);
@@ -285,7 +287,9 @@ environment:  begin Items END '{' envname '}'
                             RELEASE_SV($2); }
   |           begin error { xxincompleteBegin($1, &@1); }
 
-math:   '$' nonMath '$'   { $$ = xxmath($2, &@$, FALSE); }
+math:   '$'               { $$ = xxenterMathMode(); }
+            nonMath '$'   { xxpopMode($2);
+                            $$ = xxmath($3, &@$, FALSE); }
   |     '$' error         { xxincomplete(mkString("$"), &@1); }
 
 displaymath:    TWO_DOLLARS nonMath TWO_DOLLARS
@@ -425,15 +429,30 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
   return ans;
 }
 
-static SEXP xxpushMode(int getArgs,
-                       int ignoreKeywords) {
+static SEXP xxenterMathMode() {
     SEXP ans;
-
-    PRESERVE_SV(ans = allocVector(INTSXP, 4));
+    PRESERVE_SV(ans = allocVector(INTSXP, 5));
     INTEGER(ans)[0] = parseState.xxGetArgs;
     INTEGER(ans)[1] = parseState.xxIgnoreKeywords;
     INTEGER(ans)[2] = parseState.xxBraceDepth;
     INTEGER(ans)[3] = parseState.xxBracketDepth;
+    INTEGER(ans)[4] = parseState.xxMathMode;
+    parseState.xxBraceDepth = 0;
+    parseState.xxBracketDepth = 0;
+    parseState.xxMathMode = 1;
+    return ans;
+
+}
+static SEXP xxpushMode(int getArgs,
+                       int ignoreKeywords) {
+    SEXP ans;
+
+    PRESERVE_SV(ans = allocVector(INTSXP, 5));
+    INTEGER(ans)[0] = parseState.xxGetArgs;
+    INTEGER(ans)[1] = parseState.xxIgnoreKeywords;
+    INTEGER(ans)[2] = parseState.xxBraceDepth;
+    INTEGER(ans)[3] = parseState.xxBracketDepth;
+    INTEGER(ans)[4] = parseState.xxMathMode;
     parseState.xxGetArgs = getArgs;
     parseState.xxIgnoreKeywords = ignoreKeywords;
     parseState.xxBraceDepth = 0;
@@ -446,6 +465,7 @@ static void xxpopMode(SEXP oldmode) {
   parseState.xxIgnoreKeywords = INTEGER(oldmode)[1];
   parseState.xxBraceDepth = INTEGER(oldmode)[2];
   parseState.xxBracketDepth = INTEGER(oldmode)[3];
+  parseState.xxMathMode = INTEGER(oldmode)[4];
   RELEASE_SV(oldmode);
 }
 
@@ -726,7 +746,9 @@ static void PutState(ParseState *state) {
     state->xxIgnoreKeywords = parseState.xxIgnoreKeywords;
     state->xxBraceDepth = parseState.xxBraceDepth;
     state->xxBracketDepth = parseState.xxBracketDepth;
+    state->xxMathMode = parseState.xxMathMode;
     state->prevState = parseState.prevState;
+
 }
 
 static void UseState(ParseState *state) {
@@ -751,6 +773,7 @@ static SEXP ParseLatex(ParseStatus *status)
     parseState.xxIgnoreKeywords = 0;
     parseState.xxBraceDepth = 0;
     parseState.xxBracketDepth = 0;
+    parseState.xxMathMode = 0;
 
     parseState.xxlineno = 1;
     parseState.xxcolno = 1;
@@ -1195,17 +1218,18 @@ static int magicComment(const uint8_t *s, int len)
 
 static int mkDollar(int c)
 {
-    int retval = c, cat;
+  int retval = c, cat;
 
+  if (parseState.xxMathMode != 1) {
     c = xxgetc();
     cat = tex_catcode(c);
 
     if (cat == 3)
-        retval = TWO_DOLLARS;
+      retval = TWO_DOLLARS;
     else
-        xxungetc(c);
-
-    return retval;
+      xxungetc(c);
+  }
+  return retval;
 }
 
 static int mkMarkup(int c)

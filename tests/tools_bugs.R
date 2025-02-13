@@ -33,4 +33,7 @@ parseLatex("\\newenvironment{bea}{\\begin{eqnarray*}}{\\end{eqnarray*}}")
 parseLatex("\\newcommand{\\bea}{\\begin{eqnarray*}}")
 parseLatex("\\def\\bea{\\begin{eqnarray*}}")
 
+# 7. Syntax error in tools
+parseLatex("$a$$b$")
+
 
