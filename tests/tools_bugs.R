@@ -36,4 +36,6 @@ parseLatex("\\def\\bea{\\begin{eqnarray*}}")
 # 7. Syntax error in tools
 parseLatex("$a$$b$")
 
+# 8. Syntax error in tools
 
+parseLatex("\\let\\bea{\\begin{eqnarray*}}")

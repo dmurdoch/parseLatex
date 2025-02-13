@@ -1,9 +1,11 @@
-# parseLatex 0.2.4
+# parseLatex 0.2.5
 
 * Added `stdbool.h` to the includes for compatibility with older
 `gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
 * Added a configure script to check for bison (on Unix-alike only).
 * Adjacent math environments were treated as a syntax error.
+* `\let` is now handled the same way as `\def`:  the next two
+tokens are not considered for evaluation.
 
 # parseLatex 0.2.1
 
