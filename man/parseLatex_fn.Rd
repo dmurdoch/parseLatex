@@ -14,6 +14,9 @@ parseLatex(
   verbose = FALSE,
   verbatim = c("verbatim", "verbatim*", "Sinput", "Soutput"),
   verb = "\\\\Sexpr",
+  defcmd = c("\\\\newcommand", "\\\\renewcommand", "\\\\providecommand", "\\\\def",
+    "\\\\let"),
+  defenv = c("\\\\newenvironment", "\\\\renewenvironment"),
   catcodes = defaultCatcodes
 )
 
@@ -28,7 +31,12 @@ parseLatex(
 
 \item{verbatim}{A character vector containing the names of \LaTeX environments holding verbatim text.}
 
-\item{verb}{A character vector containing LaTeX macros that should be assumed to hold verbatim text.}
+\item{verb}{A character vector containing LaTeX macros that
+should be assumed to hold verbatim text.}
+
+\item{defcmd, defenv}{Character vectors of macros that
+are assumed to define new macro commands or environments
+respectively.}
 
 \item{catcodes}{A list or dataframe holding LaTeX "catcodes",
 such as \link{defaultCatcodes}.}

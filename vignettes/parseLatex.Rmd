@@ -212,6 +212,10 @@ backslash, e.g.\
 `  % !parser verb \Sexpr`\
 \
 would add the default verb macro.
+- `% !parser defcmd [name]` does the same for commands like
+`\newcommand`.
+- `% !parser defenv [name]` does it for commands like 
+`\newenvironment`.
 - `% !parser verbatim [name]` This tells the parser
 to add the name to the list of environments holding verbatim
 text, i.e. the list given by the `verbatim` argument. 

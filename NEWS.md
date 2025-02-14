@@ -1,4 +1,4 @@
-# parseLatex 0.2.5
+# parseLatex 0.2.6
 
 * Added `stdbool.h` to the includes for compatibility with older
 `gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
@@ -6,6 +6,9 @@
 * Adjacent math environments were treated as a syntax error.
 * `\let` is now handled the same way as `\def`:  the next two
 tokens are not considered for evaluation.
+* Added arguments `defcmd` and `defenv` to `parseLatex()` to
+allow the user to specify defining macros.  These names
+are also now allowed in the magic comments.
 
 # parseLatex 0.2.1
 

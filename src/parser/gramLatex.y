@@ -163,8 +163,9 @@ struct ParseState {
                              this is NULL */
   SEXP  xxVerbatimList;   /* A STRSXP containing all the
                              verbatim environment names */
-  SEXP  xxVerbList;       /* A STRSXP containing all the
-                             verbatim command names */
+  SEXP  xxKwdList;        /* A STRSXP containing all the
+                             verbatim and definition command names */
+  SEXP  xxKwdType;        /* An INTSXP with 1=VERB, 2=DEFCMD, 3=DEFENV */
   SEXP  xxCodepoints;     /* A vector of codepoints with catcodes given */
   SEXP  xxCatcodes;       /* Corresponding catcodes */
   int   xxGetArgs;        /* Collecting args to macro */
@@ -203,6 +204,7 @@ static void  xxArg(SEXP);
 
 static int magicComment(const uint8_t *, int);
 static SEXP addString(const uint8_t *, size_t, SEXP);
+static SEXP addInteger(int value, SEXP);
 
 #define END_OF_ARGS_CHAR 0xFFFE /* not a legal character */
 
@@ -741,7 +743,8 @@ static void PutState(ParseState *state) {
     state->xxinitvalue = parseState.xxinitvalue;
     state->xxInVerbEnv = parseState.xxInVerbEnv;
     state->xxVerbatimList = parseState.xxVerbatimList;
-    state->xxVerbList = parseState.xxVerbList;
+    state->xxKwdList = parseState.xxKwdList;
+    state->xxKwdType = parseState.xxKwdType;
     state->xxGetArgs = parseState.xxGetArgs;
     state->xxIgnoreKeywords = parseState.xxIgnoreKeywords;
     state->xxBraceDepth = parseState.xxBraceDepth;
@@ -760,7 +763,8 @@ static void UseState(ParseState *state) {
     parseState.xxinitvalue = state->xxinitvalue;
     parseState.xxInVerbEnv = state->xxInVerbEnv;
     parseState.xxVerbatimList = state->xxVerbatimList;
-    parseState.xxVerbList = state->xxVerbList;
+    parseState.xxKwdList = state->xxKwdList;
+    parseState.xxKwdType = state->xxKwdType;
     parseState.prevState = state->prevState;
 }
 
@@ -841,13 +845,6 @@ static keywords[] = {
     { "\\begin",  BEGIN },
     { "\\end",    END },
     { "\\verb",   VERB },
-    { "\\newenvironment", NEWENV },
-    { "\\renewenvironment", NEWENV },
-    { "\\newcommand", NEWCMD },
-    { "\\renewcommand", NEWCMD },
-    { "\\providecommand", NEWCMD },
-    { "\\def", NEWCMD },
-    { "\\let", NEWCMD },
     { 0,     0        }
     /* All other markup macros are rejected. */
 };
@@ -866,9 +863,13 @@ static int KeywordLookup(const char *s)
       return keywords[i].token;
   }
 
-  for (i = 0; i < length(parseState.xxVerbList); i++) {
-    if (strcmp(CHAR(STRING_ELT(parseState.xxVerbList, i)), s) == 0)
-      return VERB2;
+  for (i = 0; i < length(parseState.xxKwdList); i++) {
+    if (strcmp(CHAR(STRING_ELT(parseState.xxKwdList, i)), s) == 0)
+      switch(INTEGER(parseState.xxKwdType)[i]) {
+      case 1: return VERB2;
+      case 2: return NEWCMD;
+      case 3: return NEWENV;
+      }
   }
 
   return MACRO;
@@ -1161,6 +1162,18 @@ static SEXP addString(const uint8_t *string,
   return temp;
 }
 
+static SEXP addInteger(int value,
+                      SEXP values) {
+  size_t n = length(values);
+  SEXP temp;
+  PRESERVE_SV(temp = allocVector(INTSXP, n + 1));
+  for (int i=0; i < n; i++)
+    INTEGER(temp)[i] = INTEGER(values)[i];
+  RELEASE_SV(values);
+  INTEGER(temp)[n] = value;
+  return temp;
+}
+
 /* magic comment codes:
  * 0 = not magic
  * 1 = % !parser off
@@ -1198,8 +1211,34 @@ static int magicComment(const uint8_t *s, int len)
     name = text;
     for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
     if (text - s < len) {
-      parseState.xxVerbList = addString(name, text - name, parseState.xxVerbList);
+      parseState.xxKwdList = addString(name, text - name, parseState.xxKwdList);
+      parseState.xxKwdType = addInteger(1, parseState.xxKwdType);
       return 3;
+    }
+  }
+  if (text - s + 7 >= len) return 0;
+  if (strncmp((char *)text, "defcmd ", 7) == 0) {
+    text += 7;
+    for (; text - s < len && *text == ' '; text++) {};
+    if (*text == '\n' || text - s >= len) return 0;
+    name = text;
+    for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
+    if (text - s < len) {
+      parseState.xxKwdList = addString(name, text - name, parseState.xxKwdList);
+      parseState.xxKwdType = addInteger(2, parseState.xxKwdType);
+      return 4;
+    }
+  }
+  if (strncmp((char *)text, "defenv ", 7) == 0) {
+    text += 7;
+    for (; text - s < len && *text == ' '; text++) {};
+    if (*text == '\n' || text - s >= len) return 0;
+    name = text;
+    for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
+    if (text - s < len) {
+      parseState.xxKwdList = addString(name, text - name, parseState.xxKwdList);
+      parseState.xxKwdType = addInteger(3, parseState.xxKwdType);
+      return 5;
     }
   }
   if (text - s + 9 >= len) return 0;
@@ -1211,7 +1250,7 @@ static int magicComment(const uint8_t *s, int len)
     for (text++; text - s < len && *text != ' ' && *text != '\n'; text++) {};
     if (text - s < len) {
       parseState.xxVerbatimList = addString(name, text - name, parseState.xxVerbatimList);
-      return 4;
+      return 6;
     }
   }
   return 0;
@@ -1431,7 +1470,8 @@ SEXP parseLatex(SEXP args)
 
   parseState.xxDebugTokens = asInteger(CAR(args)); args = CDR(args);
   parseState.xxVerbatimList = CAR(args); args = CDR(args);
-  parseState.xxVerbList = CAR(args); args = CDR(args);
+  parseState.xxKwdList = CAR(args); args = CDR(args);
+  parseState.xxKwdType = CAR(args); args = CDR(args);
   parseState.xxCodepoints = CAR(args); args = CDR(args);
   parseState.xxCatcodes = CAR(args); args = CDR(args);
 
@@ -1448,7 +1488,7 @@ SEXP parseLatex(SEXP args)
 /* R package initialization code */
 
 static const R_ExternalMethodDef ExtEntries[] = {
-  {"C_parseLatex", (DL_FUNC) &parseLatex, 6},
+  {"C_parseLatex", (DL_FUNC) &parseLatex, 7},
 
   {NULL, NULL, 0}
 };

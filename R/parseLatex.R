@@ -7,7 +7,11 @@
 #' @param text A character vector containing LaTeX source code.
 #' @param verbose If \code{TRUE}, print debug error messages.
 #' @param verbatim A character vector containing the names of \LaTeX environments holding verbatim text.
-#' @param verb A character vector containing LaTeX macros that should be assumed to hold verbatim text.
+#' @param verb A character vector containing LaTeX macros that
+#'  should be assumed to hold verbatim text.
+#' @param defcmd,defenv Character vectors of macros that
+#'  are assumed to define new macro commands or environments
+#'  respectively.
 #' @param catcodes A list or dataframe holding LaTeX "catcodes",
 #' such as [defaultCatcodes].
 #'
@@ -54,9 +58,18 @@ parseLatex <- function(text,
                        verbatim = c("verbatim", "verbatim*",
                         "Sinput", "Soutput"),
                        verb = "\\Sexpr",
+                       defcmd = c("\\newcommand", "\\renewcommand",
+                                  "\\providecommand", "\\def", "\\let"),
+                       defenv = c("\\newenvironment",
+                                  "\\renewenvironment"),
                        catcodes = defaultCatcodes) {
 
   text <- paste(text, collapse="\n")
+
+  keywords <- c(as.character(verb), as.character(defcmd),
+                as.character(defenv))
+  keywordtype <- rep(1:3, c(length(verb), length(defcmd),
+                            length(defenv)))
   stopifnot(all(nchar(catcodes$char, "chars") == 1))
   codepoint <- utf8ToInt(paste0(catcodes$char, collapse = ""))
   catcode <- as.integer(catcodes$catcode)
@@ -65,8 +78,8 @@ parseLatex <- function(text,
   if (length(codepoint) != length(catcode))
     stop("catcodes must have one char per catcode")
   .External(C_parseLatex, text, as.logical(verbose),
-            as.character(verbatim), as.character(verb),
-            codepoint, catcode)
+            as.character(verbatim), keywords,
+            keywordtype, codepoint, catcode)
 
 }
 
