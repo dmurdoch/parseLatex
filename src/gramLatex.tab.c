@@ -3393,14 +3393,24 @@ static int mkVerb2(const uint8_t *s, int c)
     unsigned int nstext = INITBUFSIZE;
     uint8_t *stext = st0, *bp = st0;
     UBool isError = false;
-    int depth = 1;
+    int depth = 0;
     const uint8_t *macro = s;
 
     while (*s) TEXT_PUSH(*s++);
 
+    /* eat whitespace */
+    while (tex_catcode(c) == 10) {
+      TEXT_PUSH(c);
+      c = xxgetc();
+    }
+
+    if (c == '{') depth++;
+
     do {
       TEXT_PUSH(c);
       c = xxgetc();
+      /* if depth is zero here, we had a one character verb arg */
+      if (depth == 0) break;
       if (c == '{') depth++;
       else if (c == '}') depth--;
     } while (depth > 0 && c != R_EOF);

@@ -1,4 +1,4 @@
-# parseLatex 0.2.6
+# parseLatex 0.2.7
 
 * Added `stdbool.h` to the includes for compatibility with older
 `gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
@@ -9,6 +9,8 @@ tokens are not considered for evaluation.
 * Added arguments `defcmd` and `defenv` to `parseLatex()` to
 allow the user to specify defining macros.  These names
 are also now allowed in the magic comments.
+* Spaces between a `verb` macro and its argument caused the parsing
+to be incorrect.
 
 # parseLatex 0.2.1
 

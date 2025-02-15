@@ -1,7 +1,7 @@
 Package: parseLatex
 Type: Package
 Title: Parse 'LaTeX' Code
-Version: 0.2.6
+Version: 0.2.7
 Authors@R: c(
     person(
       "Duncan", "Murdoch",
