@@ -3388,44 +3388,46 @@ static int mkVerb(int c)
 
 static int mkVerb2(const uint8_t *s, int c)
 {
-    uint8_t st0[INITBUFSIZE];
-    uint8_t *st1 = NULL;
-    unsigned int nstext = INITBUFSIZE;
-    uint8_t *stext = st0, *bp = st0;
-    UBool isError = false;
-    int depth = 0;
-    const uint8_t *macro = s;
+  uint8_t st0[INITBUFSIZE];
+  uint8_t *st1 = NULL;
+  unsigned int nstext = INITBUFSIZE;
+  uint8_t *stext = st0, *bp = st0;
+  UBool isError = false;
+  const uint8_t *macro = s;
+  char buffer[256];
 
-    while (*s) TEXT_PUSH(*s++);
+  while (*s) TEXT_PUSH(*s++);
 
-    /* eat whitespace */
-    while (tex_catcode(c) == 10) {
-      TEXT_PUSH(c);
-      c = xxgetc();
-    }
-
-    if (c == '{') depth++;
-
+  /* eat whitespace */
+  while (tex_catcode(c) == 10) {
+    TEXT_PUSH(c);
+    c = xxgetc();
+  }
+  if (c == '}') {
+    snprintf(buffer, sizeof(buffer), "unexpected '}'\n'%s' has no argument", macro);
+    yyerror(buffer);
+    parseError();
+  } else if (c != '{') { /* it's a one-character argument */
+    TEXT_PUSH(c);
+  } else {
+    int depth = 1;
     do {
       TEXT_PUSH(c);
       c = xxgetc();
-      /* if depth is zero here, we had a one character verb arg */
-      if (depth == 0) break;
       if (c == '{') depth++;
       else if (c == '}') depth--;
     } while (depth > 0 && c != R_EOF);
 
     if (c == R_EOF) {
-      char buffer[256];
       snprintf(buffer, sizeof(buffer), "unexpected END_OF_INPUT\n'%s' is still open", macro);
       yyerror(buffer);
       parseError();
     } else
       TEXT_PUSH(c);
-
-    PRESERVE_SV(yylval = mkString2(stext, bp - stext));
-    if(st1) free(st1);
-    return VERB;
+  }
+  PRESERVE_SV(yylval = mkString2(stext, bp - stext));
+  if(st1) free(st1);
+  return VERB;
 }
 
 static int mkVerbEnv(void)
