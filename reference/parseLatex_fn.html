@@ -49,7 +49,7 @@
 <span>    <span class="st">"\\let"</span><span class="op">)</span>,</span>
 <span>  defenv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"\\newenvironment"</span>, <span class="st">"\\renewenvironment"</span><span class="op">)</span>,</span>
 <span>  catcodes <span class="op">=</span> <span class="va">defaultCatcodes</span>,</span>
-<span>  partial <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  recover <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'LaTeX2item'</span></span>
@@ -91,9 +91,9 @@ respectively.</p></dd>
 such as <a href="defaultCatcodes.html">defaultCatcodes</a>.</p></dd>
 
 
-<dt id="arg-partial">partial<a class="anchor" aria-label="anchor" href="#arg-partial"></a></dt>
+<dt id="arg-recover">recover<a class="anchor" aria-label="anchor" href="#arg-recover"></a></dt>
 <dd><p>If <code>TRUE</code>, convert errors to warnings and
-return partial results.</p></dd>
+continue parsing.  See Details below.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -135,7 +135,11 @@ Windows),</p></li>
 <li><p>as a control
 character (catcode 15) if its code point is less than 32,</p></li>
 <li><p>as "other" (catcode 12) otherwise.</p></li>
-</ul></div>
+</ul><p>When <code>recover = TRUE</code>, the parser will mark each error
+in the output, and attempt to continue parsing.  This
+may lead to a cascade of errors, but will sometimes
+help in locating the first error.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>LaTeX2, LaTeX2item</p></div>
