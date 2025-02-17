@@ -17,7 +17,8 @@ parseLatex(
   defcmd = c("\\\\newcommand", "\\\\renewcommand", "\\\\providecommand", "\\\\def",
     "\\\\let"),
   defenv = c("\\\\newenvironment", "\\\\renewenvironment"),
-  catcodes = defaultCatcodes
+  catcodes = defaultCatcodes,
+  partial = FALSE
 )
 
 \method{print}{LaTeX2item}(x, ...)
@@ -40,6 +41,9 @@ respectively.}
 
 \item{catcodes}{A list or dataframe holding LaTeX "catcodes",
 such as \link{defaultCatcodes}.}
+
+\item{partial}{If \code{TRUE}, convert errors to warnings and
+return partial results.}
 
 \item{x}{Object to work on.}
 

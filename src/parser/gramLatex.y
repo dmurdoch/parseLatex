@@ -64,13 +64,7 @@ static int   ParseErrorCol;      /* Column of start of token where parse error o
 
 static char  ParseErrorMsg[PARSE_ERROR_SIZE];
 
-static NORET void parseError(void);
-
-static NORET void parseError(void)
-{
-  error("Parse error at %d:%d: %s", ParseErrorLine,
-        ParseErrorCol, ParseErrorMsg);
-}
+static int parseError(void);
 
 /* end of internal replacements */
 
@@ -138,9 +132,11 @@ while (0)
 /* Functions used in the parsing process */
 
 static void     GrowList(SEXP, SEXP);
+static SEXP     AppendList(SEXP, SEXP);
 static int      KeywordLookup(const char *);
 static SEXP     NewList(void);
 static SEXP     makeSrcref(YYLTYPE *);
+static YYLTYPE  noSrcref = {0,0,0,0,0,0};
 static UChar32  xxgetc(void);
 static int      xxungetc(int);
 static void     xxincomplete(SEXP, YYLTYPE *);
@@ -176,6 +172,7 @@ struct ParseState {
   int   xxMathMode;       /* In single $ mode */
 
   SEXP  mset; /* precious mset for protecting parser semantic values */
+  int   recover;          /* Whether to attempt to recover */
   ParseState *prevState;
 };
 
@@ -195,12 +192,16 @@ static void  xxgettext(char *, size_t, SEXP);
 static SEXP  xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP  xxnewdef(SEXP, SEXP, YYLTYPE *);
 static SEXP  xxmath(SEXP, YYLTYPE *, Rboolean);
-static SEXP  xxenterMathMode();
+static SEXP  xxenterMathMode(void);
 static SEXP  xxblock(SEXP, YYLTYPE *);
 static void  xxSetInVerbEnv(SEXP);
 static SEXP  xxpushMode(int, int);
 static void  xxpopMode(SEXP);
 static void  xxArg(SEXP);
+
+static SEXP  xxfakeStart(const char *, SEXP);
+static SEXP  xxfakeBegin(SEXP, SEXP);
+static SEXP  xxwrapError(SEXP);
 
 static int magicComment(const uint8_t *, int);
 static SEXP addString(const uint8_t *, size_t, SEXP);
@@ -246,9 +247,7 @@ Init:    Items END_OF_INPUT    { xxsavevalue($1, &@$);
                                  YYACCEPT; }
   |  END_OF_INPUT              { xxsavevalue(NULL, &@$);
                                  YYACCEPT; }
-  |  error                     { PRESERVE_SV(parseState.Value = R_NilValue);
-                                 YYABORT; }
-  ;
+  |  error                     { YYABORT; }
 
 Items:    Item         { $$ = xxnewlist($1); }
   |  math              { $$ = xxnewlist($1); }
@@ -256,6 +255,10 @@ Items:    Item         { $$ = xxnewlist($1); }
   |  Items Item        { $$ = xxlist($1, $2); }
   |  Items math        { $$ = xxlist($1, $2); }
   |  Items displaymath { $$ = xxlist($1, $2); }
+  |  Items error       { GrowList($1, xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL)));
+                         $$ = $1;
+                         yyclearin;
+                         parseError(); }
 
 nonMath:  Item         { $$ = xxnewlist($1); }
   |  nonMath Item      { $$ = xxlist($1, $2); }
@@ -287,21 +290,39 @@ environment:  begin Items END '{' envname '}'
   |           begin END '{' envname '}'
                           { $$ = xxenv($1, NULL, $4, &@$);
                             RELEASE_SV($2); }
-  |           begin error { xxincompleteBegin($1, &@1); }
+  |           begin error { $$ = xxwrapError(xxfakeBegin($1, NULL));
+                            xxincompleteBegin($1, &@1); }
+  |           begin Items error {
+                            $$ = xxwrapError(xxfakeBegin($1, $2));
+                            xxincompleteBegin($1, &@1);
+                          }
 
-math:   '$'               { $$ = xxenterMathMode(); }
-            nonMath '$'   { xxpopMode($2);
-                            $$ = xxmath($3, &@$, FALSE); }
-  |     '$' error         { xxincomplete(mkString("$"), &@1); }
+mathstart: '$'            { $$ = xxenterMathMode(); }
+
+math:   mathstart nonMath '$'   { xxpopMode($1);
+                            $$ = xxmath($2, &@$, FALSE); }
+  |     mathstart error   { xxpopMode($1);
+                            $$ = xxwrapError(xxfakeStart("$", NULL));
+                            xxincomplete(mkString("$"), &@1); }
+  |     mathstart nonMath error { xxpopMode($1);
+                            $$ = xxwrapError(xxfakeStart("$", $2));
+                            xxincomplete(mkString("$"), &@1); }
 
 displaymath:    TWO_DOLLARS nonMath TWO_DOLLARS
                           { $$ = xxmath($2, &@$, TRUE); }
   |             TWO_DOLLARS error
-                          { xxincomplete(mkString("$$"), &@1); }
+                          { $$ = xxwrapError(xxfakeStart("$$", NULL));
+                            xxincomplete(mkString("$$"), &@1); }
+  |             TWO_DOLLARS nonMath error
+                          { $$ = xxwrapError(xxfakeStart("$$", $2));
+                              xxincomplete(mkString("$$"), &@1); }
 
 block:    '{'  Items  '}' { $$ = xxblock($2, &@$); }
   |  '{' '}'              { $$ = xxblock(NULL, &@$); }
-  | '{' error             { xxincomplete(mkString("{"), &@1); }
+  | '{' error             { $$ = xxwrapError(xxfakeStart("{", NULL));
+                            xxincomplete(mkString("{"), &@1); }
+  | '{' Items error       { $$ = xxwrapError(xxfakeStart("{", $2));
+                            xxincomplete(mkString("{"), &@1); }
 
 newdefine :  NEWCMD       { $$ = xxpushMode(2, 1); }
                Items END_OF_ARGS
@@ -315,6 +336,17 @@ newdefine :  NEWCMD       { $$ = xxpushMode(2, 1); }
                                         $3, &@$); }
 
 %%
+
+static int parseError(void)
+{
+  if (parseState.recover)
+    warning("Parse error at %d:%d: %s", ParseErrorLine,
+            ParseErrorCol, ParseErrorMsg);
+  else
+    error("Parse error at %d:%d: %s", ParseErrorLine,
+          ParseErrorCol, ParseErrorMsg);
+  return ERROR;
+}
 
 static SEXP xxnewlist(SEXP item)
 {
@@ -379,6 +411,11 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
              ename2);
     yyerror(buffer);
     parseError();
+    snprintf(buffer, sizeof(buffer),
+             "\\end{%s}", ename2);
+    PRESERVE_SV(ans = xxfakeBegin(begin, body));
+    GrowList(ans, xxtag(mkString(buffer), TEXT, lloc));
+    return xxwrapError(ans);
   }
 
   if (strcmp("document", ename1) == 0) {
@@ -431,7 +468,7 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
   return ans;
 }
 
-static SEXP xxenterMathMode() {
+static SEXP xxenterMathMode(void) {
     SEXP ans;
     PRESERVE_SV(ans = allocVector(INTSXP, 5));
     INTEGER(ans)[0] = parseState.xxGetArgs;
@@ -730,6 +767,65 @@ static void GrowList(SEXP l, SEXP s)
     tmp = CONS(s, R_NilValue);
     SETCDR(CAR(l), tmp);
     SETCAR(l, tmp);
+}
+
+/* Append one list after another */
+
+static SEXP AppendList(SEXP head, SEXP tail)
+{
+    SETCDR(CAR(head), CDR(tail));
+    SETCAR(head, CAR(tail));
+    return head;
+}
+
+/* Make items that look like the start of an env */
+
+static SEXP xxfakeStart(const char * start, SEXP items)
+{
+  SEXP temp;
+  YYLTYPE *lloc = &noSrcref;
+  PRESERVE_SV(temp = xxnewlist(xxtag(mkString(start),
+                                     TEXT, lloc)));
+  if (items)
+    AppendList(temp, items);
+  return temp;
+}
+
+/* Make items that look like the start of an env */
+
+static SEXP xxfakeBegin(SEXP envname, SEXP items)
+{
+  SEXP temp;
+  YYLTYPE *lloc = &noSrcref;
+  PRESERVE_SV(temp = xxnewlist(xxtag(mkString("\\begin"),
+                                     TEXT, lloc)));
+  GrowList(temp, xxblock(envname, lloc));
+  if (items)
+    AppendList(temp, items);
+  return temp;
+}
+
+/* Wrap a list in markers to look like an error message */
+static SEXP xxwrapError(SEXP list)
+{
+  SEXP temp;
+  YYLTYPE *lloc = &noSrcref;
+  PROTECT(temp = mkString(">>>"));
+  PROTECT(temp = xxtag(temp, TEXT, lloc));
+  PROTECT(temp = xxnewlist(temp));
+  if (list) {
+    if (TYPEOF(list) != LISTSXP)
+      PROTECT(list = xxnewlist(list));
+    else
+      PROTECT(list);
+    AppendList(temp, list);
+    UNPROTECT(1);
+    RELEASE_SV(list);
+  }
+  GrowList(temp, xxtag(mkString("<<<"), TEXT, lloc));
+  PROTECT(temp = xxblock(temp, lloc));
+  UNPROTECT(4);
+  return temp;
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1369,7 +1465,7 @@ static int mkVerb2(const uint8_t *s, int c)
   if (c == '}') {
     snprintf(buffer, sizeof(buffer), "unexpected '}'\n'%s' has no argument", macro);
     yyerror(buffer);
-    parseError();
+    return parseError();
   } else if (c != '{') { /* it's a one-character argument */
     TEXT_PUSH(c);
   } else {
@@ -1384,7 +1480,7 @@ static int mkVerb2(const uint8_t *s, int c)
     if (c == R_EOF) {
       snprintf(buffer, sizeof(buffer), "unexpected END_OF_INPUT\n'%s' is still open", macro);
       yyerror(buffer);
-      parseError();
+      return parseError();
     } else
       TEXT_PUSH(c);
   }
@@ -1486,11 +1582,11 @@ SEXP parseLatex(SEXP args)
   parseState.xxKwdType = CAR(args); args = CDR(args);
   parseState.xxCodepoints = CAR(args); args = CDR(args);
   parseState.xxCatcodes = CAR(args); args = CDR(args);
+  parseState.recover = LOGICAL(CAR(args))[0]; args = CDR(args);
 
   nextchar_parse = translateCharUTF8(STRING_ELT(text, 0));
   ptr_getc = char_getc;
   s = ParseLatex(&status);
-
   PopState();
 
   if (status != PARSE_OK) parseError();
@@ -1500,7 +1596,7 @@ SEXP parseLatex(SEXP args)
 /* R package initialization code */
 
 static const R_ExternalMethodDef ExtEntries[] = {
-  {"C_parseLatex", (DL_FUNC) &parseLatex, 7},
+  {"C_parseLatex", (DL_FUNC) &parseLatex, 8},
 
   {NULL, NULL, 0}
 };

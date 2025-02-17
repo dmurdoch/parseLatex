@@ -14,6 +14,8 @@
 #'  respectively.
 #' @param catcodes A list or dataframe holding LaTeX "catcodes",
 #' such as [defaultCatcodes].
+#' @param recover If `TRUE`, convert errors to warnings and
+#' continue parsing.  See Details below.
 #'
 #' @details
 #' Some versions of LaTeX such as `pdflatex` only handle ASCII
@@ -45,6 +47,10 @@
 #'  character (catcode 15) if its code point is less than 32,
 #'  - as "other" (catcode 12) otherwise.
 #'
+#'  When `recover = TRUE`, the parser will mark each error
+#'  in the output, and attempt to continue parsing.  This
+#'  may lead to a cascade of errors, but will sometimes
+#'  help in locating the first error.
 #'
 #' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.  Items in the list have class `"LaTeX2item"`.
 #' @seealso LaTeX2, LaTeX2item
@@ -62,7 +68,8 @@ parseLatex <- function(text,
                                   "\\providecommand", "\\def", "\\let"),
                        defenv = c("\\newenvironment",
                                   "\\renewenvironment"),
-                       catcodes = defaultCatcodes) {
+                       catcodes = defaultCatcodes,
+                       recover = FALSE) {
 
   text <- paste(text, collapse="\n")
 
@@ -73,14 +80,17 @@ parseLatex <- function(text,
   stopifnot(all(nchar(catcodes$char, "chars") == 1))
   codepoint <- utf8ToInt(paste0(catcodes$char, collapse = ""))
   catcode <- as.integer(catcodes$catcode)
+  recover <- as.logical(recover)
+  if (length(recover) != 1 || is.na(recover))
+    stop("'recover' must be TRUE or FALSE")
   if (!(all(catcode %in% 0:15)))
     stop("catcodes must be in the range 0 to 15")
   if (length(codepoint) != length(catcode))
     stop("catcodes must have one char per catcode")
   .External(C_parseLatex, text, as.logical(verbose),
             as.character(verbatim), keywords,
-            keywordtype, codepoint, catcode)
-
+            keywordtype, codepoint, catcode,
+            recover)
 }
 
 #' The default "catcodes" used by [parseLatex].

@@ -1,4 +1,4 @@
-# parseLatex 0.2.7
+# parseLatex 0.2.8
 
 * Added `stdbool.h` to the includes for compatibility with older
 `gcc`.  (Thanks to Dirk Eddelbuettel for the report and PR #2).
@@ -11,6 +11,9 @@ allow the user to specify defining macros.  These names
 are also now allowed in the magic comments.
 * Spaces between a `verb` macro and its argument caused the parsing
 to be incorrect.
+* Experimentally added argument `recover` to `parseLatex()`, to
+attempt to recover
+after a parsing error.  This may help with diagnosing the error.
 
 # parseLatex 0.2.1
 
