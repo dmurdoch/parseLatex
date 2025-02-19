@@ -92,7 +92,9 @@ character (catcode 15) if its code point is less than 32,
 When \code{recover = TRUE}, the parser will mark each error
 in the output, and attempt to continue parsing.  This
 may lead to a cascade of errors, but will sometimes
-help in locating the first error.
+help in locating the first error.  The section of text
+related to the error will be marked as an item with
+tag \code{ERROR}.
 }
 \examples{
 parsed <- parseLatex(r"(fran\c{c}ais)")

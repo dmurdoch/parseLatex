@@ -50,7 +50,9 @@
 #'  When `recover = TRUE`, the parser will mark each error
 #'  in the output, and attempt to continue parsing.  This
 #'  may lead to a cascade of errors, but will sometimes
-#'  help in locating the first error.
+#'  help in locating the first error.  The section of text
+#'  related to the error will be marked as an item with
+#'  tag `ERROR`.
 #'
 #' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.  Items in the list have class `"LaTeX2item"`.
 #' @seealso LaTeX2, LaTeX2item
@@ -199,6 +201,7 @@ deparseLatex <- function(x, dropBraces = FALSE)
                          "\\end{", envName(a), "}"),
                        MATH = c("$", Recall(a), "$"), # \( and \) parse as MACRO
                        DISPLAYMATH = c("$$", Recall(a), "$$"),
+                       ERROR = c(">>>", Recall(a), "<<<"),
                        NULL = stop("Internal error, no tag", domain = NA)
                 ))
     lastTag <- tag

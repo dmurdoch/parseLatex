@@ -14,6 +14,8 @@ to be incorrect.
 * Experimentally added argument `recover` to `parseLatex()`, to
 attempt to recover
 after a parsing error.  This may help with diagnosing the error.
+The error will be wrapped in an `ERROR` tag which is displayed
+as `>>>text causing error<<<`.
 
 # parseLatex 0.2.1
 
