@@ -138,7 +138,9 @@ character (catcode 15) if its code point is less than 32,</p></li>
 </ul><p>When <code>recover = TRUE</code>, the parser will mark each error
 in the output, and attempt to continue parsing.  This
 may lead to a cascade of errors, but will sometimes
-help in locating the first error.</p>
+help in locating the first error.  The section of text
+related to the error will be marked as an item with
+tag <code>ERROR</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
