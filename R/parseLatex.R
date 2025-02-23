@@ -107,7 +107,16 @@ parseLatex <- function(text,
 #'                   data.frame(char="@", catcode=11))
 #' unclass(parseLatex("\\makeatletter\\internal@macro",
 #'                    catcodes = atletter))
-#'
+#' # These are the default codes:
+#' cbind(defaultCatcodes, name = c("ESCAPE", "LBRACE", "RBRACE", "MATH",
+#'      "ALIGN",  "NEWLINE","NEWLINE", "PARAM",  "SUPER",
+#'      "SUB",    "SPACE",  "SPACE", "COMMENT"))
+#' # The missing ones are
+#' #  9 - IGNORE
+#' # 11 - LETTER
+#' # 12 - OTHER
+#' # 13 - ACTIVE
+#' # 15 - INVALID
 #' @export
 defaultCatcodes <-
   data.frame(char = c("\\", "{", "}", "$", "&", "\n", "\r", "#", "^", "_", " ", "\t", "%"),

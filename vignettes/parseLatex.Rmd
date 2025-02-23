@@ -94,7 +94,8 @@ table
 The parser in this package is based on the one used by the base R
 `tools::parseLatex` function (which I also wrote, based on other 
 parsers in R).  The output format is similar, but not compatible.
-These are the main differences.
+These are the main differences as of R 4.4.2.  Several of these
+changes will be incorporated into R 4.5.0.
 
 - In both this package and `tools::parseLatex`, the result of calling
 the parser is a list of items.  
@@ -124,11 +125,13 @@ knitr::kable(tags, booktabs = TRUE)
 such characters are included in `TEXT`.  It also doesn't
 have the `DEFINITION` or `ERROR` tags.  Definitions are treated
 as regular macros, which sometimes leads to parsing errors.
-Errors are always fatal.
+Errors are always fatal.  (`DEFINITION` will be added to
+R 4.5.0.)
 - This parser stops when it reaches `\end{document}`, just
-as LaTeX does.  The `tools::parseLatex()` parser continues
+as LaTeX does.  The `tools::parseLatex()` parser in R 4.4.2 continues
 parsing beyond that, often leading to parsing errors as
-it tries to parse things that LaTeX would ignore.
+it tries to parse things that LaTeX would ignore.  This will
+be fixed in R 4.5.0.
 - In both implementations, some items (`COMMENT`, `MACRO`, `SPECIAL`, `TEXT`, and `VERB`)
 are stored as length 1 character vectors; the others are stored
 as lists of items corresponding to their content.  
@@ -187,7 +190,8 @@ simple syntax like
 
     \def\bea{\begin{eqnarray*}}
     
-and you should be okay.  
+and you should be okay.  This will likely be added to R 4.5.0,
+with the same limitations.
 
 ## Magic Comments
 
