@@ -54,7 +54,7 @@
       <h1>The parseLatex package</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dmurdoch/parseLatex/blob/v0.3.0/vignettes/parseLatex.Rmd" class="external-link"><code>vignettes/parseLatex.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dmurdoch/parseLatex/blob/main/vignettes/parseLatex.Rmd" class="external-link"><code>vignettes/parseLatex.Rmd</code></a></small>
       <div class="d-none name"><code>parseLatex.Rmd</code></div>
     </div>
 
@@ -164,7 +164,8 @@ it:</p>
 <p>The parser in this package is based on the one used by the base R
 <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex</a></code> function (which I also wrote, based on
 other parsers in R). The output format is similar, but not compatible.
-These are the main differences.</p>
+These are the main differences as of R 4.4.2. Several of these changes
+will be incorporated into R 4.5.0.</p>
 <ul>
 <li>In both this package and <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex</a></code>, the result
 of calling the parser is a list of items.<br>
@@ -249,11 +250,13 @@ are</li>
 <code>SPECIAL</code>; such characters are included in <code>TEXT</code>.
 It also doesn’t have the <code>DEFINITION</code> or <code>ERROR</code>
 tags. Definitions are treated as regular macros, which sometimes leads
-to parsing errors. Errors are always fatal.</li>
+to parsing errors. Errors are always fatal. (<code>DEFINITION</code>
+will be added to R 4.5.0.)</li>
 <li>This parser stops when it reaches <code>\end{document}</code>, just
-as LaTeX does. The <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser continues
-parsing beyond that, often leading to parsing errors as it tries to
-parse things that LaTeX would ignore.</li>
+as LaTeX does. The <code><a href="https://rdrr.io/r/tools/parseLatex.html" class="external-link">tools::parseLatex()</a></code> parser in R 4.4.2
+continues parsing beyond that, often leading to parsing errors as it
+tries to parse things that LaTeX would ignore. This will be fixed in R
+4.5.0.</li>
 <li>In both implementations, some items (<code>COMMENT</code>,
 <code>MACRO</code>, <code>SPECIAL</code>, <code>TEXT</code>, and
 <code>VERB</code>) are stored as length 1 character vectors; the others
@@ -303,7 +306,8 @@ recognized and an attempt is made to handle it, but there’s some really
 arcane syntax possible with <code>\def</code>. If you use that, it
 probably won’t be parsed properly. Stick with simple syntax like</p>
 <pre><code>\def\bea{\begin{eqnarray*}}</code></pre>
-<p>and you should be okay.</p>
+<p>and you should be okay. This will likely be added to R 4.5.0, with
+the same limitations.</p>
 </div>
 <div class="section level2">
 <h2 id="magic-comments">Magic Comments<a class="anchor" aria-label="anchor" href="#magic-comments"></a>
