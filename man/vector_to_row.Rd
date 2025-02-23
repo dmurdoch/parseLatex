@@ -2,24 +2,33 @@
 % Please edit documentation in R/tableRow.R
 \name{vector_to_row}
 \alias{vector_to_row}
-\title{Convert vector to table row}
+\alias{row_to_vector}
+\title{Convert vector to table row and back}
 \usage{
 vector_to_row(cells, asis = FALSE, linebreak = TRUE)
+
+row_to_vector(row, asis = FALSE)
 }
 \arguments{
 \item{cells}{A list or vector of cell contents.}
 
-\item{asis}{If \code{FALSE}, add blanks around cell contents.}
+\item{asis}{If \code{FALSE}, add or remove blanks around cell contents.}
 
 \item{linebreak}{If \code{TRUE}, add a line break marker.}
+
+\item{row}{A row from a table}
 }
 \value{
-A \link{LaTeX2} object which could be a row
+\code{vector_to_row} returns a \link{LaTeX2} object which could be a row
 in a tabular object.
+
+\code{row_to_vector} returns a character vector of the
+deparsed contents of the row.
 }
 \description{
-Convert vector to table row
+Convert vector to table row and back
 }
 \examples{
 vector_to_row(1:3)
+row_to_vector("1 & 2 & content \\\\\\\\")
 }

@@ -1,3 +1,7 @@
+# parseLatex 0.3.1
+
+* Added `row_to_vector()`.
+
 # parseLatex 0.3.0
 
 * Added `stdbool.h` to the includes for compatibility with older

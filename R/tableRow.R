@@ -105,12 +105,12 @@ blankRow <- function(table) {
   replace_range(table, i, value)
 }
 
-#' @title Convert vector to table row
+#' @title Convert vector to table row and back
 #'
 #' @param cells A list or vector of cell contents.
-#' @param asis If `FALSE`, add blanks around cell contents.
+#' @param asis If `FALSE`, add or remove blanks around cell contents.
 #' @param linebreak If `TRUE`, add a line break marker.
-#' @returns A [LaTeX2] object which could be a row
+#' @returns `vector_to_row` returns a [LaTeX2] object which could be a row
 #' in a tabular object.
 #' @export
 #'
@@ -131,6 +131,33 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
                 } else amp)
   }
   as_LaTeX2(result)
+}
+
+#' @rdname vector_to_row
+#'
+#' @param row A row from a table
+#' @returns `row_to_vector` returns a character vector of the
+#' deparsed contents of the row.
+#' @export
+#'
+#' @examples
+#' row_to_vector("1 & 2 & content \\\\")
+row_to_vector <- function(row, asis = FALSE) {
+  row <- as_LaTeX2(row)
+  amp <- find_catcode(row, 4)
+  eol <- find_macro(row, "\\\\")
+  if (length(eol) > 1)
+    warning("This row has a line break.  Only first line used")
+  if (!length(eol))
+    eol <- length(row) + 1
+  br <- c(0, amp[amp < eol[1]], eol[1])
+  result <- rep("", length(br) - 1)
+  for (i in seq_along(result))
+    if (br[i+1] > br[i] + 1)
+      result[i] <- deparseLatex(row[(br[i] + 1):(br[i+1] - 1)])
+  if (!asis)
+    result <- trimws(result)
+  result
 }
 
 #' @title Convert vector to items
