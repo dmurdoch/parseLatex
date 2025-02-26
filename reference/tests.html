@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,11 @@
 <span></span>
 <span><span class="fu">is_bracket</span><span class="op">(</span><span class="va">item</span>, <span class="va">bracket</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">is_whitespace</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">is_whitespace</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">is_text</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">is_error</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -81,6 +85,10 @@ e.g. <code>"table"</code>.</p></dd>
 specified type.</p>
 <p><code>is_whitespace()</code> returns a boolean indicating if the
 <code>item</code> is a space, tab or newline.</p>
+<p><code>is_text()</code> returns a boolean indicating if the
+<code>item</code> is text.</p>
+<p><code>is_error()</code> returns a boolean indicating if the
+<code>item</code> is an error.</p>
     </div>
 
     <div class="section level2">

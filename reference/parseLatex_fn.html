@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,8 @@
 <span>    <span class="st">"\\let"</span><span class="op">)</span>,</span>
 <span>  defenv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"\\newenvironment"</span>, <span class="st">"\\renewenvironment"</span><span class="op">)</span>,</span>
 <span>  catcodes <span class="op">=</span> <span class="va">defaultCatcodes</span>,</span>
-<span>  recover <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  recover <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  showErrors <span class="op">=</span> <span class="va">recover</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'LaTeX2item'</span></span>
@@ -94,6 +95,10 @@ such as <a href="defaultCatcodes.html">defaultCatcodes</a>.</p></dd>
 <dt id="arg-recover">recover<a class="anchor" aria-label="anchor" href="#arg-recover"></a></dt>
 <dd><p>If <code>TRUE</code>, convert errors to warnings and
 continue parsing.  See Details below.</p></dd>
+
+
+<dt id="arg-showerrors">showErrors<a class="anchor" aria-label="anchor" href="#arg-showerrors"></a></dt>
+<dd><p>If <code>TRUE</code>, show errors after parsing.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
