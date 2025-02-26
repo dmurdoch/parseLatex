@@ -17,6 +17,6 @@ Show errors in parsed Latex object
 }
 \examples{
 parsed <- parseLatex("\\\\begin{foo} abc \\\\end{bar} def",
-                     recover = TRUE)
+                     recover = TRUE, showErrors = FALSE)
 showErrors(parsed)
 }

@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' parsed <- parseLatex("\\begin{foo} abc \\end{bar} def",
-#'                      recover = TRUE)
+#'                      recover = TRUE, showErrors = FALSE)
 #' showErrors(parsed)
 showErrors <- function(x) {
   errs <- path_to(x, is_error, all = TRUE)
