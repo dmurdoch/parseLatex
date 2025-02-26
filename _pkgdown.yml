@@ -7,6 +7,7 @@ reference:
   contents:
   - parseLatex_fn
   - deparseLatex
+  - showErrors
 - title: Searching
   desc: Functions to find and modify things
   contents:
