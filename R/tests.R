@@ -63,3 +63,23 @@ is_whitespace <- function(item) {
   } else
     FALSE
 }
+
+#' @rdname tests
+
+#' @returns `is_text()` returns a boolean indicating if the
+#' `item` is text.
+#' @export
+is_text <- function(item) {
+  inherits(item, "LaTeX2item") &&
+      latexTag(item) == "TEXT"
+}
+
+#' @rdname tests
+
+#' @returns `is_error()` returns a boolean indicating if the
+#' `item` is an error.
+#' @export
+is_error <- function(item) {
+  inherits(item, "LaTeX2item") &&
+    latexTag(item) == "ERROR"
+}

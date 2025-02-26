@@ -7,6 +7,8 @@
 \alias{is_block}
 \alias{is_bracket}
 \alias{is_whitespace}
+\alias{is_text}
+\alias{is_error}
 \title{Test objects}
 \usage{
 is_env(item, envtypes = NULL)
@@ -18,6 +20,10 @@ is_block(item)
 is_bracket(item, bracket)
 
 is_whitespace(item)
+
+is_text(item)
+
+is_error(item)
 }
 \arguments{
 \item{item}{An object of class \link{LaTeX2item} to test.}
@@ -41,6 +47,12 @@ specified type.
 
 \code{is_whitespace()} returns a boolean indicating if the
 \code{item} is a space, tab or newline.
+
+\code{is_text()} returns a boolean indicating if the
+\code{item} is text.
+
+\code{is_error()} returns a boolean indicating if the
+\code{item} is an error.
 }
 \description{
 Test objects
