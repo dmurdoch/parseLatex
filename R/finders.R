@@ -95,7 +95,7 @@ path_to <- function(items, is_fn, ..., all = FALSE) {
       if (!all) return(i)
       else hits <- c(hits, list(i))
     }
-    if (is_env(items[[i]]) || is_block(items[[i]])) {
+    if (is.list(items[[i]])) {
       recurse <- path_to(get_contents(items[[i]]),
                          all = all,
                          is_fn, ...)
