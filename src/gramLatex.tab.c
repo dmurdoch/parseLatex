@@ -3046,6 +3046,14 @@ static int KeywordLookup(const char *s)
 static void xxincomplete(SEXP what, YYLTYPE *where)
 {
   char buffer[PARSE_ERROR_SIZE + 32];
+  /* If multiple nested constructions are incomplete, we
+   * don't want the error messages to accumulate.  Cut things
+   * off at the first newline. */
+  for (int i=0; ParseErrorMsg[i]; i++)
+    if (ParseErrorMsg[i] == '\n') {
+      ParseErrorMsg[i] = 0;
+      break;
+     }
   snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
            ParseErrorMsg,
            CHAR(STRING_ELT(what, 0)),

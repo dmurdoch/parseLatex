@@ -29,7 +29,9 @@ showErrors <- function(x) {
     indent <- rep(" ", nchar(linenums[1]))
     for (line in sort(unique(c(start_line, end_line)))) {
       # Errors ending on this line
-      for (i in which(start_line < line & end_line == line)) {
+      i1 <- which(start_line < line & end_line == line)
+      i1 <- i1[order(-start_line[i1], -start_col[i1])]
+      for (i in i1) {
         cat(linenums[line], text[line], "\n", sep = "")
         marker <- c(indent,
                     rep("-", end_col[i] - 1),
@@ -39,7 +41,9 @@ showErrors <- function(x) {
         cat(indent, attr(err, "errormsg"), "\n", sep = "")
       }
       # Errors all on one line
-      for (i in which(start_line == line & end_line == line)) {
+      i1 <- which(start_line == line & end_line == line)
+      i1 <- i1[order(start_col[i1])]
+      for (i in i1) {
         cat(linenums[line], text[line], "\n", sep = "")
         marker <- c(indent, rep(" ", start_col[i] - 1))
         if (start_col[i] == end_col[i])
@@ -53,7 +57,9 @@ showErrors <- function(x) {
         cat(indent, attr(err, "errormsg"), "\n", sep = "")
       }
       # Errors starting on this line
-      for (i in which(start_line == line & end_line > line)) {
+      i1 <- which(start_line == line & end_line > line)
+      i1 <- i1[order(start_col[i1])]
+      for (i in i1) {
         cat(linenums[line], text[line], "\n", sep = "")
         marker <- c(indent,
                     rep(" ", start_col[i] - 1), "<",
