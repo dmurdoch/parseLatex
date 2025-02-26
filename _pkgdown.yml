@@ -45,3 +45,4 @@ reference:
   - vector_to_latex2
   - defaultCatcodes
   - get_leftovers
+  - print.LaTeX2item

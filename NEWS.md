@@ -1,10 +1,11 @@
-# parseLatex 0.3.2
+# parseLatex 0.3.3
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
 * Added `showErrors()`, and changed the formatting of 
   errors in `deparseLatex()`.  `parseLatex(recover = TRUE)` now calls
   `showErrors()` rather than generating warnings.
+* Fixed some parsing bugs related to error recovery.
 
 # parseLatex 0.3.0
 

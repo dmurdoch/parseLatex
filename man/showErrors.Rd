@@ -4,10 +4,26 @@
 \alias{showErrors}
 \title{Show errors in parsed Latex object}
 \usage{
-showErrors(x)
+showErrors(
+  x,
+  repeatSrcline = FALSE,
+  errorMsgTwice = FALSE,
+  lineNumbers = TRUE,
+  showAllLines = FALSE
+)
 }
 \arguments{
 \item{x}{A \link{LaTeX2} object.}
+
+\item{repeatSrcline}{Repeat the source line when it has multiple errors?}
+
+\item{errorMsgTwice}{Show the error message at both the start
+and end of a multiline error?}
+
+\item{lineNumbers}{Show line numbers on output?}
+
+\item{showAllLines}{Show all lines whether they have errors or
+not?}
 }
 \value{
 A list of paths to errors, invisibly.
@@ -16,7 +32,7 @@ A list of paths to errors, invisibly.
 Show errors in parsed Latex object
 }
 \examples{
-parsed <- parseLatex("\\\\begin{foo} abc \\\\end{bar} def",
+parsed <- parseLatex("\\\\end{baz} \\\\begin{foo} \n \\\\begin{bar}  $1+1\n4",
                      recover = TRUE, showErrors = FALSE)
 showErrors(parsed)
 }

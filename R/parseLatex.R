@@ -14,9 +14,10 @@
 #'  respectively.
 #' @param catcodes A list or dataframe holding LaTeX "catcodes",
 #' such as [defaultCatcodes].
-#' @param recover If `TRUE`, convert errors to warnings and
+#' @param recover If `TRUE`, attempt to recover from errors and
 #' continue parsing.  See Details below.
 #' @param showErrors If `TRUE`, show errors after parsing.
+#' @param ... Additional parameters to pass to [showErrors].
 #'
 #' @details
 #' Some versions of LaTeX such as `pdflatex` only handle ASCII
@@ -73,7 +74,8 @@ parseLatex <- function(text,
                                   "\\renewenvironment"),
                        catcodes = defaultCatcodes,
                        recover = FALSE,
-                       showErrors = recover) {
+                       showErrors = recover,
+                       ...) {
 
   text <- paste(text, collapse="\n")
 
@@ -96,7 +98,7 @@ parseLatex <- function(text,
             keywordtype, codepoint, catcode,
             recover)
   if (showErrors)
-    showErrors(result)
+    showErrors(result, ...)
   result
 }
 
@@ -127,16 +129,17 @@ defaultCatcodes <-
   data.frame(char = c("\\", "{", "}", "$", "&", "\n", "\r", "#", "^", "_", " ", "\t", "%"),
           catcode = c(0,     1,   2,   3,   4,    5,    5,   6,   7,  8,  10,   10,   14 ))
 
-#' @rdname parseLatex_fn
+#' Print methods
+#' @param x Object to work on.
+#' @param ... Extra parameters to pass to [deparseLatex].
 #' @export
 print.LaTeX2item <- function(x, ...) {
-  cat(paste0(latexTag(x), ": ", deparseLatex(list(x)), "\n"))
+  cat(paste0(latexTag(x), ": ", deparseLatex(list(x), ...), "\n"))
 }
 
-#' @rdname parseLatex_fn
-#' @param x Object to work on.
+#' @rdname print.LaTeX2item
 #' @param tags Whether to display LaTeX2 tags.
-#' @param ... Extra parameters to pass to `deparseLatex`.
+
 #' @export
 print.LaTeX2 <- function(x, tags = FALSE, ...) {
   if (tags) {

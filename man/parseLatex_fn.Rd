@@ -5,8 +5,6 @@
 \alias{parseLatex}
 \alias{LaTeX2}
 \alias{LaTeX2item}
-\alias{print.LaTeX2item}
-\alias{print.LaTeX2}
 \title{Parse LaTeX code}
 \usage{
 parseLatex(
@@ -19,12 +17,9 @@ parseLatex(
   defenv = c("\\\\newenvironment", "\\\\renewenvironment"),
   catcodes = defaultCatcodes,
   recover = FALSE,
-  showErrors = recover
+  showErrors = recover,
+  ...
 )
-
-\method{print}{LaTeX2item}(x, ...)
-
-\method{print}{LaTeX2}(x, tags = FALSE, ...)
 }
 \arguments{
 \item{text}{A character vector containing LaTeX source code.}
@@ -43,16 +38,12 @@ respectively.}
 \item{catcodes}{A list or dataframe holding LaTeX "catcodes",
 such as \link{defaultCatcodes}.}
 
-\item{recover}{If \code{TRUE}, convert errors to warnings and
+\item{recover}{If \code{TRUE}, attempt to recover from errors and
 continue parsing.  See Details below.}
 
 \item{showErrors}{If \code{TRUE}, show errors after parsing.}
 
-\item{x}{Object to work on.}
-
-\item{...}{Extra parameters to pass to \code{deparseLatex}.}
-
-\item{tags}{Whether to display LaTeX2 tags.}
+\item{...}{Additional parameters to pass to \link{showErrors}.}
 }
 \value{
 \code{parseLatex} returns parsed Latex in a list with class \code{"LaTeX2"}.  Items in the list have class \code{"LaTeX2item"}.

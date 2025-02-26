@@ -248,7 +248,6 @@ Init:    Items END_OF_INPUT    { xxsavevalue($1, &@$);
                                  YYACCEPT; }
   |  END_OF_INPUT              { xxsavevalue(NULL, &@$);
                                  YYACCEPT; }
-  |  error                     { YYABORT; }
 
 Items:    Item         { $$ = xxnewlist($1); }
   |  math              { $$ = xxnewlist($1); }
@@ -258,8 +257,12 @@ Items:    Item         { $$ = xxnewlist($1); }
   |  Items displaymath { $$ = xxlist($1, $2); }
   |  Items error       { yyclearin;
                          parseError();
-                         GrowList($1, xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &@$));
+                         GrowList($1, xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &@2));
                          $$ = $1;
+                       }
+  | error              { yyclearin;
+                         parseError();
+                         $$ = xxnewlist(xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &@1));
                        }
 
 nonMath:  Item         { $$ = xxnewlist($1); }
@@ -985,6 +988,14 @@ static int KeywordLookup(const char *s)
 static void xxincomplete(SEXP what, YYLTYPE *where)
 {
   char buffer[PARSE_ERROR_SIZE + 32];
+  /* If multiple nested constructions are incomplete, we
+   * don't want the error messages to accumulate.  Cut things
+   * off at the first newline. */
+  for (int i=0; ParseErrorMsg[i]; i++)
+    if (ParseErrorMsg[i] == '\n') {
+      ParseErrorMsg[i] = 0;
+      break;
+     }
   snprintf(buffer, sizeof(buffer), "%s\n  '%s' at %d:%d is still open",
            ParseErrorMsg,
            CHAR(STRING_ELT(what, 0)),
