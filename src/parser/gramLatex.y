@@ -194,7 +194,7 @@ static SEXP  xxnewdef(SEXP, SEXP, YYLTYPE *);
 static SEXP  xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP  xxenterMathMode(void);
 static SEXP  xxblock(SEXP, YYLTYPE *);
-static SEXP  xxerrblock(SEXP);
+static SEXP  xxerrblock(SEXP, YYLTYPE *);
 static void  xxSetInVerbEnv(SEXP);
 static SEXP  xxpushMode(int, int);
 static void  xxpopMode(SEXP);
@@ -202,7 +202,7 @@ static void  xxArg(SEXP);
 
 static SEXP  xxfakeStart(const char *, SEXP);
 static SEXP  xxfakeBegin(SEXP, SEXP);
-static SEXP  xxwrapError(SEXP);
+static SEXP  xxwrapError(SEXP, YYLTYPE *);
 
 static int magicComment(const uint8_t *, int);
 static SEXP addString(const uint8_t *, size_t, SEXP);
@@ -258,7 +258,7 @@ Items:    Item         { $$ = xxnewlist($1); }
   |  Items displaymath { $$ = xxlist($1, $2); }
   |  Items error       { yyclearin;
                          parseError();
-                         GrowList($1, xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL)));
+                         GrowList($1, xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &@$));
                          $$ = $1;
                        }
 
@@ -293,10 +293,10 @@ environment:  begin Items END '{' envname '}'
                           { $$ = xxenv($1, NULL, $4, &@$);
                             RELEASE_SV($2); }
   |           begin error { xxincompleteBegin($1, &@1);
-                            $$ = xxwrapError(xxfakeBegin($1, NULL)); }
+                            $$ = xxwrapError(xxfakeBegin($1, NULL), &@$); }
   |           begin Items error {
                             xxincompleteBegin($1, &@1);
-                            $$ = xxwrapError(xxfakeBegin($1, $2)); }
+                            $$ = xxwrapError(xxfakeBegin($1, $2), &@$); }
 
 mathstart: '$'            { $$ = xxenterMathMode(); }
 
@@ -304,26 +304,26 @@ math:   mathstart nonMath '$'   { xxpopMode($1);
                             $$ = xxmath($2, &@$, FALSE); }
   |     mathstart error   { xxpopMode($1);
                             xxincomplete(mkString("$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$", NULL)); }
+                            $$ = xxwrapError(xxfakeStart("$", NULL), &@$); }
   |     mathstart nonMath error { xxpopMode($1);
                             xxincomplete(mkString("$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$", $2)); }
+                            $$ = xxwrapError(xxfakeStart("$", $2), &@$); }
 
 displaymath:    TWO_DOLLARS nonMath TWO_DOLLARS
                           { $$ = xxmath($2, &@$, TRUE); }
   |             TWO_DOLLARS error
                           { xxincomplete(mkString("$$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$$", NULL)); }
+                            $$ = xxwrapError(xxfakeStart("$$", NULL), &@$); }
   |             TWO_DOLLARS nonMath error
                           { xxincomplete(mkString("$$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$$", $2)); }
+                            $$ = xxwrapError(xxfakeStart("$$", $2), &@$); }
 
 block:    '{'  Items  '}' { $$ = xxblock($2, &@$); }
   |  '{' '}'              { $$ = xxblock(NULL, &@$); }
   | '{' error             { xxincomplete(mkString("{"), &@1);
-                            $$ = xxwrapError(xxfakeStart("{", NULL)); }
+                            $$ = xxwrapError(xxfakeStart("{", NULL), &@$); }
   | '{' Items error       { xxincomplete(mkString("{"), &@1);
-                            $$ = xxwrapError(xxfakeStart("{", $2)); }
+                            $$ = xxwrapError(xxfakeStart("{", $2), &@$); }
 
 newdefine :  NEWCMD       { $$ = xxpushMode(2, 1); }
                Items END_OF_ARGS
@@ -340,10 +340,7 @@ newdefine :  NEWCMD       { $$ = xxpushMode(2, 1); }
 
 static int parseError(void)
 {
-  if (parseState.recover)
-    warning("Parse error at %d:%d: %s", ParseErrorLine,
-            ParseErrorCol, ParseErrorMsg);
-  else
+  if (!parseState.recover)
     error("Parse error at %d:%d: %s", ParseErrorLine,
           ParseErrorCol, ParseErrorMsg);
   return ERROR;
@@ -416,7 +413,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
              "\\end{%s}", ename2);
     PRESERVE_SV(ans = xxfakeBegin(begin, body));
     GrowList(ans, xxtag(mkString(buffer), TEXT, lloc));
-    return xxwrapError(ans);
+    return xxwrapError(ans, lloc);
   }
 
   if (strcmp("document", ename1) == 0) {
@@ -576,7 +573,7 @@ static SEXP xxblock(SEXP body, YYLTYPE *lloc)
   return ans;
 }
 
-static SEXP xxerrblock(SEXP body)
+static SEXP xxerrblock(SEXP body, YYLTYPE *lloc)
 {
   SEXP ans;
   if (!body)
@@ -585,7 +582,7 @@ static SEXP xxerrblock(SEXP body)
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
   }
-  setAttrib(ans, install("srcref"), makeSrcref(&yylloc));
+  setAttrib(ans, install("srcref"), makeSrcref(lloc));
   setAttrib(ans, LatexTagSymbol, mkString("ERROR"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
   setAttrib(ans, install("errormsg"), mkString(ParseErrorMsg));
@@ -824,7 +821,7 @@ static SEXP xxfakeBegin(SEXP envname, SEXP items)
 }
 
 /* Wrap a list to indicate an error message */
-static SEXP xxwrapError(SEXP list)
+static SEXP xxwrapError(SEXP list, YYLTYPE *lloc)
 {
   SEXP temp;
   PROTECT(temp = NewList());
@@ -837,7 +834,7 @@ static SEXP xxwrapError(SEXP list)
     UNPROTECT(1);
     RELEASE_SV(list);
   }
-  temp = xxerrblock(temp);
+  temp = xxerrblock(temp, lloc);
   UNPROTECT(1);
   return temp;
 }
@@ -1004,6 +1001,7 @@ static void xxincompleteBegin(SEXP what, YYLTYPE *where)
   start[strlen(start) + 1] = 0;
   start[strlen(start)] = '}';
   xxincomplete(mkString(start), where);
+  UNPROTECT(1);
 }
 
 static void yyerror(const char *s)

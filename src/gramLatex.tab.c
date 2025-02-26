@@ -261,7 +261,7 @@ static SEXP  xxnewdef(SEXP, SEXP, YYLTYPE *);
 static SEXP  xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP  xxenterMathMode(void);
 static SEXP  xxblock(SEXP, YYLTYPE *);
-static SEXP  xxerrblock(SEXP);
+static SEXP  xxerrblock(SEXP, YYLTYPE *);
 static void  xxSetInVerbEnv(SEXP);
 static SEXP  xxpushMode(int, int);
 static void  xxpopMode(SEXP);
@@ -269,7 +269,7 @@ static void  xxArg(SEXP);
 
 static SEXP  xxfakeStart(const char *, SEXP);
 static SEXP  xxfakeBegin(SEXP, SEXP);
-static SEXP  xxwrapError(SEXP);
+static SEXP  xxwrapError(SEXP, YYLTYPE *);
 
 static int magicComment(const uint8_t *, int);
 static SEXP addString(const uint8_t *, size_t, SEXP);
@@ -1928,7 +1928,7 @@ yyreduce:
 #line 259 "parser/gramLatex.y"
                        { yyclearin;
                          parseError();
-                         GrowList(yyvsp[-1], xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL)));
+                         GrowList(yyvsp[-1], xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &(yyloc)));
                          yyval = yyvsp[-1];
                        }
 #line 1935 "gramLatex.tab.c"
@@ -2051,7 +2051,7 @@ yyreduce:
   case 30: /* environment: begin error  */
 #line 295 "parser/gramLatex.y"
                           { xxincompleteBegin(yyvsp[-1], &(yylsp[-1]));
-                            yyval = xxwrapError(xxfakeBegin(yyvsp[-1], NULL)); }
+                            yyval = xxwrapError(xxfakeBegin(yyvsp[-1], NULL), &(yyloc)); }
 #line 2056 "gramLatex.tab.c"
     break;
 
@@ -2059,7 +2059,7 @@ yyreduce:
 #line 297 "parser/gramLatex.y"
                                 {
                             xxincompleteBegin(yyvsp[-2], &(yylsp[-2]));
-                            yyval = xxwrapError(xxfakeBegin(yyvsp[-2], yyvsp[-1])); }
+                            yyval = xxwrapError(xxfakeBegin(yyvsp[-2], yyvsp[-1]), &(yyloc)); }
 #line 2064 "gramLatex.tab.c"
     break;
 
@@ -2080,7 +2080,7 @@ yyreduce:
 #line 305 "parser/gramLatex.y"
                           { xxpopMode(yyvsp[-1]);
                             xxincomplete(mkString("$"), &(yylsp[-1]));
-                            yyval = xxwrapError(xxfakeStart("$", NULL)); }
+                            yyval = xxwrapError(xxfakeStart("$", NULL), &(yyloc)); }
 #line 2085 "gramLatex.tab.c"
     break;
 
@@ -2088,7 +2088,7 @@ yyreduce:
 #line 308 "parser/gramLatex.y"
                                 { xxpopMode(yyvsp[-2]);
                             xxincomplete(mkString("$"), &(yylsp[-2]));
-                            yyval = xxwrapError(xxfakeStart("$", yyvsp[-1])); }
+                            yyval = xxwrapError(xxfakeStart("$", yyvsp[-1]), &(yyloc)); }
 #line 2093 "gramLatex.tab.c"
     break;
 
@@ -2101,14 +2101,14 @@ yyreduce:
   case 37: /* displaymath: TWO_DOLLARS error  */
 #line 315 "parser/gramLatex.y"
                           { xxincomplete(mkString("$$"), &(yylsp[-1]));
-                            yyval = xxwrapError(xxfakeStart("$$", NULL)); }
+                            yyval = xxwrapError(xxfakeStart("$$", NULL), &(yyloc)); }
 #line 2106 "gramLatex.tab.c"
     break;
 
   case 38: /* displaymath: TWO_DOLLARS nonMath error  */
 #line 318 "parser/gramLatex.y"
                           { xxincomplete(mkString("$$"), &(yylsp[-2]));
-                            yyval = xxwrapError(xxfakeStart("$$", yyvsp[-1])); }
+                            yyval = xxwrapError(xxfakeStart("$$", yyvsp[-1]), &(yyloc)); }
 #line 2113 "gramLatex.tab.c"
     break;
 
@@ -2127,14 +2127,14 @@ yyreduce:
   case 41: /* block: '{' error  */
 #line 323 "parser/gramLatex.y"
                           { xxincomplete(mkString("{"), &(yylsp[-1]));
-                            yyval = xxwrapError(xxfakeStart("{", NULL)); }
+                            yyval = xxwrapError(xxfakeStart("{", NULL), &(yyloc)); }
 #line 2132 "gramLatex.tab.c"
     break;
 
   case 42: /* block: '{' Items error  */
 #line 325 "parser/gramLatex.y"
                           { xxincomplete(mkString("{"), &(yylsp[-2]));
-                            yyval = xxwrapError(xxfakeStart("{", yyvsp[-1])); }
+                            yyval = xxwrapError(xxfakeStart("{", yyvsp[-1]), &(yyloc)); }
 #line 2139 "gramLatex.tab.c"
     break;
 
@@ -2401,10 +2401,7 @@ yyreturnlab:
 
 static int parseError(void)
 {
-  if (parseState.recover)
-    warning("Parse error at %d:%d: %s", ParseErrorLine,
-            ParseErrorCol, ParseErrorMsg);
-  else
+  if (!parseState.recover)
     error("Parse error at %d:%d: %s", ParseErrorLine,
           ParseErrorCol, ParseErrorMsg);
   return ERROR;
@@ -2477,7 +2474,7 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
              "\\end{%s}", ename2);
     PRESERVE_SV(ans = xxfakeBegin(begin, body));
     GrowList(ans, xxtag(mkString(buffer), TEXT, lloc));
-    return xxwrapError(ans);
+    return xxwrapError(ans, lloc);
   }
 
   if (strcmp("document", ename1) == 0) {
@@ -2637,7 +2634,7 @@ static SEXP xxblock(SEXP body, YYLTYPE *lloc)
   return ans;
 }
 
-static SEXP xxerrblock(SEXP body)
+static SEXP xxerrblock(SEXP body, YYLTYPE *lloc)
 {
   SEXP ans;
   if (!body)
@@ -2646,7 +2643,7 @@ static SEXP xxerrblock(SEXP body)
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
   }
-  setAttrib(ans, install("srcref"), makeSrcref(&yylloc));
+  setAttrib(ans, install("srcref"), makeSrcref(lloc));
   setAttrib(ans, LatexTagSymbol, mkString("ERROR"));
   setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
   setAttrib(ans, install("errormsg"), mkString(ParseErrorMsg));
@@ -2885,7 +2882,7 @@ static SEXP xxfakeBegin(SEXP envname, SEXP items)
 }
 
 /* Wrap a list to indicate an error message */
-static SEXP xxwrapError(SEXP list)
+static SEXP xxwrapError(SEXP list, YYLTYPE *lloc)
 {
   SEXP temp;
   PROTECT(temp = NewList());
@@ -2898,7 +2895,7 @@ static SEXP xxwrapError(SEXP list)
     UNPROTECT(1);
     RELEASE_SV(list);
   }
-  temp = xxerrblock(temp);
+  temp = xxerrblock(temp, lloc);
   UNPROTECT(1);
   return temp;
 }
@@ -3065,6 +3062,7 @@ static void xxincompleteBegin(SEXP what, YYLTYPE *where)
   start[strlen(start) + 1] = 0;
   start[strlen(start)] = '}';
   xxincomplete(mkString(start), where);
+  UNPROTECT(1);
 }
 
 static void yyerror(const char *s)

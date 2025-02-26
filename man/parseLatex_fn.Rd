@@ -18,7 +18,8 @@ parseLatex(
     "\\\\let"),
   defenv = c("\\\\newenvironment", "\\\\renewenvironment"),
   catcodes = defaultCatcodes,
-  recover = FALSE
+  recover = FALSE,
+  showErrors = recover
 )
 
 \method{print}{LaTeX2item}(x, ...)
@@ -44,6 +45,8 @@ such as \link{defaultCatcodes}.}
 
 \item{recover}{If \code{TRUE}, convert errors to warnings and
 continue parsing.  See Details below.}
+
+\item{showErrors}{If \code{TRUE}, show errors after parsing.}
 
 \item{x}{Object to work on.}
 

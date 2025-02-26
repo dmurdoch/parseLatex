@@ -2,6 +2,9 @@
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
+* Added `showErrors()`, and changed the formatting of 
+  errors in `deparseLatex()`.  `parseLatex(recover = TRUE)` now calls
+  `showErrors()` rather than generating warnings.
 
 # parseLatex 0.3.0
 

@@ -16,6 +16,7 @@
 #' such as [defaultCatcodes].
 #' @param recover If `TRUE`, convert errors to warnings and
 #' continue parsing.  See Details below.
+#' @param showErrors If `TRUE`, show errors after parsing.
 #'
 #' @details
 #' Some versions of LaTeX such as `pdflatex` only handle ASCII
@@ -71,7 +72,8 @@ parseLatex <- function(text,
                        defenv = c("\\newenvironment",
                                   "\\renewenvironment"),
                        catcodes = defaultCatcodes,
-                       recover = FALSE) {
+                       recover = FALSE,
+                       showErrors = recover) {
 
   text <- paste(text, collapse="\n")
 
@@ -89,10 +91,13 @@ parseLatex <- function(text,
     stop("catcodes must be in the range 0 to 15")
   if (length(codepoint) != length(catcode))
     stop("catcodes must have one char per catcode")
-  .External(C_parseLatex, text, as.logical(verbose),
+  result <- .External(C_parseLatex, text, as.logical(verbose),
             as.character(verbatim), keywords,
             keywordtype, codepoint, catcode,
             recover)
+  if (showErrors)
+    showErrors(result)
+  result
 }
 
 #' The default "catcodes" used by [parseLatex].
@@ -210,7 +215,7 @@ deparseLatex <- function(x, dropBraces = FALSE)
                          "\\end{", envName(a), "}"),
                        MATH = c("$", Recall(a), "$"), # \( and \) parse as MACRO
                        DISPLAYMATH = c("$$", Recall(a), "$$"),
-                       ERROR = c(">>>", Recall(a), "<<<"),
+                       ERROR = Recall(a),
                        NULL = stop("Internal error, no tag", domain = NA)
                 ))
     lastTag <- tag
