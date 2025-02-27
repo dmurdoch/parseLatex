@@ -212,6 +212,7 @@ static SEXP addInteger(int value, SEXP);
 
 static int  mkMarkup(int);
 static int  mkText(int);
+static int  mkWhite(int, int);
 static int  mkComment(int);
 static int  mkSpecial(int, int);
 static int  mkVerb(int);
@@ -1184,6 +1185,8 @@ static int token(void)
         return '}';
       }
       case 3:  return mkDollar(c);
+      case 5:
+      case 10: return mkWhite(c, cat);
       case 11: return mkText(c);
       case 14: return mkComment(c);
 
@@ -1216,6 +1219,32 @@ static int mkText(int c)
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
     if(st1) free(st1);
     return TEXT;
+}
+
+static int mkWhite(int c, int cat)
+{
+  uint8_t st0[INITBUFSIZE];
+  uint8_t *st1 = NULL;
+  unsigned int nstext = INITBUFSIZE;
+  uint8_t *stext = st0, *bp = st0;
+  UBool isError = false;
+
+  if (parseState.xxGetArgs > 0 &&
+      parseState.xxBraceDepth == 0 &&
+      parseState.xxBracketDepth == 0) {
+    TEXT_PUSH(c);
+  } else {
+    do {
+      TEXT_PUSH(c);
+      c = xxgetc();
+    } while (tex_catcode(c) == cat);
+    xxungetc(c);
+  }
+  PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
+  setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
+  setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
+  if(st1) free(st1);
+  return SPECIAL;
 }
 
 static int mkComment(int c)

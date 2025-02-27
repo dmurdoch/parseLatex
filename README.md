@@ -77,7 +77,3 @@ table
   subsetting on that class.
 - See what `kableExtra` does with tables, and try to make that easier.
 - Do something with math environments?
-- Efficiency gains: collect consecutive whitespace into a single item.
-- allow `catCodes` to contain `NA`, indicating the default if not seen
-  earlier.
-- work on ways to show errors better.

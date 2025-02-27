@@ -279,6 +279,7 @@ static SEXP addInteger(int value, SEXP);
 
 static int  mkMarkup(int);
 static int  mkText(int);
+static int  mkWhite(int, int);
 static int  mkComment(int);
 static int  mkSpecial(int, int);
 static int  mkVerb(int);
@@ -291,7 +292,7 @@ static SEXP LatexTagSymbol = NULL;
 #define YYSTYPE    SEXP
 
 
-#line 295 "gramLatex.tab.c"
+#line 296 "gramLatex.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -808,11 +809,11 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   247,   247,   249,   252,   253,   254,   255,   256,   257,
-     258,   263,   268,   269,   271,   272,   273,   275,   277,   278,
-     279,   280,   281,   283,   284,   285,   286,   288,   292,   295,
-     298,   300,   304,   306,   308,   311,   315,   317,   320,   324,
-     325,   326,   328,   331,   331,   336,   336
+       0,   248,   248,   250,   253,   254,   255,   256,   257,   258,
+     259,   264,   269,   270,   272,   273,   274,   276,   278,   279,
+     280,   281,   282,   284,   285,   286,   287,   289,   293,   296,
+     299,   301,   305,   307,   309,   312,   316,   318,   321,   325,
+     326,   327,   329,   332,   332,   337,   337
 };
 #endif
 
@@ -1549,33 +1550,33 @@ yydestruct (const char *yymsg,
   switch (yykind)
     {
     case YYSYMBOL_MACRO: /* MACRO  */
-#line 243 "parser/gramLatex.y"
+#line 244 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1555 "gramLatex.tab.c"
+#line 1556 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_TEXT: /* TEXT  */
-#line 243 "parser/gramLatex.y"
+#line 244 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1561 "gramLatex.tab.c"
+#line 1562 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_COMMENT: /* COMMENT  */
-#line 243 "parser/gramLatex.y"
+#line 244 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1567 "gramLatex.tab.c"
+#line 1568 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_BEGIN: /* BEGIN  */
-#line 243 "parser/gramLatex.y"
+#line 244 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1573 "gramLatex.tab.c"
+#line 1574 "gramLatex.tab.c"
         break;
 
     case YYSYMBOL_END: /* END  */
-#line 243 "parser/gramLatex.y"
+#line 244 "parser/gramLatex.y"
             { RELEASE_SV((*yyvaluep)); }
-#line 1579 "gramLatex.tab.c"
+#line 1580 "gramLatex.tab.c"
         break;
 
       default:
@@ -1871,308 +1872,308 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Init: Items END_OF_INPUT  */
-#line 247 "parser/gramLatex.y"
+#line 248 "parser/gramLatex.y"
                                { xxsavevalue(yyvsp[-1], &(yyloc));
                                  YYACCEPT; }
-#line 1878 "gramLatex.tab.c"
+#line 1879 "gramLatex.tab.c"
     break;
 
   case 3: /* Init: END_OF_INPUT  */
-#line 249 "parser/gramLatex.y"
+#line 250 "parser/gramLatex.y"
                                { xxsavevalue(NULL, &(yyloc));
                                  YYACCEPT; }
-#line 1885 "gramLatex.tab.c"
+#line 1886 "gramLatex.tab.c"
     break;
 
   case 4: /* Items: Item  */
-#line 252 "parser/gramLatex.y"
+#line 253 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1891 "gramLatex.tab.c"
+#line 1892 "gramLatex.tab.c"
     break;
 
   case 5: /* Items: math  */
-#line 253 "parser/gramLatex.y"
+#line 254 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1897 "gramLatex.tab.c"
+#line 1898 "gramLatex.tab.c"
     break;
 
   case 6: /* Items: displaymath  */
-#line 254 "parser/gramLatex.y"
+#line 255 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1903 "gramLatex.tab.c"
+#line 1904 "gramLatex.tab.c"
     break;
 
   case 7: /* Items: Items Item  */
-#line 255 "parser/gramLatex.y"
+#line 256 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1909 "gramLatex.tab.c"
+#line 1910 "gramLatex.tab.c"
     break;
 
   case 8: /* Items: Items math  */
-#line 256 "parser/gramLatex.y"
+#line 257 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1915 "gramLatex.tab.c"
+#line 1916 "gramLatex.tab.c"
     break;
 
   case 9: /* Items: Items displaymath  */
-#line 257 "parser/gramLatex.y"
+#line 258 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1921 "gramLatex.tab.c"
+#line 1922 "gramLatex.tab.c"
     break;
 
   case 10: /* Items: Items error  */
-#line 258 "parser/gramLatex.y"
+#line 259 "parser/gramLatex.y"
                        { yyclearin;
                          parseError();
                          GrowList(yyvsp[-1], xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &(yylsp[0])));
                          yyval = yyvsp[-1];
                        }
-#line 1931 "gramLatex.tab.c"
+#line 1932 "gramLatex.tab.c"
     break;
 
   case 11: /* Items: error  */
-#line 263 "parser/gramLatex.y"
+#line 264 "parser/gramLatex.y"
                        { yyclearin;
                          parseError();
                          yyval = xxnewlist(xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &(yylsp[0])));
                        }
-#line 1940 "gramLatex.tab.c"
+#line 1941 "gramLatex.tab.c"
     break;
 
   case 12: /* nonMath: Item  */
-#line 268 "parser/gramLatex.y"
+#line 269 "parser/gramLatex.y"
                        { yyval = xxnewlist(yyvsp[0]); }
-#line 1946 "gramLatex.tab.c"
+#line 1947 "gramLatex.tab.c"
     break;
 
   case 13: /* nonMath: nonMath Item  */
-#line 269 "parser/gramLatex.y"
+#line 270 "parser/gramLatex.y"
                        { yyval = xxlist(yyvsp[-1], yyvsp[0]); }
-#line 1952 "gramLatex.tab.c"
+#line 1953 "gramLatex.tab.c"
     break;
 
   case 14: /* Item: TEXT  */
-#line 271 "parser/gramLatex.y"
+#line 272 "parser/gramLatex.y"
                     { xxArg(NULL); yyval = xxtag(yyvsp[0], TEXT, &(yyloc)); }
-#line 1958 "gramLatex.tab.c"
+#line 1959 "gramLatex.tab.c"
     break;
 
   case 15: /* Item: COMMENT  */
-#line 272 "parser/gramLatex.y"
+#line 273 "parser/gramLatex.y"
                     { yyval = xxtag(yyvsp[0], COMMENT, &(yyloc)); }
-#line 1964 "gramLatex.tab.c"
+#line 1965 "gramLatex.tab.c"
     break;
 
   case 16: /* Item: MACRO  */
-#line 273 "parser/gramLatex.y"
+#line 274 "parser/gramLatex.y"
                     { xxArg(NULL);
                       yyval = xxtag(yyvsp[0], MACRO, &(yyloc)); }
-#line 1971 "gramLatex.tab.c"
+#line 1972 "gramLatex.tab.c"
     break;
 
   case 17: /* Item: SPECIAL  */
-#line 275 "parser/gramLatex.y"
+#line 276 "parser/gramLatex.y"
                     { xxArg(yyvsp[0]);
                       yyval = xxtag(yyvsp[0], SPECIAL, &(yyloc)); }
-#line 1978 "gramLatex.tab.c"
+#line 1979 "gramLatex.tab.c"
     break;
 
   case 18: /* Item: VERB  */
-#line 277 "parser/gramLatex.y"
+#line 278 "parser/gramLatex.y"
                     { yyval = xxtag(yyvsp[0], VERB, &(yyloc)); }
-#line 1984 "gramLatex.tab.c"
+#line 1985 "gramLatex.tab.c"
     break;
 
   case 19: /* Item: VERB2  */
-#line 278 "parser/gramLatex.y"
+#line 279 "parser/gramLatex.y"
                     { yyval = xxtag(yyvsp[0], VERB, &(yyloc)); }
-#line 1990 "gramLatex.tab.c"
+#line 1991 "gramLatex.tab.c"
     break;
 
   case 20: /* Item: block  */
-#line 279 "parser/gramLatex.y"
+#line 280 "parser/gramLatex.y"
                     { xxArg(NULL); yyval = yyvsp[0]; }
-#line 1996 "gramLatex.tab.c"
+#line 1997 "gramLatex.tab.c"
     break;
 
   case 21: /* Item: environment  */
-#line 280 "parser/gramLatex.y"
+#line 281 "parser/gramLatex.y"
                     { yyval = yyvsp[0]; }
-#line 2002 "gramLatex.tab.c"
+#line 2003 "gramLatex.tab.c"
     break;
 
   case 22: /* Item: newdefine  */
-#line 281 "parser/gramLatex.y"
+#line 282 "parser/gramLatex.y"
                     { yyval = yyvsp[0]; }
-#line 2008 "gramLatex.tab.c"
+#line 2009 "gramLatex.tab.c"
     break;
 
   case 23: /* envname: TEXT  */
-#line 283 "parser/gramLatex.y"
+#line 284 "parser/gramLatex.y"
                  { yyval = xxnewlist(xxtag(yyvsp[0], TEXT, &(yylsp[0]))); }
-#line 2014 "gramLatex.tab.c"
+#line 2015 "gramLatex.tab.c"
     break;
 
   case 24: /* envname: SPECIAL  */
-#line 284 "parser/gramLatex.y"
+#line 285 "parser/gramLatex.y"
                  { yyval = xxnewlist(xxtag(yyvsp[0], SPECIAL, &(yylsp[0]))); }
-#line 2020 "gramLatex.tab.c"
+#line 2021 "gramLatex.tab.c"
     break;
 
   case 25: /* envname: envname TEXT  */
-#line 285 "parser/gramLatex.y"
+#line 286 "parser/gramLatex.y"
                          { yyval = xxlist(yyvsp[-1], xxtag(yyvsp[0], TEXT, &(yylsp[0]))); }
-#line 2026 "gramLatex.tab.c"
+#line 2027 "gramLatex.tab.c"
     break;
 
   case 26: /* envname: envname SPECIAL  */
-#line 286 "parser/gramLatex.y"
+#line 287 "parser/gramLatex.y"
                          { yyval = xxlist(yyvsp[-1], xxtag(yyvsp[0], SPECIAL, &(yylsp[0]))); }
-#line 2032 "gramLatex.tab.c"
+#line 2033 "gramLatex.tab.c"
     break;
 
   case 27: /* begin: BEGIN '{' envname '}'  */
-#line 288 "parser/gramLatex.y"
+#line 289 "parser/gramLatex.y"
                                { xxSetInVerbEnv(yyvsp[-1]);
                                  RELEASE_SV(yyvsp[-3]);
                                  yyval = yyvsp[-1]; }
-#line 2040 "gramLatex.tab.c"
+#line 2041 "gramLatex.tab.c"
     break;
 
   case 28: /* environment: begin Items END '{' envname '}'  */
-#line 293 "parser/gramLatex.y"
+#line 294 "parser/gramLatex.y"
                           { yyval = xxenv(yyvsp[-5], yyvsp[-4], yyvsp[-1], &(yyloc));
                             RELEASE_SV(yyvsp[-3]); }
-#line 2047 "gramLatex.tab.c"
+#line 2048 "gramLatex.tab.c"
     break;
 
   case 29: /* environment: begin END '{' envname '}'  */
-#line 296 "parser/gramLatex.y"
+#line 297 "parser/gramLatex.y"
                           { yyval = xxenv(yyvsp[-4], NULL, yyvsp[-1], &(yyloc));
                             RELEASE_SV(yyvsp[-3]); }
-#line 2054 "gramLatex.tab.c"
+#line 2055 "gramLatex.tab.c"
     break;
 
   case 30: /* environment: begin error  */
-#line 298 "parser/gramLatex.y"
+#line 299 "parser/gramLatex.y"
                           { xxincompleteBegin(yyvsp[-1], &(yylsp[-1]));
                             yyval = xxwrapError(xxfakeBegin(yyvsp[-1], NULL), &(yyloc)); }
-#line 2061 "gramLatex.tab.c"
+#line 2062 "gramLatex.tab.c"
     break;
 
   case 31: /* environment: begin Items error  */
-#line 300 "parser/gramLatex.y"
+#line 301 "parser/gramLatex.y"
                                 {
                             xxincompleteBegin(yyvsp[-2], &(yylsp[-2]));
                             yyval = xxwrapError(xxfakeBegin(yyvsp[-2], yyvsp[-1]), &(yyloc)); }
-#line 2069 "gramLatex.tab.c"
+#line 2070 "gramLatex.tab.c"
     break;
 
   case 32: /* mathstart: '$'  */
-#line 304 "parser/gramLatex.y"
+#line 305 "parser/gramLatex.y"
                           { yyval = xxenterMathMode(); }
-#line 2075 "gramLatex.tab.c"
+#line 2076 "gramLatex.tab.c"
     break;
 
   case 33: /* math: mathstart nonMath '$'  */
-#line 306 "parser/gramLatex.y"
+#line 307 "parser/gramLatex.y"
                                 { xxpopMode(yyvsp[-2]);
                             yyval = xxmath(yyvsp[-1], &(yyloc), FALSE); }
-#line 2082 "gramLatex.tab.c"
+#line 2083 "gramLatex.tab.c"
     break;
 
   case 34: /* math: mathstart error  */
-#line 308 "parser/gramLatex.y"
+#line 309 "parser/gramLatex.y"
                           { xxpopMode(yyvsp[-1]);
                             xxincomplete(mkString("$"), &(yylsp[-1]));
                             yyval = xxwrapError(xxfakeStart("$", NULL), &(yyloc)); }
-#line 2090 "gramLatex.tab.c"
+#line 2091 "gramLatex.tab.c"
     break;
 
   case 35: /* math: mathstart nonMath error  */
-#line 311 "parser/gramLatex.y"
+#line 312 "parser/gramLatex.y"
                                 { xxpopMode(yyvsp[-2]);
                             xxincomplete(mkString("$"), &(yylsp[-2]));
                             yyval = xxwrapError(xxfakeStart("$", yyvsp[-1]), &(yyloc)); }
-#line 2098 "gramLatex.tab.c"
+#line 2099 "gramLatex.tab.c"
     break;
 
   case 36: /* displaymath: TWO_DOLLARS nonMath TWO_DOLLARS  */
-#line 316 "parser/gramLatex.y"
+#line 317 "parser/gramLatex.y"
                           { yyval = xxmath(yyvsp[-1], &(yyloc), TRUE); }
-#line 2104 "gramLatex.tab.c"
+#line 2105 "gramLatex.tab.c"
     break;
 
   case 37: /* displaymath: TWO_DOLLARS error  */
-#line 318 "parser/gramLatex.y"
+#line 319 "parser/gramLatex.y"
                           { xxincomplete(mkString("$$"), &(yylsp[-1]));
                             yyval = xxwrapError(xxfakeStart("$$", NULL), &(yyloc)); }
-#line 2111 "gramLatex.tab.c"
+#line 2112 "gramLatex.tab.c"
     break;
 
   case 38: /* displaymath: TWO_DOLLARS nonMath error  */
-#line 321 "parser/gramLatex.y"
+#line 322 "parser/gramLatex.y"
                           { xxincomplete(mkString("$$"), &(yylsp[-2]));
                             yyval = xxwrapError(xxfakeStart("$$", yyvsp[-1]), &(yyloc)); }
-#line 2118 "gramLatex.tab.c"
+#line 2119 "gramLatex.tab.c"
     break;
 
   case 39: /* block: '{' Items '}'  */
-#line 324 "parser/gramLatex.y"
+#line 325 "parser/gramLatex.y"
                           { yyval = xxblock(yyvsp[-1], &(yyloc)); }
-#line 2124 "gramLatex.tab.c"
+#line 2125 "gramLatex.tab.c"
     break;
 
   case 40: /* block: '{' '}'  */
-#line 325 "parser/gramLatex.y"
+#line 326 "parser/gramLatex.y"
                           { yyval = xxblock(NULL, &(yyloc)); }
-#line 2130 "gramLatex.tab.c"
+#line 2131 "gramLatex.tab.c"
     break;
 
   case 41: /* block: '{' error  */
-#line 326 "parser/gramLatex.y"
+#line 327 "parser/gramLatex.y"
                           { xxincomplete(mkString("{"), &(yylsp[-1]));
                             yyval = xxwrapError(xxfakeStart("{", NULL), &(yyloc)); }
-#line 2137 "gramLatex.tab.c"
+#line 2138 "gramLatex.tab.c"
     break;
 
   case 42: /* block: '{' Items error  */
-#line 328 "parser/gramLatex.y"
+#line 329 "parser/gramLatex.y"
                           { xxincomplete(mkString("{"), &(yylsp[-2]));
                             yyval = xxwrapError(xxfakeStart("{", yyvsp[-1]), &(yyloc)); }
-#line 2144 "gramLatex.tab.c"
+#line 2145 "gramLatex.tab.c"
     break;
 
   case 43: /* @1: %empty  */
-#line 331 "parser/gramLatex.y"
+#line 332 "parser/gramLatex.y"
                           { yyval = xxpushMode(2, 1); }
-#line 2150 "gramLatex.tab.c"
+#line 2151 "gramLatex.tab.c"
     break;
 
   case 44: /* newdefine: NEWCMD @1 Items END_OF_ARGS  */
-#line 333 "parser/gramLatex.y"
+#line 334 "parser/gramLatex.y"
                           { xxpopMode(yyvsp[-2]);
                             yyval = xxnewdef(xxtag(yyvsp[-3], MACRO, &(yylsp[-3])),
                                         yyvsp[-1], &(yyloc)); }
-#line 2158 "gramLatex.tab.c"
+#line 2159 "gramLatex.tab.c"
     break;
 
   case 45: /* @2: %empty  */
-#line 336 "parser/gramLatex.y"
+#line 337 "parser/gramLatex.y"
                           { yyval = xxpushMode(3, 1); }
-#line 2164 "gramLatex.tab.c"
+#line 2165 "gramLatex.tab.c"
     break;
 
   case 46: /* newdefine: NEWENV @2 Items END_OF_ARGS  */
-#line 338 "parser/gramLatex.y"
+#line 339 "parser/gramLatex.y"
                           {  xxpopMode(yyvsp[-2]);
                              yyval = xxnewdef(xxtag(yyvsp[-3], MACRO, &(yylsp[-3])),
                                         yyvsp[-1], &(yyloc)); }
-#line 2172 "gramLatex.tab.c"
+#line 2173 "gramLatex.tab.c"
     break;
 
 
-#line 2176 "gramLatex.tab.c"
+#line 2177 "gramLatex.tab.c"
 
       default: break;
     }
@@ -2401,7 +2402,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 342 "parser/gramLatex.y"
+#line 343 "parser/gramLatex.y"
 
 
 static int parseError(void)
@@ -3247,6 +3248,8 @@ static int token(void)
         return '}';
       }
       case 3:  return mkDollar(c);
+      case 5:
+      case 10: return mkWhite(c, cat);
       case 11: return mkText(c);
       case 14: return mkComment(c);
 
@@ -3279,6 +3282,32 @@ static int mkText(int c)
     PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
     if(st1) free(st1);
     return TEXT;
+}
+
+static int mkWhite(int c, int cat)
+{
+  uint8_t st0[INITBUFSIZE];
+  uint8_t *st1 = NULL;
+  unsigned int nstext = INITBUFSIZE;
+  uint8_t *stext = st0, *bp = st0;
+  UBool isError = false;
+
+  if (parseState.xxGetArgs > 0 &&
+      parseState.xxBraceDepth == 0 &&
+      parseState.xxBracketDepth == 0) {
+    TEXT_PUSH(c);
+  } else {
+    do {
+      TEXT_PUSH(c);
+      c = xxgetc();
+    } while (tex_catcode(c) == cat);
+    xxungetc(c);
+  }
+  PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
+  setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
+  setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
+  if(st1) free(st1);
+  return SPECIAL;
 }
 
 static int mkComment(int c)

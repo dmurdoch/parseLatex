@@ -1,4 +1,4 @@
-# parseLatex 0.3.3
+# parseLatex 0.3.4
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -6,6 +6,10 @@
   errors in `deparseLatex()`.  `parseLatex(recover = TRUE)` now calls
   `showErrors()` rather than generating warnings.
 * Fixed some parsing bugs related to error recovery.
+* Sequences of spaces and tabs and sequences of linebreaks are
+  each collected into single items containing the full sequence of
+  characters.
+* Deparsing of `SPECIAL`s has been improved.
 
 # parseLatex 0.3.0
 
