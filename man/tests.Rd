@@ -9,6 +9,7 @@
 \alias{is_whitespace}
 \alias{is_text}
 \alias{is_error}
+\alias{is_char}
 \title{Test objects}
 \usage{
 is_env(item, envtypes = NULL)
@@ -24,6 +25,8 @@ is_whitespace(item)
 is_text(item)
 
 is_error(item)
+
+is_char(item, char)
 }
 \arguments{
 \item{item}{An object of class \link{LaTeX2item} to test.}
@@ -34,6 +37,8 @@ e.g. \code{"table"}.}
 \item{macros}{Which macros to match, e.g. \code{"\\\\\\\\caption"}.}
 
 \item{bracket}{Which bracket are we looking for?}
+
+\item{char}{A character to match}
 }
 \value{
 \code{is_env()} returns a boolean if the item matches.
@@ -53,6 +58,9 @@ specified type.
 
 \code{is_error()} returns a boolean indicating if the
 \code{item} is an error.
+
+\code{is_char()} returns a boolean indicating if the
+\code{item} is a \code{SPECIAL} matching \code{char}.
 }
 \description{
 Test objects

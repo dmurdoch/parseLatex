@@ -143,14 +143,22 @@ set_item <- function(items, path, value) {
 
 #' @rdname path_to
 #' @param values A [LaTeX2] list or a [LaTeX2item].
-#' @returns `insert_values()` inserts the `values` before `idx`, and returns the modified version of `items`.
+#' @returns `insert_values()` inserts the `values` before the item mentioned in `path`, and returns the modified version of `items`.
 #' @export
-insert_values <- function(items, idx, values) {
-  values <- latex2(values)
-  n <- length(values)
-  if (idx <= length(items))
-    items[(idx:length(items)) + n] <- items[idx:length(items)]
-  items[seq_along(values) - 1 + idx] <- values[]
+insert_values <- function(items, path, values) {
+  if (length(path) > 1) {
+    head <- path[-length(path)]
+    tail <- path[length(path)]
+    item <- insert_values(item[[head]], tail, values)
+    items[[head]] <- items
+  } else {
+    # length 1 path
+    values <- latex2(values)
+    n <- length(values)
+    if (path <= length(items))
+      items[(path:length(items)) + n] <- items[path:length(items)]
+    items[seq_along(values) - 1 + path] <- values[]
+  }
   items
 }
 
@@ -303,8 +311,8 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
 #' parsed <- parseLatex(latex)
 #' tablepath <- path_to(parsed, is_env, envtypes = "tabular")
-#' range <- LaTeX2range(tablepath, 8)
-#' set_range(parsed, range, "The 8th item")
+#' range <- LaTeX2range(tablepath, 11)
+#' set_range(parsed, range, "The 11th item")
 #' @export
 set_range <- function(items, range, values) {
   path <- range$path
@@ -344,4 +352,22 @@ set_range <- function(items, range, values) {
     }
   }
   items
+}
+
+#' @rdname set_range
+#' @returns `get_range()` extracts the
+#' specified range and returns it as a [LaTeX2] object.
+#' @examples
+#' get_range(parsed, range)
+#' @export
+
+get_range <- function(items, range) {
+  if (length(range$path))
+    items <- items[[range$path]]
+  if (length(range$range)) {
+    idx <- seq_along(items)
+    items <- items[idx >= min(range$range) &
+                   idx <= max(range$range)]
+  }
+  as_LaTeX2(items)
 }

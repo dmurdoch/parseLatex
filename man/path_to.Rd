@@ -15,7 +15,7 @@ get_item(items, path)
 
 set_item(items, path, value)
 
-insert_values(items, idx, values)
+insert_values(items, path, values)
 
 get_container(items, path)
 
@@ -45,7 +45,7 @@ or a list of paths to all matching items.
 
 \code{set_item()} replaces the item at the given path, and returns the modified version of \code{items}.
 
-\code{insert_values()} inserts the \code{values} before \code{idx}, and returns the modified version of \code{items}.
+\code{insert_values()} inserts the \code{values} before the item mentioned in \code{path}, and returns the modified version of \code{items}.
 
 \code{get_container()} returns the item
 containing the given path

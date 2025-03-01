@@ -14,6 +14,10 @@
 #' @export
 tableNrow <- function(table) {
   content <- tableContent(table)
+
+  # Skip captions which can occur in a longtable
+  content <- drop_captions(content)
+
   length(find_macro(content, "\\\\"))
 }
 

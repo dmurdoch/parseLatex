@@ -83,3 +83,11 @@ is_error <- function(item) {
   inherits(item, "LaTeX2item") &&
     latexTag(item) == "ERROR"
 }
+
+#' @rdname tests
+#' @param char A character to match
+#' @returns `is_char()` returns a boolean indicating if the
+#' `item` is a `SPECIAL` matching `char`.
+#' @export
+is_char <- function(item, char)
+  latexTag(item) == "SPECIAL" && item == char

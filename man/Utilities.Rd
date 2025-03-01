@@ -56,7 +56,7 @@ separated at the splits.
 separated at the splits.  Each piece is marked as
 a \link{LaTeX2} object.
 
-A BLOCK item containing the items.
+\code{new_block()} returns a \code{BLOCK} item containing the items.
 }
 \description{
 Miscellaneous utilities

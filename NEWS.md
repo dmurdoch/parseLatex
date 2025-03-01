@@ -1,4 +1,4 @@
-# parseLatex 0.3.5
+# parseLatex 0.3.6
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -13,6 +13,8 @@
 * Added `trim_whitespace()`, `envName()<-`, `find_block()` and `insert_values()`
   to help with `kableExtra` support.
 * Added support for `tabu` tables.
+* Added `is_char()`, `find_captions()`, `drop_captions()`, `path_to_caption()`,
+  `get_range()`.
 
 # parseLatex 0.3.0
 

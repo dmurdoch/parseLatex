@@ -2,9 +2,12 @@
 % Please edit documentation in R/finders.R
 \name{set_range}
 \alias{set_range}
+\alias{get_range}
 \title{Set items in a \link{LaTeX2} object}
 \usage{
 set_range(items, range, values)
+
+get_range(items, range)
 }
 \arguments{
 \item{items}{A \link{LaTeX2} object or other list of
@@ -18,6 +21,9 @@ a \link{LaTeX2item}.}
 }
 \value{
 \code{set_range()} replaces the item(s) at the given path, and returns the modified version of \code{items}.
+
+\code{get_range()} extracts the
+specified range and returns it as a \link{LaTeX2} object.
 }
 \description{
 Set items in a \link{LaTeX2} object
@@ -26,6 +32,7 @@ Set items in a \link{LaTeX2} object
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
 parsed <- parseLatex(latex)
 tablepath <- path_to(parsed, is_env, envtypes = "tabular")
-range <- LaTeX2range(tablepath, 8)
-set_range(parsed, range, "The 8th item")
+range <- LaTeX2range(tablepath, 11)
+set_range(parsed, range, "The 11th item")
+get_range(parsed, range)
 }

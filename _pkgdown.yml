@@ -28,6 +28,7 @@ reference:
   - tableCell
   - tableRule
   - vector_to_row
+  - find_captions
 - title: Utilities
   desc: Functions for working with parsed LaTeX
   contents:

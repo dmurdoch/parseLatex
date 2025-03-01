@@ -16,6 +16,10 @@ find_rules <- function(table) {
   contentIdx <- find_tableContent(table)
   content <- as_LaTeX2(table[contentIdx])
 
+  # drop captions
+  content <- drop_captions(content, contentIdx)
+  contentIdx <- attr(content, "idx")
+
   # linebreaks
   breaks <- find_macro(content, "\\\\")
 

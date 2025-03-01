@@ -138,7 +138,7 @@ set_contents <- function(item, value) {
 
 #' @rdname Utilities
 #'
-#' @returns A BLOCK item containing the items.
+#' @returns `new_block()` returns a `BLOCK` item containing the items.
 #' @export
 #'
 #' @examples

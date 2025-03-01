@@ -25,8 +25,11 @@ find_tableRow <- function(table, row) {
   }
 
   # Drop the captions
-  skip <- find_macro(content, c("\\caption", "\\caption*"))
-  drop(c(skip, skip + 1))
+  idx <- find_captions(content)
+  if (length(idx)) {
+    idx <- unlist(attr(idx, "extra"))
+    drop(idx)
+  }
 
   # Drop the rules
   drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
