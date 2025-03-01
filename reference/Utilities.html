@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,8 @@
 <span></span>
 <span><span class="fu">drop_whitespace</span><span class="op">(</span><span class="va">items</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">trim_whitespace</span><span class="op">(</span><span class="va">items</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">include_whitespace</span><span class="op">(</span><span class="va">items</span>, <span class="va">which</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">split_list</span><span class="op">(</span><span class="va">items</span>, <span class="va">splits</span><span class="op">)</span></span>
@@ -77,6 +79,8 @@
 <p><code>select_items()</code> returns the list of subsetted items.</p>
 <p><code>drop_whitespace()</code> returns the items with
 whitespace (blanks, tabs, newlines) removed.</p>
+<p><code>trim_whitespace()</code> returns the items with
+leading and trailing whitespace (blanks, tabs, newlines) removed.</p>
 <p><code>include_whitespace()</code> returns <code>which</code> with
 following whitespace (blanks, tabs, newlines) included.</p>
 <p><code>split_list()</code> returns a list of pieces
