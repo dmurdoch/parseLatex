@@ -143,14 +143,22 @@ set_item <- function(items, path, value) {
 
 #' @rdname path_to
 #' @param values A [LaTeX2] list or a [LaTeX2item].
-#' @returns `insert_values()` inserts the `values` before `idx`, and returns the modified version of `items`.
+#' @returns `insert_values()` inserts the `values` before the item mentioned in `path`, and returns the modified version of `items`.
 #' @export
-insert_values <- function(items, idx, values) {
-  values <- latex2(values)
-  n <- length(values)
-  if (idx <= length(items))
-    items[(idx:length(items)) + n] <- items[idx:length(items)]
-  items[seq_along(values) - 1 + idx] <- values[]
+insert_values <- function(items, path, values) {
+  if (length(path) > 1) {
+    head <- path[-length(path)]
+    tail <- path[length(path)]
+    item <- insert_values(item[[head]], tail, values)
+    items[[head]] <- items
+  } else {
+    # length 1 path
+    values <- latex2(values)
+    n <- length(values)
+    if (path <= length(items))
+      items[(path:length(items)) + n] <- items[path:length(items)]
+    items[seq_along(values) - 1 + path] <- values[]
+  }
   items
 }
 
