@@ -5,6 +5,7 @@
 \alias{latexTag}
 \alias{catcode}
 \alias{envName}
+\alias{envName<-}
 \alias{macroName}
 \title{Utility functions finding names and types of objects}
 \usage{
@@ -14,10 +15,14 @@ catcode(item)
 
 envName(item)
 
+envName(item) <- value
+
 macroName(item)
 }
 \arguments{
-\item{item}{A single latex item.}
+\item{item}{A \link{LaTeX2item} which is an environment}
+
+\item{value}{A character string to set as the name}
 }
 \value{
 \code{latexTag()} returns the \link{LaTeX2} tag for the item or \code{NULL}.

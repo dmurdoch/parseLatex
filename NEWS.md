@@ -1,4 +1,4 @@
-# parseLatex 0.3.4
+# parseLatex 0.3.5
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -10,6 +10,9 @@
   each collected into single items containing the full sequence of
   characters.
 * Deparsing of `SPECIAL`s has been improved.
+* Added `trim_whitespace()`, `envName()<-`, `find_block()` and `insert_values()`
+  to help with `kableExtra` support.
+* Added support for `tabu` tables.
 
 # parseLatex 0.3.0
 

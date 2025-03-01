@@ -4,6 +4,7 @@
 \alias{path_to}
 \alias{get_item}
 \alias{set_item}
+\alias{insert_values}
 \alias{get_container}
 \alias{get_which}
 \title{Find path to a particular kind of item}
@@ -13,6 +14,8 @@ path_to(items, is_fn, ..., all = FALSE)
 get_item(items, path)
 
 set_item(items, path, value)
+
+insert_values(items, idx, values)
 
 get_container(items, path)
 
@@ -30,6 +33,8 @@ get_which(path)
 \item{path}{Integer vector of subitems}
 
 \item{value}{A \link{LaTeX2item} to set as a value.}
+
+\item{values}{A \link{LaTeX2} list or a \link{LaTeX2item}.}
 }
 \value{
 \code{path_to()} returns the recursive path to the
@@ -39,6 +44,8 @@ or a list of paths to all matching items.
 \code{get_item()} returns the item at the given path.
 
 \code{set_item()} replaces the item at the given path, and returns the modified version of \code{items}.
+
+\code{insert_values()} inserts the \code{values} before \code{idx}, and returns the modified version of \code{items}.
 
 \code{get_container()} returns the item
 containing the given path

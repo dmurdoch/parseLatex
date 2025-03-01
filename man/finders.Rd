@@ -8,6 +8,7 @@
 \alias{find_catcode}
 \alias{find_tags}
 \alias{find_char}
+\alias{find_block}
 \title{Miscellaneous low-level finders}
 \usage{
 find_whitespace(items)
@@ -21,6 +22,8 @@ find_catcode(items, codes)
 find_tags(items, tags)
 
 find_char(items, char)
+
+find_block(items)
 }
 \arguments{
 \item{items}{A list of latex items.}
@@ -54,6 +57,9 @@ of items with tags matching \code{tags}.
 \code{find_char()} returns the index within \code{items}
 of characters matching \code{char}.  Only characters
 marked as SPECIAL by the parser will be found.
+
+\code{find_block()} returns the index within \code{items}
+of blocks (i.e. sequences in {})
 }
 \description{
 Miscellaneous low-level finders

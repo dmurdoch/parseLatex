@@ -34,6 +34,19 @@ drop_whitespace <- function(items)
 
 #' @rdname Utilities
 #'
+#' @returns `trim_whitespace()` returns the items with
+#'  leading and trailing whitespace (blanks, tabs, newlines) removed.
+#' @export
+trim_whitespace <- function(items) {
+  while(length(items) && is_whitespace(items[[length(items)]]))
+    items <- items[-length(items)]
+  while(length(items) && is_whitespace(items[[1]]))
+    items <- items[-1]
+  items
+}
+
+#' @rdname Utilities
+#'
 #' @returns `include_whitespace()` returns `which` with
 #' following whitespace (blanks, tabs, newlines) included.
 #' @export
@@ -105,7 +118,7 @@ get_contents <- function(item) {
 #' @param value An object that can be coerced to be
 #' a [LaTeX2] object.
 #'
-#' @returns The original `item` with the contents
+#' @returns `set_contents` returns the original `item` with the contents
 #' replaced by `value`.
 #' @export
 #'
@@ -119,7 +132,7 @@ set_contents <- function(item, value) {
   }
   stopifnot(inherits(item, "LaTeX2item") && is.list(item))
   value <- as_LaTeX2(value)
-  range <- LaTeX2range(NULL, seq_along(item))
+  range <- LaTeX2range(NULL, NULL)
   set_range(item, range, value)
 }
 

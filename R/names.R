@@ -27,6 +27,18 @@ envName <- function(item) {
 
 #' @rdname names
 #'
+#' @param item A [LaTeX2item] which is an environment
+#' @param value A character string to set as the name
+#' @export
+`envName<-` <- function(item, value) {
+  if (latexTag(item) != "ENVIRONMENT")
+    stop("item is not an environment")
+  attr(item, "envname") <- value
+  item
+}
+
+#' @rdname names
+#'
 #' @returns `macroName()` returns the Latex macro, or `NULL`.
 #' @export
 macroName <- function(item) {

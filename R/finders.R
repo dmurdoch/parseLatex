@@ -71,6 +71,16 @@ find_char <- function(items, char) {
                  items[[i]] == char))
 }
 
+#' @rdname finders
+#' @returns `find_block()` returns the index within `items`
+#' of blocks (i.e. sequences in {})
+#' @export
+find_block <- function(items) {
+  which(sapply(seq_along(items),
+               function(i)
+                 latexTag(items[[i]]) == "BLOCK"))
+}
+
 #' @title Find path to a particular kind of item
 #' @param items A list of latex items.
 #' @param all Find all matching, or the first?
@@ -128,6 +138,19 @@ set_item <- function(items, path, value) {
   if (!inherits(value, "LaTeX2item"))
     stop("requires a LaTeX2item as a value")
   items[[path]] <- value
+  items
+}
+
+#' @rdname path_to
+#' @param values A [LaTeX2] list or a [LaTeX2item].
+#' @returns `insert_values()` inserts the `values` before `idx`, and returns the modified version of `items`.
+#' @export
+insert_values <- function(items, idx, values) {
+  values <- latex2(values)
+  n <- length(values)
+  if (idx <= length(items))
+    items[(idx:length(items)) + n] <- items[idx:length(items)]
+  items[seq_along(values) - 1 + idx] <- values[]
   items
 }
 
@@ -260,7 +283,7 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
   else {
     cat("path=")
     cat(x$path, sep = ",")
-    if (!is.null(x$range))
+    if (length(x$range) > 0)
       cat(" range=", min(x$range), ":", max(x$range), "\n", sep = "")
     else
       cat(" range=all\n")
@@ -286,23 +309,39 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
 set_range <- function(items, range, values) {
   path <- range$path
   range <- range$range
-  values <- as_LaTeX2(values)
-  if (!length(path))
-    item <- items
-  else
-    item <- items[[path]]
-  if (!length(range))
-    range <- seq_along(item)
-  iold <- seq_along(item)
-  saveattr <- attributes(item)
-  item <- c(item[iold < min(range)],
-            values,
-            item[iold > max(range)])
-  attributes(item) <- saveattr
-  if (!length(path))
-    items <- item
-  else
-    items[[path]] <- item
-
+  if (!is.null(path) && !is.null(range)) {
+    range <- LaTeX2range(NULL, range)
+    items[[path]] <- set_range(items[[path]], range, values)
+  } else if (!is.null(path)) { # but NULL range
+    newpath <- path[-length(path)]
+    if (!length(newpath)) newpath <- NULL
+    range <- LaTeX2range(newpath, path[length(path)])
+    items <- set_range(items, range, values)
+  } else {
+    setlen <- function(items, len) {
+      saveattr <- attributes(items)
+      length(items) <- len
+      attributes(items) <- saveattr
+      items
+    }
+    values <- as_LaTeX2(values)
+    n <- length(values)
+    if (is.null(range)) {
+      saveattr <- attributes(items)
+      items <- setlen(items, length(values))
+      items[seq_along(values)] <- values
+    } else {
+      iold <- seq_along(items)
+      if (length(iold)) {
+        shift <- length(values) - (max(range) - min(range) + 1)
+        after <- iold[iold > max(range)]
+        if (length(after) && shift != 0)
+          items[after + shift] <- items[after]
+        if (shift < 0)
+          items <- setlen(items, length(items) + shift)
+      }
+      items[min(range) - 1 + seq_len(n)] <- values
+    }
+  }
   items
 }

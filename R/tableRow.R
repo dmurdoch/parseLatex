@@ -123,9 +123,9 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
   blank <- as_LaTeX2(" ")
   for (i in seq_along(cells)) {
     result <- c(result,
-                if (!asis) blank,
+                if (!asis && i > 1) blank,
                 as_LaTeX2(cells[[i]]),
-                if (!asis) blank,
+                if (!asis && i < length(cells)) blank,
                 if (i == length(cells)) {
                   if (linebreak) eol
                 } else amp)

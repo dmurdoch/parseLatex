@@ -18,7 +18,7 @@ a \link{LaTeX2} object.}
 \value{
 \code{get_contents} returns the contents of the item as a \link{LaTeX2} list.
 
-The original \code{item} with the contents
+\code{set_contents} returns the original \code{item} with the contents
 replaced by \code{value}.
 }
 \description{

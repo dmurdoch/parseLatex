@@ -15,7 +15,11 @@
 #'
 #' @export
 find_posOption <- function(table) {
-  find_bracket_options(table)
+  if (is_env(table, "tabu"))
+    start <- min(c(find_char(table, "["), find_block(table)[1]))
+  else
+    start <- 1
+  find_bracket_options(table, start = start)
 }
 
 #' @rdname tableOption
@@ -94,10 +98,15 @@ widthOption <- function(table) {
 #' find_columnOptions(table)
 #' @export
 find_columnOptions <- function(table) {
+  start <- 1
   which <- 1
   if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
     which <- 2
-  find_brace_options(table, which = which)
+  if (envName(table) == "tabu") {
+    while (!is_bracket(table[[start]], "[") &&
+           !is_block(table[[start]])) start <- start + 1
+  }
+  find_brace_options(table, which = which, start = start)
 }
 
 #' @rdname tableOption

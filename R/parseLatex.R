@@ -153,7 +153,7 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
       cat(rep(" ", indent), collapse="")
       tag <- attr(item, "latex_tag")
       if (tag  == "ENVIRONMENT") {
-        cat(envName(item), ":\n")
+        cat(envName(item), ":\n", sep = "")
         lapply(item, showItem, indent + 2)
       } else if (tag == "BLOCK") {
         cat("{\n")
@@ -167,11 +167,11 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
       } else if (tag == "DEFINITION") {
         lapply(item, showItem, indent + 2)
       } else
-        cat(tag, ":", item, "\n")
+        cat(tag, ":", item, "\n", sep = "")
     }
     lapply(x, showItem)
   } else {
-    cat(deparseLatex(x, ...), "\n")
+    cat(deparseLatex(x, ...), "\n", sep = "")
   }
   invisible(x)
 }

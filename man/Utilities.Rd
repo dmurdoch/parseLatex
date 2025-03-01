@@ -5,6 +5,7 @@
 \alias{drop_items}
 \alias{select_items}
 \alias{drop_whitespace}
+\alias{trim_whitespace}
 \alias{include_whitespace}
 \alias{split_list}
 \alias{split_latex}
@@ -16,6 +17,8 @@ drop_items(items, which)
 select_items(items, which)
 
 drop_whitespace(items)
+
+trim_whitespace(items)
 
 include_whitespace(items, which)
 
@@ -39,6 +42,9 @@ new_block(items)
 
 \code{drop_whitespace()} returns the items with
 whitespace (blanks, tabs, newlines) removed.
+
+\code{trim_whitespace()} returns the items with
+leading and trailing whitespace (blanks, tabs, newlines) removed.
 
 \code{include_whitespace()} returns \code{which} with
 following whitespace (blanks, tabs, newlines) included.
