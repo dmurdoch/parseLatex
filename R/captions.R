@@ -59,7 +59,7 @@ drop_captions <- function(items, idx = NULL) {
 #' @returns `path_to_caption()` returns a path
 #'  containing the location of the first caption
 #'  block within `items`.  It has an attribute `idx`
-#'  containing a [LaTeX2Range] object for the
+#'  containing a [LaTeX2range] object for the
 #'  associated macros and whitespace.
 #' @export
 #'

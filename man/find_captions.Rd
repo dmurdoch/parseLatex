@@ -30,7 +30,7 @@ elements dropped.
 \code{path_to_caption()} returns a path
 containing the location of the first caption
 block within \code{items}.  It has an attribute \code{idx}
-containing a \link{LaTeX2Range} object for the
+containing a \link{LaTeX2range} object for the
 associated macros and whitespace.
 }
 \description{
