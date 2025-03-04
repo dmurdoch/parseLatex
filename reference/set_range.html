@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,9 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">set_range</span><span class="op">(</span><span class="va">items</span>, <span class="va">range</span>, <span class="va">values</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">set_range</span><span class="op">(</span><span class="va">items</span>, <span class="va">range</span>, <span class="va">values</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_range</span><span class="op">(</span><span class="va">items</span>, <span class="va">range</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -65,6 +67,8 @@ a <a href="parseLatex_fn.html">LaTeX2item</a>.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p><code>set_range()</code> replaces the item(s) at the given path, and returns the modified version of <code>items</code>.</p>
+<p><code>get_range()</code> extracts the
+specified range and returns it as a <a href="parseLatex_fn.html">LaTeX2</a> object.</p>
     </div>
 
     <div class="section level2">
@@ -72,15 +76,15 @@ a <a href="parseLatex_fn.html">LaTeX2item</a>.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">latex</span> <span class="op">&lt;-</span> <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kbl.html" class="external-link">kbl</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, format <span class="op">=</span> <span class="st">"latex"</span>, caption <span class="op">=</span> <span class="st">"Sample table"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tablepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="path_to.html">path_to</a></span><span class="op">(</span><span class="va">parsed</span>, <span class="va">is_env</span>, envtypes <span class="op">=</span> <span class="st">"tabular"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">range</span> <span class="op">&lt;-</span> <span class="fu"><a href="LaTeX2range.html">LaTeX2range</a></span><span class="op">(</span><span class="va">tablepath</span>, <span class="fl">8</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">set_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span>, <span class="st">"The 8th item"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">range</span> <span class="op">&lt;-</span> <span class="fu"><a href="LaTeX2range.html">LaTeX2range</a></span><span class="op">(</span><span class="va">tablepath</span>, <span class="fl">11</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">set_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span>, <span class="st">"The 11th item"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \begin{table}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \caption{Sample table}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \centering</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \begin{tabular}[t]{l|r|r}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> The 8th item&amp; mpg &amp; cyl\\</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   &amp; The 11th item &amp; cyl\\</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 &amp; 21 &amp; 6\\</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
@@ -88,6 +92,8 @@ a <a href="parseLatex_fn.html">LaTeX2item</a>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{tabular}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{table}</span>
+<span class="r-in"><span><span class="fu">get_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mpg</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

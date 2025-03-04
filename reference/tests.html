@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,9 @@
 <span></span>
 <span><span class="fu">is_text</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">is_error</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">is_error</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">is_char</span><span class="op">(</span><span class="va">item</span>, <span class="va">char</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -75,6 +77,10 @@ e.g. <code>"table"</code>.</p></dd>
 <dt id="arg-bracket">bracket<a class="anchor" aria-label="anchor" href="#arg-bracket"></a></dt>
 <dd><p>Which bracket are we looking for?</p></dd>
 
+
+<dt id="arg-char">char<a class="anchor" aria-label="anchor" href="#arg-char"></a></dt>
+<dd><p>A character to match</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -89,6 +95,8 @@ specified type.</p>
 <code>item</code> is text.</p>
 <p><code>is_error()</code> returns a boolean indicating if the
 <code>item</code> is an error.</p>
+<p><code>is_char()</code> returns a boolean indicating if the
+<code>item</code> is a <code>SPECIAL</code> matching <code>char</code>.</p>
     </div>
 
     <div class="section level2">
