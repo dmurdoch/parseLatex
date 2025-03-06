@@ -29,7 +29,8 @@ split_latex(items, splits)
 new_block(items)
 }
 \arguments{
-\item{items}{A \link{LaTeX2} object or list of items.}
+\item{items}{A \link{LaTeX2} object or list of items, or
+a \link{LaTeX2item} which is a list.}
 
 \item{which}{Which items to operate on.}
 

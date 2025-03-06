@@ -1,14 +1,20 @@
 #' @title Miscellaneous utilities
 #' @name Utilities
 #'
-#' @param items A [LaTeX2] object or list of items.
+#' @param items A [LaTeX2] object or list of items, or
+#' a [LaTeX2item] which is a list.
 #' @param which Which items to operate on.
 #' @returns `drop_items()` returns the list of items with specific items removed.
 #' @export
 drop_items <- function(items, which) {
+  saveattr <- attributes(items)
   if (length(which))
     items <- items[-which]
-  as_LaTeX2(items)
+  attributes(items) <- saveattr
+  if (inherits(items, "LaTeX2item"))
+    items
+  else
+    as_LaTeX2(items)
 }
 
 #' @rdname Utilities

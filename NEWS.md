@@ -1,4 +1,4 @@
-# parseLatex 0.3.6
+# parseLatex 0.3.7
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -15,6 +15,7 @@
 * Added support for `tabu` tables.
 * Added `is_char()`, `find_captions()`, `drop_captions()`, `path_to_caption()`,
   `get_range()`.
+* `drop_items()` now works on `LaTeX2Item` lists.
 
 # parseLatex 0.3.0
 
