@@ -16,6 +16,7 @@
 * Added `is_char()`, `find_captions()`, `drop_captions()`, `path_to_caption()`,
   `get_range()`.
 * `drop_items()` now works on `LaTeX2Item` lists.
+* `tableRow()` ignores `\pagebreak` and `\nopagebreak`.
 
 # parseLatex 0.3.0
 

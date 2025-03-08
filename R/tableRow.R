@@ -31,8 +31,17 @@ find_tableRow <- function(table, row) {
     drop(idx)
   }
 
-  # Drop the rules
+  # Drop the rules & \nopagebreak
   drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
+
+  # Drop pagebreak and nopagebreak
+  idx <- find_macro(content, c("\\pagebreak", "\\nopagebreak"))
+  if (length(idx)) {
+    idx0 <- idx
+    for (i in idx)
+      idx0 <- c(idx0, find_bracket_options(content, start = idx[i]))
+    drop(idx0)
+  }
 
   # Drop partial rules
   cline <- find_macro(content, "\\cline")
