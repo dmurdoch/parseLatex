@@ -121,6 +121,34 @@ columnOptions <- function(table) {
 }
 
 #' @rdname tableOption
+#' @returns `columnOption()` returns a [LaTeX2] object
+#' containing the requested column option.  Dividers
+#' such as `"|"` will not be included.
+#' @export
+#' @examples
+#' columnOption(table, 3)
+columnOption <- function(table, which) {
+  opts <- drop_whitespace(get_contents(columnOptions(table)[[1]]))
+  opts <- drop_items(opts, find_char(opts, "|"))
+  result <- NULL
+  start <- 0
+  for (i in seq_along(opts)) {
+    x <- opts[[i]]
+    if (latexTag(x) == "TEXT")
+      stop <- start + nchar(x)
+    if (which <= stop) {
+      j <- which - start
+      result <- latex2(substr(x, j, j))
+      if (j == nchar(x))
+        result <- latex2(result, brace_options(opts, start = i + 1))
+      break
+    }
+    start <- stop
+  }
+  result
+}
+
+#' @rdname tableOption
 #' @examples
 #' columnOptions(table) <- "lrr"
 #' table

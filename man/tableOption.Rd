@@ -10,6 +10,7 @@
 \alias{widthOption<-}
 \alias{find_columnOptions}
 \alias{columnOptions}
+\alias{columnOption}
 \alias{columnOptions<-}
 \title{Functions related to table options.}
 \usage{
@@ -28,6 +29,8 @@ widthOption(table, asis = FALSE) <- value
 find_columnOptions(table)
 
 columnOptions(table)
+
+columnOption(table, which)
 
 columnOptions(table, asis = FALSE) <- value
 }
@@ -59,6 +62,10 @@ block corresponding to the column spec.
 
 \code{columnOptions()} returns a \link{LaTeX2} object containing the
 "column" options.
+
+\code{columnOption()} returns a \link{LaTeX2} object
+containing the requested column option.  Dividers
+such as \code{"|"} will not be included.
 }
 \description{
 Functions related to table options.
@@ -85,6 +92,7 @@ widthOption(table)
 find_columnOptions(table)
 columnOptions(table)
 
+columnOption(table, 3)
 columnOptions(table) <- "lrr"
 table
 }
