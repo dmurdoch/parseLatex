@@ -44,11 +44,16 @@ drop_whitespace <- function(items)
 #'  leading and trailing whitespace (blanks, tabs, newlines) removed.
 #' @export
 trim_whitespace <- function(items) {
+  saveattr <- attributes(items)
   while(length(items) && is_whitespace(items[[length(items)]]))
     items <- items[-length(items)]
   while(length(items) && is_whitespace(items[[1]]))
     items <- items[-1]
-  items
+  attributes(items) <- saveattr
+  if (inherits(items, "LaTeX2item"))
+    items
+  else
+    as_LaTeX2(items)
 }
 
 #' @rdname Utilities

@@ -1,4 +1,4 @@
-# parseLatex 0.3.7
+# parseLatex 0.3.8
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.

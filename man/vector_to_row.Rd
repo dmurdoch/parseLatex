@@ -7,7 +7,7 @@
 \usage{
 vector_to_row(cells, asis = FALSE, linebreak = TRUE)
 
-row_to_vector(row, asis = FALSE)
+row_to_vector(row, asis = FALSE, deparse = TRUE)
 }
 \arguments{
 \item{cells}{A list or vector of cell contents.}
@@ -23,7 +23,7 @@ row_to_vector(row, asis = FALSE)
 in a tabular object.
 
 \code{row_to_vector} returns a character vector of the
-deparsed contents of the row.
+deparsed contents of the row, or if \code{deparse} is \code{FALSE}, a list of the contents.
 }
 \description{
 Convert vector to table row and back
@@ -31,4 +31,5 @@ Convert vector to table row and back
 \examples{
 vector_to_row(1:3)
 row_to_vector("1 & 2 & content \\\\\\\\")
+row_to_vector("1 & 2 & content \\\\\\\\", deparse = FALSE)
 }

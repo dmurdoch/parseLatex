@@ -140,12 +140,13 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 #'
 #' @param row A row from a table
 #' @returns `row_to_vector` returns a character vector of the
-#' deparsed contents of the row.
+#' deparsed contents of the row, or if `deparse` is `FALSE`, a list of the contents.
 #' @export
 #'
 #' @examples
 #' row_to_vector("1 & 2 & content \\\\")
-row_to_vector <- function(row, asis = FALSE) {
+#' row_to_vector("1 & 2 & content \\\\", deparse = FALSE)
+row_to_vector <- function(row, asis = FALSE, deparse = TRUE) {
   row <- as_LaTeX2(row)
   amp <- find_catcode(row, 4)
   eol <- find_macro(row, "\\\\")
@@ -154,12 +155,24 @@ row_to_vector <- function(row, asis = FALSE) {
   if (!length(eol))
     eol <- length(row) + 1
   br <- c(0, amp[amp < eol[1]], eol[1])
-  result <- rep("", length(br) - 1)
+  if (deparse)
+    result <- rep("", length(br) - 1)
+  else
+    result <- vector("list", length(br) - 1)
   for (i in seq_along(result))
-    if (br[i+1] > br[i] + 1)
-      result[i] <- deparseLatex(row[(br[i] + 1):(br[i+1] - 1)])
-  if (!asis)
-    result <- trimws(result)
+    if (br[i+1] > br[i] + 1) {
+      value <- row[(br[i] + 1):(br[i+1] - 1)]
+      if (deparse)
+        result[i] <- deparseLatex(value)
+      else
+        result[[i]] <- as_LaTeX2(value)
+    }
+  if (!asis) {
+    if (deparse)
+      result <- trimws(result)
+    else
+      result <- lapply(result, trim_whitespace)
+  }
   result
 }
 
