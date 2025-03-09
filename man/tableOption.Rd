@@ -12,6 +12,7 @@
 \alias{columnOptions}
 \alias{columnOption}
 \alias{columnOptions<-}
+\alias{columnOption<-}
 \title{Functions related to table options.}
 \usage{
 find_posOption(table)
@@ -33,6 +34,8 @@ columnOptions(table)
 columnOption(table, column)
 
 columnOptions(table, asis = FALSE) <- value
+
+columnOption(table, column) <- value
 }
 \arguments{
 \item{table}{A known tabular-like environment object,
@@ -66,8 +69,8 @@ block corresponding to the column spec.
 "column" options.
 
 \code{columnOption()} returns a \link{LaTeX2} object
-containing the requested column option.  Dividers
-such as \code{"|"} will not be included.
+containing the requested column option.  A \code{"|"} divider
+will not be included.
 }
 \description{
 Functions related to table options.
@@ -97,4 +100,6 @@ columnOptions(table)
 columnOption(table, 3)
 columnOptions(table) <- "lrr"
 table
+columnOption(table, 3) <- "p{1cm}"
+columnOptions(table)
 }

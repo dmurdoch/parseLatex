@@ -1,4 +1,4 @@
-# parseLatex 0.3.8
+# parseLatex 0.3.9
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -22,6 +22,7 @@ extras before the line in the result.  `find_tableRow()` and `tableRow<-`
 have similar modifications.
 * `find_rule()` and `rule()` now remove the final whitespace from
 the result.
+* Added `columnOption()` and `columnOption<-()` functions.
 
 # parseLatex 0.3.0
 

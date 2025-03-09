@@ -123,28 +123,30 @@ columnOptions <- function(table) {
 #' @rdname tableOption
 #' @param column For which column?
 #' @returns `columnOption()` returns a [LaTeX2] object
-#' containing the requested column option.  Dividers
-#' such as `"|"` will not be included.
+#' containing the requested column option.  A `"|"` divider
+#' will not be included.
 #' @export
 #' @examples
 #' columnOption(table, 3)
 columnOption <- function(table, column) {
-  opts <- drop_whitespace(get_contents(columnOptions(table)[[1]]))
-  opts <- drop_items(opts, find_char(opts, "|"))
+  opts <- get_contents(columnOptions(table)[[1]])
   result <- NULL
   start <- 0
   for (i in seq_along(opts)) {
     x <- opts[[i]]
-    if (latexTag(x) == "TEXT")
+    if (latexTag(x) == "TEXT") {
       stop <- start + nchar(x)
-    if (column <= stop) {
-      j <- column - start
-      result <- latex2(substr(x, j, j))
-      if (j == nchar(x))
-        result <- latex2(result, brace_options(opts, start = i + 1))
-      break
+      if (column <= stop) {
+        j <- column - start
+        result <- latex2(substr(x, j, j))
+        if (j == nchar(x))
+          result <- latex2(result, brace_options(opts, start = i + 1))
+        if (j == 1 && i > 2 && is_block(opts[[i-1]]) && !is_text(opts[[i-2]]))
+          result <- insert_values(result, opts[c(i-2, i-1)])
+        break
+      }
+      start <- stop
     }
-    start <- stop
   }
   result
 }
@@ -161,4 +163,61 @@ columnOption <- function(table, column) {
     which <- 2
   brace_options(table, which = which, asis = asis) <- value
   table
+}
+
+#' @rdname tableOption
+#' @examples
+#' columnOption(table, 3) <- "p{1cm}"
+#' columnOptions(table)
+#' @export
+`columnOption<-` <- function(table, column, value) {
+  value <- latex2(value)
+  letter <- find_tags(value, "TEXT")
+  if (length(letter) != 1 || nchar(value[[letter]]) != 1)
+    stop("unrecognized column specification")
+  opts <- get_contents(columnOptions(table))
+  start <- 0
+  for (i in seq_along(opts)) {
+    x <- opts[[i]]
+    if (latexTag(x) == "TEXT") {
+      stop <- start + nchar(x)
+      if (column <= stop) {
+        # We have the first entry.  Now things
+        # depend on whether it has options, or value
+        # has options.  Options like ">{3cm}" can appear
+        # before, others like in "p{3cm}" after.
+        # Vertical bars count as part of it only after.
+        newarg <- length(value) > 1
+        oldarg <- FALSE
+        oldprearg <- NULL
+        j <- column - start
+        n <- nchar(x)
+        if (j == n && i < length(opts) && is_block(opts[[i+1]]))
+          oldarg <- TRUE
+        if (j == 1 && i > 2 && is_block(opts[[i-1]]) && !is_text(opts[[i-2]]))
+          oldprearg <- c(i-2, i-1)
+        if (oldarg)
+          opts <- drop_items(opts, i+1)
+        if (newarg) {
+          # Need to split up x to make room for new arg
+          # NB:  substr copies the attributes from x to the
+          #      substring
+          if (j > 1)
+            opts[[i]] <- substr(x, 1, j-1)
+          if (j < n)
+            opts <- insert_values(opts, i+1, substr(x, j+1, n))
+          opts <- insert_values(opts, i+1, value)
+          if (j == 1)
+            opts <- drop_items(opts, i)
+        } else
+          substr(opts[[i]], j, j) <- value[[1]]
+        if (!is.null(oldprearg))
+          opts <- drop_items(opts, oldprearg)
+        columnOptions(table) <- new_block(opts)
+        return(table)
+      }
+      start <- stop
+    }
+  }
+  stop("column ", column, " not found.")
 }
