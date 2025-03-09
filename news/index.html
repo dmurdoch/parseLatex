@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.7" id="parselatex-037">parseLatex 0.3.7<a class="anchor" aria-label="anchor" href="#parselatex-037"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.3.8" id="parselatex-038">parseLatex 0.3.8<a class="anchor" aria-label="anchor" href="#parselatex-038"></a></h2>
 <ul><li>Added <code><a href="../reference/vector_to_row.html">row_to_vector()</a></code>.</li>
 <li>Added <code><a href="../reference/tests.html">is_text()</a></code> and <code><a href="../reference/tests.html">is_error()</a></code>.</li>
 <li>Added <code><a href="../reference/showErrors.html">showErrors()</a></code>, and changed the formatting of errors in <code><a href="../reference/deparseLatex.html">deparseLatex()</a></code>. <code>parseLatex(recover = TRUE)</code> now calls <code><a href="../reference/showErrors.html">showErrors()</a></code> rather than generating warnings.</li>
@@ -46,6 +46,10 @@
 <li>Added <code><a href="../reference/tests.html">is_char()</a></code>, <code><a href="../reference/find_captions.html">find_captions()</a></code>, <code><a href="../reference/find_captions.html">drop_captions()</a></code>, <code><a href="../reference/find_captions.html">path_to_caption()</a></code>, <code><a href="../reference/set_range.html">get_range()</a></code>.</li>
 <li>
 <code><a href="../reference/Utilities.html">drop_items()</a></code> now works on <code>LaTeX2Item</code> lists.</li>
+<li>
+<code><a href="../reference/tableRow.html">tableRow()</a></code> by default ignores <code>\pagebreak</code> and <code>\nopagebreak</code>. The new argument <code>withExtras</code> causes it to include these and other extras before the line in the result. <code><a href="../reference/tableRow.html">find_tableRow()</a></code> and <code>tableRow&lt;-</code> have similar modifications.</li>
+<li>
+<code><a href="../reference/tableRule.html">find_rule()</a></code> and <code><a href="../reference/tableRule.html">rule()</a></code> now remove the final whitespace from the result.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="parselatex-030">parseLatex 0.3.0<a class="anchor" aria-label="anchor" href="#parselatex-030"></a></h2><p class="text-muted">CRAN release: 2025-02-20</p>

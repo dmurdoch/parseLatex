@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +56,8 @@
 <span></span>
 <span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">columnOption</span><span class="op">(</span><span class="va">table</span>, <span class="va">which</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span>, asis <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
 
@@ -92,6 +94,9 @@ Only some tabular-like environments have these.</p>
 block corresponding to the column spec.</p>
 <p><code>columnOptions()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "column" options.</p>
+<p><code>columnOption()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object
+containing the requested column option.  Dividers
+such as <code>"|"</code> will not be included.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -134,6 +139,8 @@ can be specified with or without the enclosing brackets.</p>
 <span class="r-in"><span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> {l|r|r}</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">columnOption</span><span class="op">(</span><span class="va">table</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> r</span>
 <span class="r-in"><span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"lrr"</span></span></span>
 <span class="r-in"><span><span class="va">table</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENVIRONMENT: \begin{tabular}[h]{lrr}</span>
