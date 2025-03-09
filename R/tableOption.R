@@ -121,13 +121,14 @@ columnOptions <- function(table) {
 }
 
 #' @rdname tableOption
+#' @param column For which column?
 #' @returns `columnOption()` returns a [LaTeX2] object
 #' containing the requested column option.  Dividers
 #' such as `"|"` will not be included.
 #' @export
 #' @examples
 #' columnOption(table, 3)
-columnOption <- function(table, which) {
+columnOption <- function(table, column) {
   opts <- drop_whitespace(get_contents(columnOptions(table)[[1]]))
   opts <- drop_items(opts, find_char(opts, "|"))
   result <- NULL
@@ -136,8 +137,8 @@ columnOption <- function(table, which) {
     x <- opts[[i]]
     if (latexTag(x) == "TEXT")
       stop <- start + nchar(x)
-    if (which <= stop) {
-      j <- which - start
+    if (column <= stop) {
+      j <- column - start
       result <- latex2(substr(x, j, j))
       if (j == nchar(x))
         result <- latex2(result, brace_options(opts, start = i + 1))

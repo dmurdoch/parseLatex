@@ -17,6 +17,8 @@ row_to_vector(row, asis = FALSE, deparse = TRUE)
 \item{linebreak}{If \code{TRUE}, add a line break marker.}
 
 \item{row}{A row from a table}
+
+\item{deparse}{Should the result be deparsed?}
 }
 \value{
 \code{vector_to_row} returns a \link{LaTeX2} object which could be a row

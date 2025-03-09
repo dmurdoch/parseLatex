@@ -30,7 +30,7 @@ find_columnOptions(table)
 
 columnOptions(table)
 
-columnOption(table, which)
+columnOption(table, column)
 
 columnOptions(table, asis = FALSE) <- value
 }
@@ -41,6 +41,8 @@ or the contents of one.}
 \item{asis}{Whether to make small modifications in replacement functions.}
 
 \item{value}{A character string or \link{LaTeX2} object.}
+
+\item{column}{For which column?}
 }
 \value{
 \code{find_posOption()} returns the indices of the

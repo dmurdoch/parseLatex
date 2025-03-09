@@ -101,7 +101,8 @@ blankRow <- function(table) {
 #'
 #' @export
 `tableRow<-` <- function(table, row, asis = FALSE,
-                         value, withExtras = FALSE) {
+                         withExtras = FALSE,
+                         value) {
   value <- as_LaTeX2(value)
   if (!asis) {
     breaks <- find_macro(value, "\\\\")
@@ -158,6 +159,7 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 #' @rdname vector_to_row
 #'
 #' @param row A row from a table
+#' @param deparse Should the result be deparsed?
 #' @returns `row_to_vector` returns a character vector of the
 #' deparsed contents of the row, or if `deparse` is `FALSE`, a list of the contents.
 #' @export
