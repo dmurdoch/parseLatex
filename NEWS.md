@@ -16,7 +16,12 @@
 * Added `is_char()`, `find_captions()`, `drop_captions()`, `path_to_caption()`,
   `get_range()`.
 * `drop_items()` now works on `LaTeX2Item` lists.
-* `tableRow()` ignores `\pagebreak` and `\nopagebreak`.
+* `tableRow()` by default ignores `\pagebreak` and `\nopagebreak`. 
+The new argument `withExtras` causes it to include these and other 
+extras before the line in the result.  `find_tableRow()` and `tableRow<-`
+have similar modifications.
+* `find_rule()` and `rule()` now remove the final whitespace from
+the result.
 
 # parseLatex 0.3.0
 

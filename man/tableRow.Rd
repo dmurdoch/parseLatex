@@ -6,17 +6,20 @@
 \alias{tableRow<-}
 \title{Functions to work with rows in tables}
 \usage{
-find_tableRow(table, row)
+find_tableRow(table, row, withExtras = FALSE)
 
-tableRow(table, row)
+tableRow(table, row, withExtras = FALSE)
 
-tableRow(table, row, asis = FALSE) <- value
+tableRow(table, row, asis = FALSE, withExtras = FALSE) <- value
 }
 \arguments{
 \item{table}{A tabular-like environment to work with.}
 
 \item{row}{row in the table (1 is top row), including
 rows of labels.}
+
+\item{withExtras}{If \code{TRUE}, include the extras
+before the line of data, such as \verb{\\hline}, etc.}
 
 \item{asis}{Should a linebreak and newline be added after the
 value?}
@@ -43,6 +46,11 @@ at the end if not present.
 If the \code{row} value is higher than the number of rows
 in the table, blank rows will be added to fill the
 space between.
+
+If \code{withExtras = TRUE} and you want the
+result to start on a new line, you need to add the
+newline explicitly in \code{value} when using the
+assignment function.
 }
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
@@ -51,6 +59,7 @@ table <- parsed[[find_tabular(parsed)]]
 find_tableRow(table, 1)
 
 tableRow(table, 1)
+tableRow(table, 1, withExtras = TRUE)
 
 tableRow(table, 5) <- "a & b & c"
 table

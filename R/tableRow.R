@@ -3,6 +3,8 @@
 #' @param table A tabular-like environment to work with.
 #' @param row row in the table (1 is top row), including
 #' rows of labels.
+#' @param withExtras If `TRUE`, include the extras
+#' before the line of data, such as `\hline`, etc.
 #' @returns `find_tableRow()` returns the indices of the
 #' entries corresponding to the content of row i of the table.
 #' @examples
@@ -12,7 +14,7 @@
 #' find_tableRow(table, 1)
 #'
 #' @export
-find_tableRow <- function(table, row) {
+find_tableRow <- function(table, row, withExtras = FALSE) {
   contentIdx <- find_tableContent(table)
   content <- as_LaTeX2(table[contentIdx])
 
@@ -31,26 +33,27 @@ find_tableRow <- function(table, row) {
     drop(idx)
   }
 
-  # Drop the rules
-  drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
+  if (!withExtras) {
+    # Drop the rules
+    drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
 
-  # Drop pagebreak and nopagebreak
-  idx <- find_macro(content, c("\\pagebreak", "\\nopagebreak"))
-  if (length(idx)) {
-    idx0 <- idx
-    for (i in idx)
-      idx0 <- c(idx0, find_bracket_options(content, start = i + 1))
-    drop(idx0)
+    # Drop pagebreak and nopagebreak
+    idx <- find_macro(content, c("\\pagebreak", "\\nopagebreak"))
+    if (length(idx)) {
+      idx0 <- idx
+      for (i in idx)
+        idx0 <- c(idx0, find_bracket_options(content, start = i + 1))
+      drop(idx0)
+    }
+
+    # Drop partial rules
+    cline <- find_macro(content, "\\cline")
+    if (length(cline))
+      drop(c(cline, cline + 1))
+
+    # Drop all newlines
+    drop(find_catcode(content, NEWLINE))
   }
-
-  # Drop partial rules
-  cline <- find_macro(content, "\\cline")
-  if (length(cline))
-    drop(c(cline, cline + 1))
-
-  # Drop all newlines
-  drop(find_catcode(content, NEWLINE))
-
   breaks <- find_macro(content, "\\\\")
   rows <- split_list(contentIdx, breaks)
   if (row <= length(breaks))
@@ -64,10 +67,11 @@ find_tableRow <- function(table, row) {
 #' all of the table content in the row.
 #' @examples
 #' tableRow(table, 1)
+#' tableRow(table, 1, withExtras = TRUE)
 #'
 #' @export
-tableRow <- function(table, row)
-  as_LaTeX2(table[find_tableRow(table, row)])
+tableRow <- function(table, row, withExtras = FALSE)
+  as_LaTeX2(table[find_tableRow(table, row, withExtras)])
 
 blankRow <- function(table) {
   paste0(rep(" & ", tableNcol(table) - 1), collapse = "")
@@ -86,12 +90,18 @@ blankRow <- function(table) {
 #' If the `row` value is higher than the number of rows
 #' in the table, blank rows will be added to fill the
 #' space between.
+#'
+#' If `withExtras = TRUE` and you want the
+#' result to start on a new line, you need to add the
+#' newline explicitly in `value` when using the
+#' assignment function.
 #' @examples
 #' tableRow(table, 5) <- "a & b & c"
 #' table
 #'
 #' @export
-`tableRow<-` <- function(table, row, asis = FALSE, value) {
+`tableRow<-` <- function(table, row, asis = FALSE,
+                         value, withExtras = FALSE) {
   value <- as_LaTeX2(value)
   if (!asis) {
     breaks <- find_macro(value, "\\\\")
@@ -101,7 +111,7 @@ blankRow <- function(table) {
     # if (!(length(value) %in% newlines))
     #   value <- c(value, as_LaTeX2("\n"))
   }
-  i <- find_tableRow(table, row)
+  i <- find_tableRow(table, row, withExtras = withExtras)
   if (!length(i)) {
     # Need to insert rows
     contentIdx <- find_tableContent(table)
