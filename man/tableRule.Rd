@@ -42,7 +42,7 @@ before each row.  The last entry will be the rule(s)
 following the last row.
 
 \code{find_rule(table, row)} returns the indices
-of the rule(s) before \code{row}.
+of the rule(s) before \code{row}, not including the final whitespace.
 
 \code{rule(table, row)} returns the indices
 rule(s) before \code{row}.

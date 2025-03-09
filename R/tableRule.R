@@ -58,13 +58,20 @@ rules <- function(table) {
 #' @param row The rules will precede the contents of this row.
 #' The rule after the final row uses `row = tableNrow(table) + 1`.
 #' @returns `find_rule(table, row)` returns the indices
-#' of the rule(s) before `row`.
+#' of the rule(s) before `row`, not including the final whitespace.
 #' @examples
 #' find_rule(table, 1)
 #'
 #' @export
-find_rule <- function(table, row)
-  find_rules(table)[[row]]
+find_rule <- function(table, row) {
+  res <- find_rules(table)[[row]]
+  n <- length(res)
+  while (n > 0 && is_whitespace(table[[res[n]]])) {
+    res <- res[-n]
+    n <- n - 1
+  }
+  res
+}
 
 #' @rdname tableRule
 #' @returns `rule(table, row)` returns the indices
