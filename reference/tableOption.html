@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,9 @@
 <span></span>
 <span><span class="fu">columnOption</span><span class="op">(</span><span class="va">table</span>, <span class="va">column</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span>, asis <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
+<span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span>, asis <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="fu">columnOption</span><span class="op">(</span><span class="va">table</span>, <span class="va">column</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -99,8 +101,8 @@ block corresponding to the column spec.</p>
 <p><code>columnOptions()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "column" options.</p>
 <p><code>columnOption()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object
-containing the requested column option.  Dividers
-such as <code>"|"</code> will not be included.</p>
+containing the requested column option.  A <code>"|"</code> divider
+will not be included.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -156,6 +158,9 @@ can be specified with or without the enclosing brackets.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 Wag &amp; 21 &amp; 6\\</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{tabular}</span>
+<span class="r-in"><span><span class="fu">columnOption</span><span class="op">(</span><span class="va">table</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"p{1cm}"</span></span></span>
+<span class="r-in"><span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> {lrp{1cm}}</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
