@@ -34,8 +34,10 @@ find_tableRow <- function(table, row, withExtras = FALSE) {
   }
 
   if (!withExtras) {
-    # Drop the rules
-    drop(find_macro(content, c("\\hline", "\\toprule", "\\midrule", "\\bottomrule")))
+    # Drop the rules and addlinespace
+    drop(find_macro(content, c("\\hline", "\\toprule",
+                               "\\midrule", "\\bottomrule",
+                               "\\addlinespace")))
 
     # Drop pagebreak and nopagebreak
     idx <- find_macro(content, c("\\pagebreak", "\\nopagebreak"))
