@@ -148,15 +148,36 @@ set_contents <- function(item, value) {
 }
 
 #' @rdname Utilities
-#'
+#' @param ... Items to be passed to `latex2()`.
 #' @returns `new_block()` returns a `BLOCK` item containing the items.
 #' @export
 #'
 #' @examples
 #' new_block(parseLatex("abc"))
-new_block <- function(items) {
-  items <- as_LaTeX2(items)
+new_block <- function(...) {
+  items <- latex2(...)
   attr(items, "latex_tag") <- "BLOCK"
   class(items) <- "LaTeX2item"
   items
+}
+
+#' @rdname Utilities
+#' @param name The desired environment name.
+#' @returns `new_env()` returns an environment item containing the other items.
+#' @export
+#'
+#' @examples
+#' new_env("itemize", parseLatex("\\item An item"))
+new_env <- function(name, ...) {
+  result <- latex2(...)
+  if (length(result) == 0 ||
+      !is_char(result[[1]], "\n"))
+    insert_values(result, 1, "\n")
+  n <- length(result)
+  if (!is_char(result[[n]], "\n"))
+    insert_values(result, n+1, "\n")
+  attr(result, "latex_tag") <- "ENVIRONMENT"
+  class(result) <- "LaTeX2item"
+  envName(result) <- name
+  result
 }

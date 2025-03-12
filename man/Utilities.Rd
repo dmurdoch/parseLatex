@@ -10,6 +10,7 @@
 \alias{split_list}
 \alias{split_latex}
 \alias{new_block}
+\alias{new_env}
 \title{Miscellaneous utilities}
 \usage{
 drop_items(items, which)
@@ -26,7 +27,9 @@ split_list(items, splits)
 
 split_latex(items, splits)
 
-new_block(items)
+new_block(...)
+
+new_env(name, ...)
 }
 \arguments{
 \item{items}{A \link{LaTeX2} object or list of items, or
@@ -35,6 +38,10 @@ a \link{LaTeX2item} which is a list.}
 \item{which}{Which items to operate on.}
 
 \item{splits}{Which items divide the parts?}
+
+\item{...}{Items to be passed to \code{latex2()}.}
+
+\item{name}{The desired environment name.}
 }
 \value{
 \code{drop_items()} returns the list of items with specific items removed.
@@ -58,6 +65,8 @@ separated at the splits.  Each piece is marked as
 a \link{LaTeX2} object.
 
 \code{new_block()} returns a \code{BLOCK} item containing the items.
+
+\code{new_env()} returns an environment item containing the other items.
 }
 \description{
 Miscellaneous utilities
@@ -68,6 +77,7 @@ them into a single item.
 }
 \examples{
 new_block(parseLatex("abc"))
+new_env("itemize", parseLatex("\\\\item An item"))
 }
 \seealso{
 \code{drop_whitespace()} does not act recursively; use \link{reduce_whitespace} for that.

@@ -1,4 +1,4 @@
-# parseLatex 0.3.9
+# parseLatex 0.3.10
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -23,6 +23,7 @@ have similar modifications.
 * `find_rule()` and `rule()` now remove the final whitespace from
 the result.
 * Added `columnOption()` and `columnOption<-()` functions.
+* Added `new_env()`, similar to `new_block()`.
 
 # parseLatex 0.3.0
 
