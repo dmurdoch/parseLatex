@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,9 @@
 <span></span>
 <span><span class="fu">split_latex</span><span class="op">(</span><span class="va">items</span>, <span class="va">splits</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">new_block</span><span class="op">(</span><span class="va">items</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">new_block</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">new_env</span><span class="op">(</span><span class="va">name</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -73,6 +75,14 @@ a <a href="parseLatex_fn.html">LaTeX2item</a> which is a list.</p></dd>
 <dt id="arg-splits">splits<a class="anchor" aria-label="anchor" href="#arg-splits"></a></dt>
 <dd><p>Which items divide the parts?</p></dd>
 
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Items to be passed to <code><a href="as_LaTeX2.html">latex2()</a></code>.</p></dd>
+
+
+<dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
+<dd><p>The desired environment name.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -90,6 +100,7 @@ separated at the splits.</p>
 separated at the splits.  Each piece is marked as
 a <a href="parseLatex_fn.html">LaTeX2</a> object.</p>
 <p><code>new_block()</code> returns a <code>BLOCK</code> item containing the items.</p>
+<p><code>new_env()</code> returns an environment item containing the other items.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
@@ -105,6 +116,8 @@ them into a single item.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">new_block</span><span class="op">(</span><span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="st">"abc"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BLOCK: {abc}</span>
+<span class="r-in"><span><span class="fu">new_env</span><span class="op">(</span><span class="st">"itemize"</span>, <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="st">"\\item An item"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENVIRONMENT: \begin{itemize}\item An item\end{itemize}</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
