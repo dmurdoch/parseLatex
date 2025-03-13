@@ -11,7 +11,7 @@
 #'  should be assumed to hold verbatim text.
 #' @param defcmd,defenv Character vectors of macros that
 #'  are assumed to define new macro commands or environments
-#'  respectively.
+#'  respectively.  See the note below about some limitations.
 #' @param catcodes A list or dataframe holding LaTeX "catcodes",
 #' such as [defaultCatcodes].
 #' @param recover If `TRUE`, attempt to recover from errors and
@@ -55,6 +55,14 @@
 #'  help in locating the first error.  The section of text
 #'  related to the error will be marked as an item with
 #'  tag `ERROR`.
+#'
+#'  # `defcmd` limitations
+#'
+#'  The LaTeX defining commands have fairly simple syntax, but
+#'  `\def` and `\let` from plain Tex have quite variable syntax
+#'  and `parseLatex()` does not attempt to handle it all.  Stick
+#'  with simple syntax like `\def\bea{\begin{eqnarray}}` and
+#'  it should work.
 #'
 #' @returns `parseLatex` returns parsed Latex in a list with class `"LaTeX2"`.  Items in the list have class `"LaTeX2item"`.
 #' @seealso LaTeX2, LaTeX2item

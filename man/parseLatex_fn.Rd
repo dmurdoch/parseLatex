@@ -33,7 +33,7 @@ should be assumed to hold verbatim text.}
 
 \item{defcmd, defenv}{Character vectors of macros that
 are assumed to define new macro commands or environments
-respectively.}
+respectively.  See the note below about some limitations.}
 
 \item{catcodes}{A list or dataframe holding LaTeX "catcodes",
 such as \link{defaultCatcodes}.}
@@ -90,6 +90,14 @@ help in locating the first error.  The section of text
 related to the error will be marked as an item with
 tag \code{ERROR}.
 }
+\section{\code{defcmd} limitations}{
+The LaTeX defining commands have fairly simple syntax, but
+\verb{\\def} and \verb{\\let} from plain Tex have quite variable syntax
+and \code{parseLatex()} does not attempt to handle it all.  Stick
+with simple syntax like \verb{\\def\\bea\{\\begin\{eqnarray\}\}} and
+it should work.
+}
+
 \examples{
 parsed <- parseLatex(r"(fran\c{c}ais)")
 parsed

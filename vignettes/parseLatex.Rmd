@@ -182,9 +182,9 @@ The `\begin{oldenv}` part of the definition shouldn't be
 interpreted here as the start of an `oldenv` environment,
 because `\end{oldenv}` isn't in the same `{}` block.
 
-One plain TeX version of these macros is `\def`.  It is
-recognized and an attempt is made to handle it, but there's
-some really arcane syntax possible with `\def`.  If you use
+Two plain TeX versions of these macros are `\def` and `\let`.  They are
+recognized and an attempt is made to handle them, but there's
+some really arcane syntax possible.  If you use
 that, it probably won't be parsed properly.  Stick with
 simple syntax like
 
