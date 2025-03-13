@@ -79,7 +79,7 @@ should be assumed to hold verbatim text.</p></dd>
 <dt id="arg-defcmd-defenv">defcmd, defenv<a class="anchor" aria-label="anchor" href="#arg-defcmd-defenv"></a></dt>
 <dd><p>Character vectors of macros that
 are assumed to define new macro commands or environments
-respectively.</p></dd>
+respectively.  See the note below about some limitations.</p></dd>
 
 
 <dt id="arg-catcodes">catcodes<a class="anchor" aria-label="anchor" href="#arg-catcodes"></a></dt>
@@ -133,6 +133,14 @@ may lead to a cascade of errors, but will sometimes
 help in locating the first error.  The section of text
 related to the error will be marked as an item with
 tag <code>ERROR</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="defcmd-limitations"><code>defcmd</code> limitations<a class="anchor" aria-label="anchor" href="#defcmd-limitations"></a></h2>
+    <p>The LaTeX defining commands have fairly simple syntax, but
+<code>\def</code> and <code>\let</code> from plain Tex have quite variable syntax
+and <code>parseLatex()</code> does not attempt to handle it all.  Stick
+with simple syntax like <code>\def\bea{\begin{eqnarray}}</code> and
+it should work.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

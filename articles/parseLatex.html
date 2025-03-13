@@ -301,10 +301,10 @@ syntax error. For example:</p>
 interpreted here as the start of an <code>oldenv</code> environment,
 because <code>\end{oldenv}</code> isn’t in the same <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>
 block.</p>
-<p>One plain TeX version of these macros is <code>\def</code>. It is
-recognized and an attempt is made to handle it, but there’s some really
-arcane syntax possible with <code>\def</code>. If you use that, it
-probably won’t be parsed properly. Stick with simple syntax like</p>
+<p>Two plain TeX versions of these macros are <code>\def</code> and
+<code>\let</code>. They are recognized and an attempt is made to handle
+them, but there’s some really arcane syntax possible. If you use that,
+it probably won’t be parsed properly. Stick with simple syntax like</p>
 <pre><code>\def\bea{\begin{eqnarray*}}</code></pre>
 <p>and you should be okay. This will likely be added to R 4.5.0, with
 the same limitations.</p>
