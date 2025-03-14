@@ -1,4 +1,4 @@
-# parseLatex 0.3.10
+# parseLatex 0.3.11
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -17,8 +17,9 @@
   `get_range()`.
 * `drop_items()` now works on `LaTeX2Item` lists.
 * `tableRow()` by default ignores `\pagebreak` and `\nopagebreak`. 
-The new argument `withExtras` causes it to include these and other 
-extras before the line in the result.  `find_tableRow()` and `tableRow<-`
+The new argument `withExtras` allows it to include these and other 
+extras before the line in the result.  `withData` allows it to exclude
+the data.  `find_tableRow()` and `tableRow<-`
 have similar modifications.
 * `find_rule()` and `rule()` now remove the final whitespace from
 the result.

@@ -6,11 +6,11 @@
 \alias{tableRow<-}
 \title{Functions to work with rows in tables}
 \usage{
-find_tableRow(table, row, withExtras = FALSE)
+find_tableRow(table, row, withExtras = FALSE, withData = TRUE)
 
-tableRow(table, row, withExtras = FALSE)
+tableRow(table, row, withExtras = FALSE, withData = TRUE)
 
-tableRow(table, row, asis = FALSE, withExtras = FALSE) <- value
+tableRow(table, row, asis = FALSE, withExtras = FALSE, withData = TRUE) <- value
 }
 \arguments{
 \item{table}{A tabular-like environment to work with.}
@@ -20,6 +20,8 @@ rows of labels.}
 
 \item{withExtras}{If \code{TRUE}, include the extras
 before the line of data, such as \verb{\\hline}, etc.}
+
+\item{withData}{If \code{TRUE}, include the data.}
 
 \item{asis}{Should a linebreak and newline be added after the
 value?}

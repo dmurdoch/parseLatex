@@ -5,6 +5,7 @@
 #' rows of labels.
 #' @param withExtras If `TRUE`, include the extras
 #' before the line of data, such as `\hline`, etc.
+#' @param withData If `TRUE`, include the data.
 #' @returns `find_tableRow()` returns the indices of the
 #' entries corresponding to the content of row i of the table.
 #' @examples
@@ -14,7 +15,7 @@
 #' find_tableRow(table, 1)
 #'
 #' @export
-find_tableRow <- function(table, row, withExtras = FALSE) {
+find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
   contentIdx <- find_tableContent(table)
   content <- as_LaTeX2(table[contentIdx])
 
@@ -33,35 +34,56 @@ find_tableRow <- function(table, row, withExtras = FALSE) {
     drop(idx)
   }
 
-  if (!withExtras) {
-    # Drop the rules and addlinespace
-    drop(find_macro(content, c("\\hline", "\\toprule",
-                               "\\midrule", "\\bottomrule",
-                               "\\addlinespace")))
+  breaks <- contentIdx[find_macro(content, "\\\\")]
+  if (row <= 0 || row > length(breaks) + 1)
+    return(integer())
 
-    # Drop pagebreak and nopagebreak
-    idx <- find_macro(content, c("\\pagebreak", "\\nopagebreak"))
-    if (length(idx)) {
-      idx0 <- idx
-      for (i in idx)
-        idx0 <- c(idx0, find_bracket_options(content, start = i + 1))
-      drop(idx0)
-    }
-
-    # Drop partial rules
-    cline <- find_macro(content, "\\cline")
-    if (length(cline))
-      drop(c(cline, cline + 1))
-
-    # Drop all newlines
-    drop(find_catcode(content, NEWLINE))
+  if (!withExtras && !withData) {
+    if (row > length(breaks))
+      return(integer())
+    else
+      return(breaks[row ])
   }
-  breaks <- find_macro(content, "\\\\")
-  rows <- split_list(contentIdx, breaks)
-  if (row <= length(breaks))
-    c(rows[[row]], contentIdx[breaks[row]])
-  else if (row == length(rows))
-    rows[[row]]
+
+  breaks <- c(0, breaks, Inf)
+
+  # Drop stuff before and after the line we want
+  idx <- which((contentIdx <= breaks[row]) |
+               (contentIdx > breaks[row + 1]))
+  drop(idx)
+
+  if (withExtras && withData)
+    return(contentIdx)
+
+  # Find all the extras
+  # The rules and addlinespace
+  extras <- find_macro(content, c("\\hline", "\\toprule",
+                               "\\midrule", "\\bottomrule",
+                               "\\addlinespace"))
+
+  # pagebreak and nopagebreak
+  idx <- find_macro(content, c("\\pagebreak", "\\nopagebreak"))
+  if (length(idx)) {
+    idx0 <- idx
+    for (i in idx)
+      idx0 <- c(idx0, find_bracket_options(content, start = i + 1))
+    extras <- c(extras, idx0)
+  }
+
+  # partial rules and rowcolor
+  idx <- find_macro(content, c("\\cline", "\\rowcolor"))
+  if (length(idx))
+    extras <- c(extras, idx, idx + 1)
+
+  # newlines
+  extras <- c(extras, find_catcode(content, NEWLINE))
+
+  if (withExtras)   # just extras...
+    contentIdx[sort(unique(extras))]
+  else {            # just data
+    drop(extras)
+    contentIdx
+  }
 }
 
 #' @rdname tableRow
@@ -72,8 +94,8 @@ find_tableRow <- function(table, row, withExtras = FALSE) {
 #' tableRow(table, 1, withExtras = TRUE)
 #'
 #' @export
-tableRow <- function(table, row, withExtras = FALSE)
-  as_LaTeX2(table[find_tableRow(table, row, withExtras)])
+tableRow <- function(table, row, withExtras = FALSE, withData = TRUE)
+  as_LaTeX2(table[find_tableRow(table, row, withExtras, withData)])
 
 blankRow <- function(table) {
   paste0(rep(" & ", tableNcol(table) - 1), collapse = "")
@@ -104,6 +126,7 @@ blankRow <- function(table) {
 #' @export
 `tableRow<-` <- function(table, row, asis = FALSE,
                          withExtras = FALSE,
+                         withData = TRUE,
                          value) {
   value <- as_LaTeX2(value)
   if (!asis) {
@@ -114,7 +137,7 @@ blankRow <- function(table) {
     # if (!(length(value) %in% newlines))
     #   value <- c(value, as_LaTeX2("\n"))
   }
-  i <- find_tableRow(table, row, withExtras = withExtras)
+  i <- find_tableRow(table, row, withExtras = withExtras, withData = withData)
   if (!length(i)) {
     # Need to insert rows
     contentIdx <- find_tableContent(table)
