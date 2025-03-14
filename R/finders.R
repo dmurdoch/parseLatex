@@ -17,10 +17,11 @@ find_whitespace <- function(items) {
 #' of environments in `envtypes`.
 #' @export
 find_env <- function(items, envtypes) {
-  which(sapply(seq_along(items),
+  which(vapply(seq_along(items),
                function(i)
                  is_env(items[[i]]) &&
-                 envName(items[[i]]) %in% envtypes))
+                 envName(items[[i]]) %in% envtypes,
+               TRUE))
 }
 
 #' @rdname finders
@@ -29,10 +30,11 @@ find_env <- function(items, envtypes) {
 #' of instances in `macros`.
 #' @export
 find_macro <- function(items, macros) {
-  which(sapply(seq_along(items),
+  which(vapply(seq_along(items),
                function(i)
                  is_macro(items[[i]]) &&
-                 macroName(items[[i]]) %in% macros))
+                 macroName(items[[i]]) %in% macros,
+               TRUE))
 }
 
 #' @rdname finders
@@ -41,10 +43,11 @@ find_macro <- function(items, macros) {
 #' of specials matching `code`.
 #' @export
 find_catcode <- function(items, codes) {
-  which(sapply(seq_along(items),
+  which(vapply(seq_along(items),
                function(i)
                  latexTag(items[[i]]) == "SPECIAL" &&
-                 catcode(items[[i]]) %in% codes))
+                 catcode(items[[i]]) %in% codes,
+               TRUE))
 }
 
 #' @rdname finders
@@ -53,9 +56,10 @@ find_catcode <- function(items, codes) {
 #' of items with tags matching `tags`.
 #' @export
 find_tags <- function(items, tags) {
-  which(sapply(seq_along(items),
+  which(vapply(seq_along(items),
                function(i)
-                 latexTag(items[[i]]) %in% tags))
+                 latexTag(items[[i]]) %in% tags,
+               TRUE))
 }
 
 #' @rdname finders
@@ -65,10 +69,11 @@ find_tags <- function(items, tags) {
 #' marked as SPECIAL by the parser will be found.
 #' @export
 find_char <- function(items, char) {
-  which(sapply(seq_along(items),
+  which(vapply(seq_along(items),
                function(i)
                  latexTag(items[[i]]) == "SPECIAL" &&
-                 items[[i]] == char))
+                 items[[i]] == char,
+               TRUE))
 }
 
 #' @rdname finders
@@ -76,9 +81,10 @@ find_char <- function(items, char) {
 #' of blocks (i.e. sequences in {})
 #' @export
 find_block <- function(items) {
-  which(sapply(seq_along(items),
+  which(vapply(seq_along(items),
                function(i)
-                 latexTag(items[[i]]) == "BLOCK"))
+                 latexTag(items[[i]]) == "BLOCK",
+               TRUE))
 }
 
 #' @title Find path to a particular kind of item

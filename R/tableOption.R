@@ -142,7 +142,7 @@ columnOption <- function(table, column) {
         if (j == nchar(x))
           result <- latex2(result, brace_options(opts, start = i + 1))
         if (j == 1 && i > 2 && is_block(opts[[i-1]]) && !is_text(opts[[i-2]]))
-          result <- insert_values(result, opts[c(i-2, i-1)])
+          result <- insert_values(result, 1, opts[c(i-2, i-1)])
         break
       }
       start <- stop
