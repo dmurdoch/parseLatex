@@ -39,6 +39,7 @@ find_rules <- function(table) {
 
 #' @rdname tableRule
 #' @param table A tabular-like environment to work with.
+#' @param idx A list of indices as produced by `find_rules()`.
 #' @description
 #' In LaTeX, "rules" are horizontal lines in a table.
 #' These functions let rules be extracted or modified.
@@ -49,8 +50,7 @@ find_rules <- function(table) {
 #' rules(table)
 #'
 #' @export
-rules <- function(table) {
-  idx <- find_rules(table)
+rules <- function(table, idx = find_rules(table)) {
   lapply(idx, function(x) as_LaTeX2(table[x]))
 }
 
@@ -63,8 +63,8 @@ rules <- function(table) {
 #' find_rule(table, 1)
 #'
 #' @export
-find_rule <- function(table, row) {
-  res <- find_rules(table)[[row]]
+find_rule <- function(table, row, idx = find_rules(table)) {
+  res <- idx[[row]]
   n <- length(res)
   while (n > 0 && is_whitespace(table[[res[n]]])) {
     res <- res[-n]
@@ -80,8 +80,8 @@ find_rule <- function(table, row) {
 #' rule(table, 1)
 #'
 #' @export
-rule <- function(table, row)
-  as_LaTeX2(table[find_rule(table, row)])
+rule <- function(table, row, idx = find_rules(table))
+  as_LaTeX2(table[find_rule(table, row, idx)])
 
 #' @rdname tableRule
 #' @param asis Should a newline be added after the
@@ -93,7 +93,7 @@ rule <- function(table, row)
 #' rule(table, 2) <- "\\midrule"
 #' table
 #' @export
-`rule<-` <- function(table, row, asis = FALSE, value) {
+`rule<-` <- function(table, row, asis = FALSE, idx = find_rules(table), value) {
   value <- as_LaTeX2(value)
   if (!asis) {
     breaks <- find_macro(value, "\\\\")
@@ -101,7 +101,7 @@ rule <- function(table, row)
     if (!(length(value) %in% newlines))
       value <- c(value, as_LaTeX2("\n"))
   }
-  i <- find_rule(table, row)
+  i <- find_rule(table, row, idx)
   if (!length(i)) {
     # Need to insert new rule at start of row
     rowidx <- find_tableRow(table, row)

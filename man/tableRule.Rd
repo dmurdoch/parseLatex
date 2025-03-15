@@ -11,16 +11,18 @@
 \usage{
 find_rules(table)
 
-rules(table)
+rules(table, idx = find_rules(table))
 
-find_rule(table, row)
+find_rule(table, row, idx = find_rules(table))
 
-rule(table, row)
+rule(table, row, idx = find_rules(table))
 
-rule(table, row, asis = FALSE) <- value
+rule(table, row, asis = FALSE, idx = find_rules(table)) <- value
 }
 \arguments{
 \item{table}{A tabular-like environment to work with.}
+
+\item{idx}{A list of indices as produced by \code{find_rules()}.}
 
 \item{row}{The rules will precede the contents of this row.
 The rule after the final row uses \code{row = tableNrow(table) + 1}.}
