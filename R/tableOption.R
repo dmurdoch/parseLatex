@@ -158,10 +158,15 @@ columnOption <- function(table, column) {
 #' @export
 `columnOptions<-` <- function(table,
                               asis = FALSE, value) {
+  start <- 1
   which <- 1
   if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
     which <- 2
-  brace_options(table, which = which, asis = asis) <- value
+  if (envName(table) == "tabu") {
+    while (!is_bracket(table[[start]], "[") &&
+           !is_block(table[[start]])) start <- start + 1
+  }
+  brace_options(table, which = which, start = start, asis = asis) <- value
   table
 }
 
