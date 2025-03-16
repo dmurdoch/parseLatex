@@ -3,6 +3,22 @@
 \docType{data}
 \name{defaultCatcodes}
 \alias{defaultCatcodes}
+\alias{ESCAPE}
+\alias{LBRACE}
+\alias{RBRACE}
+\alias{MATH}
+\alias{ALIGN}
+\alias{NEWLINE}
+\alias{PARAM}
+\alias{SUPER}
+\alias{SUB}
+\alias{SPACE}
+\alias{COMMENT}
+\alias{IGNORE}
+\alias{LETTER}
+\alias{OTHER}
+\alias{ACTIVE}
+\alias{INVALID}
 \title{The default "catcodes" used by \link{parseLatex}.}
 \format{
 An object of class \code{data.frame} with 13 rows and 2 columns.
@@ -15,7 +31,8 @@ The default "catcodes" used by \link{parseLatex}.
 }
 \details{
 \code{defaultCatcodes} is a dataframe containing the
-default catcode definitions.
+default catcode definitions.  The numeric values of each
+code are exported, e.g. \code{LETTER} is 11.
 }
 \examples{
 # \makeatletter has no effect by default...

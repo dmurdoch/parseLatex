@@ -112,8 +112,10 @@ parseLatex <- function(text,
 
 #' The default "catcodes" used by [parseLatex].
 #' @name defaultCatcodes
+#' @aliases ESCAPE LBRACE RBRACE MATH ALIGN NEWLINE PARAM SUPER SUB SPACE COMMENT IGNORE LETTER OTHER ACTIVE INVALID
 #' @details `defaultCatcodes` is a dataframe containing the
-#' default catcode definitions.
+#' default catcode definitions.  The numeric values of each
+#' code are exported, e.g. `LETTER` is 11.
 #' @examples
 #' # \makeatletter has no effect by default...
 #' unclass(parseLatex("\\makeatletter\\internal@macro"))

@@ -27,6 +27,7 @@ the result.
 * Added `new_env()`, similar to `new_block()`.
 * Added `split_chars()`, usually used to split text or whitespace into individual
 characters.
+* Constants for the TeX catcodes are now exported, e.g. `NEWLINE`.
 
 # parseLatex 0.3.0
 
