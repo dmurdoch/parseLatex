@@ -9,6 +9,7 @@
 \alias{include_whitespace}
 \alias{split_list}
 \alias{split_latex}
+\alias{split_chars}
 \alias{new_block}
 \alias{new_env}
 \title{Miscellaneous utilities}
@@ -27,6 +28,8 @@ split_list(items, splits)
 
 split_latex(items, splits)
 
+split_chars(item, split = "")
+
 new_block(...)
 
 new_env(name, ...)
@@ -38,6 +41,10 @@ a \link{LaTeX2item} which is a list.}
 \item{which}{Which items to operate on.}
 
 \item{splits}{Which items divide the parts?}
+
+\item{item}{A non-list \link{LaTeX2item}.}
+
+\item{split}{Where to split the characters.}
 
 \item{...}{Items to be passed to \code{latex2()}.}
 
@@ -64,6 +71,10 @@ separated at the splits.
 separated at the splits.  Each piece is marked as
 a \link{LaTeX2} object.
 
+\code{split_chars()} returns a \link{LaTeX2}
+list containing the result of calling \link{strsplit}
+on the text of the \code{item}.
+
 \code{new_block()} returns a \code{BLOCK} item containing the items.
 
 \code{new_env()} returns an environment item containing the other items.
@@ -76,6 +87,9 @@ Miscellaneous utilities
 them into a single item.
 }
 \examples{
+parsed <- parseLatex("Hello")
+unclass(parsed)
+unclass(split_chars(parsed[[1]]))
 new_block(parseLatex("abc"))
 new_env("itemize", parseLatex("\\\\item An item"))
 }

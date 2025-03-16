@@ -103,6 +103,30 @@ split_latex <- function(items, splits) {
   lapply(split_list(items, splits), as_LaTeX2)
 }
 
+
+#' @rdname Utilities
+#' @param item A non-list [LaTeX2item].
+#' @param split Where to split the characters.
+#' @returns `split_chars()` returns a [LaTeX2]
+#' list containing the result of calling [strsplit]
+#' on the text of the `item`.
+#' @examples
+#' parsed <- parseLatex("Hello")
+#' unclass(parsed)
+#' unclass(split_chars(parsed[[1]]))
+#' @export
+split_chars <- function(item, split = "") {
+  stopifnot(is.character(item))
+  if (nchar(item) <= 1)
+    return(latex2(item))
+  chars <- strsplit(item, split)
+  result <- lapply(chars[[1]], function(x) {
+    attributes(x) <- attributes(item)
+    x}
+  )
+  latex2(result)
+}
+
 #' Convenience functions to get or set contents of item
 #'
 #' @param item An item from a Latex list (or a [LaTeX2] list with one item).

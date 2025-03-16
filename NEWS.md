@@ -1,4 +1,4 @@
-# parseLatex 0.3.11
+# parseLatex 0.3.12
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -25,6 +25,8 @@ have similar modifications.
 the result.
 * Added `columnOption()` and `columnOption<-()` functions.
 * Added `new_env()`, similar to `new_block()`.
+* Added `split_chars()`, usually used to split text or whitespace into individual
+characters.
 
 # parseLatex 0.3.0
 
