@@ -16,7 +16,7 @@
 #' @export
 find_posOption <- function(table) {
   if (is_env(table, "tabu"))
-    start <- min(c(find_char(table, "["), find_block(table)[1]))
+    start <- min(c(find_char(table, "["), find_block(table, all = FALSE)))
   else
     start <- 1
   find_bracket_options(table, start = start)

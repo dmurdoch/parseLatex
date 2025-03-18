@@ -11,22 +11,24 @@
 \alias{find_block}
 \title{Miscellaneous low-level finders}
 \usage{
-find_whitespace(items)
+find_whitespace(items, all = TRUE)
 
-find_env(items, envtypes)
+find_env(items, envtypes, all = TRUE)
 
-find_macro(items, macros)
+find_macro(items, macros, all = TRUE)
 
-find_catcode(items, codes)
+find_catcode(items, codes, all = TRUE)
 
-find_tags(items, tags)
+find_tags(items, tags, all = TRUE)
 
-find_char(items, char)
+find_char(items, char, all = TRUE)
 
-find_block(items)
+find_block(items, all = TRUE)
 }
 \arguments{
 \item{items}{A list of latex items.}
+
+\item{all}{If \code{FALSE}, return the first match}
 
 \item{envtypes}{Which types of environment to look for.}
 

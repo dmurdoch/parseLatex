@@ -75,6 +75,15 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
   if (length(idx))
     extras <- c(extras, idx, idx + 1)
 
+  # cmidrule
+  idx <- find_macro(content, "\\cmidrule")
+  if (length(idx)) {
+    for (i in idx) {
+      i2 <- find_block(content[(i+1):length(content)], all= FALSE)
+      extras <- c(extras, i + 0:i2)
+    }
+  }
+
   # newlines
   extras <- c(extras, find_catcode(content, NEWLINE))
 
@@ -82,7 +91,10 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
     contentIdx[sort(unique(extras))]
   else {            # just data
     drop(extras)
-    contentIdx
+    if (length(contentIdx))
+      min(contentIdx):max(contentIdx)
+    else
+      integer()
   }
 }
 
@@ -195,12 +207,12 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 row_to_vector <- function(row, asis = FALSE, deparse = TRUE) {
   row <- as_LaTeX2(row)
   amp <- find_catcode(row, 4)
-  eol <- find_macro(row, "\\\\")
+  eol <- find_macro(row, "\\\\", all = FALSE)
   if (length(eol) > 1)
     warning("This row has a line break.  Only first line used")
   if (!length(eol))
     eol <- length(row) + 1
-  br <- c(0, amp[amp < eol[1]], eol[1])
+  br <- c(0, amp[amp < eol], eol)
   if (deparse)
     result <- rep("", length(br) - 1)
   else
