@@ -28,6 +28,8 @@ the result.
 * Added `split_chars()`, usually used to split text or whitespace into individual
 characters.
 * Constants for the TeX catcodes are now exported, e.g. `NEWLINE`.
+* The `find_*` functions now have an `all` argument, to allow
+the search to be stopped at the first success.
 
 # parseLatex 0.3.0
 
