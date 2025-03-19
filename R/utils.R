@@ -143,9 +143,10 @@ get_contents <- function(item) {
       warning("only using the first element")
     item <- item[[1]]
   }
-  if (is.list(item))
-    as_LaTeX2(unclass(item))
-  else
+  if (is.list(item)) {
+    attributes(item) <- NULL
+    as_LaTeX2(item)
+  } else
     NULL
 }
 
