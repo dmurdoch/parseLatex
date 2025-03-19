@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.11" id="parselatex-0311">parseLatex 0.3.11<a class="anchor" aria-label="anchor" href="#parselatex-0311"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.3.12" id="parselatex-0312">parseLatex 0.3.12<a class="anchor" aria-label="anchor" href="#parselatex-0312"></a></h2>
 <ul><li>Added <code><a href="../reference/vector_to_row.html">row_to_vector()</a></code>.</li>
 <li>Added <code><a href="../reference/tests.html">is_text()</a></code> and <code><a href="../reference/tests.html">is_error()</a></code>.</li>
 <li>Added <code><a href="../reference/showErrors.html">showErrors()</a></code>, and changed the formatting of errors in <code><a href="../reference/deparseLatex.html">deparseLatex()</a></code>. <code>parseLatex(recover = TRUE)</code> now calls <code><a href="../reference/showErrors.html">showErrors()</a></code> rather than generating warnings.</li>
@@ -52,6 +52,9 @@
 <code><a href="../reference/tableRule.html">find_rule()</a></code> and <code><a href="../reference/tableRule.html">rule()</a></code> now remove the final whitespace from the result.</li>
 <li>Added <code><a href="../reference/tableOption.html">columnOption()</a></code> and <code>columnOption&lt;-()</code> functions.</li>
 <li>Added <code><a href="../reference/Utilities.html">new_env()</a></code>, similar to <code><a href="../reference/Utilities.html">new_block()</a></code>.</li>
+<li>Added <code><a href="../reference/Utilities.html">split_chars()</a></code>, usually used to split text or whitespace into individual characters.</li>
+<li>Constants for the TeX catcodes are now exported, e.g. <code>NEWLINE</code>.</li>
+<li>The <code>find_*</code> functions now have an <code>all</code> argument, to allow the search to be stopped at the first success.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="parselatex-030">parseLatex 0.3.0<a class="anchor" aria-label="anchor" href="#parselatex-030"></a></h2><p class="text-muted">CRAN release: 2025-02-20</p>
