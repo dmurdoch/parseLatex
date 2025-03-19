@@ -28,6 +28,8 @@ get_which(path)
 
 \item{...}{Additional parameters to pass to \code{is_fn}.}
 
+\item{all}{Return all paths, or just the first?}
+
 \item{path}{Integer vector of subitems}
 
 \item{value}{A \link{LaTeX2item} to set as a value.}

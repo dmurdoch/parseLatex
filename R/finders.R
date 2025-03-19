@@ -144,6 +144,7 @@ find_block <- function(items, all = TRUE) {
 #' @param items A list of latex items.
 #' @param is_fn Which test function to use.
 #' @param ... Additional parameters to pass to `is_fn`.
+#' @param all Return all paths, or just the first?
 #' @details `path_to()` does a recursive search in the order
 #' items appear in the deparse.
 #' @returns `path_to()` returns the recursive path to the
