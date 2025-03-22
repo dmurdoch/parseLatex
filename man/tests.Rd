@@ -9,6 +9,8 @@
 \alias{is_whitespace}
 \alias{is_text}
 \alias{is_error}
+\alias{is_itemlist}
+\alias{is_placeholder}
 \alias{is_char}
 \title{Test objects}
 \usage{
@@ -25,6 +27,10 @@ is_whitespace(item)
 is_text(item)
 
 is_error(item)
+
+is_itemlist(item)
+
+is_placeholder(item)
 
 is_char(item, char)
 }
@@ -58,6 +64,12 @@ specified type.
 
 \code{is_error()} returns a boolean indicating if the
 \code{item} is an error.
+
+\code{is_itemlist()} returns a boolean indicating if the
+\code{item} is an \link{ITEMLIST} item.
+
+\code{is_placeholder()} returns a boolean indicating if the
+\code{item} is a \link{PLACEHOLDER} item.
 
 \code{is_char()} returns a boolean indicating if the
 \code{item} is a \code{SPECIAL} matching \code{char}.

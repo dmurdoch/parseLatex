@@ -21,6 +21,7 @@ is_env <- function(item,  envtypes = NULL) {
 #' @returns `is_macro()` returns a boolean indicating the match.
 #' @export
 is_macro <- function(item, macros = NULL) {
+  if (!is.null(macros)) print(macros)
   inherits(item, "LaTeX2item") &&
   !is.null(macroName(item)) &&
     (is.null(macros) || item %in% macros)
@@ -82,6 +83,24 @@ is_text <- function(item) {
 is_error <- function(item) {
   inherits(item, "LaTeX2item") &&
     latexTag(item) == "ERROR"
+}
+
+#' @rdname tests
+#' @returns `is_itemlist()` returns a boolean indicating if the
+#' `item` is an [ITEMLIST] item.
+#' @export
+is_itemlist <- function(item) {
+  inherits(item, "LaTeX2item") &&
+    latexTag(item) == "ITEMLIST"
+}
+
+#' @rdname tests
+#' @returns `is_placeholder()` returns a boolean indicating if the
+#' `item` is a [PLACEHOLDER] item.
+#' @export
+is_placeholder <- function(item) {
+  inherits(item, "LaTeX2item") &&
+    latexTag(item) == "PLACEHOLDER"
 }
 
 #' @rdname tests

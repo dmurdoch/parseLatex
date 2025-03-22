@@ -9,13 +9,14 @@
 \alias{find_tags}
 \alias{find_char}
 \alias{find_block}
+\alias{find_general}
 \title{Miscellaneous low-level finders}
 \usage{
 find_whitespace(items, all = TRUE)
 
-find_env(items, envtypes, all = TRUE)
+find_env(items, envtypes = NULL, all = TRUE)
 
-find_macro(items, macros, all = TRUE)
+find_macro(items, macros = NULL, all = TRUE)
 
 find_catcode(items, codes, all = TRUE)
 
@@ -24,6 +25,8 @@ find_tags(items, tags, all = TRUE)
 find_char(items, char, all = TRUE)
 
 find_block(items, all = TRUE)
+
+find_general(items, test, ..., all = TRUE)
 }
 \arguments{
 \item{items}{A list of latex items.}
@@ -39,6 +42,8 @@ find_block(items, all = TRUE)
 \item{tags}{Which tags to look for.}
 
 \item{char}{Which character to look for.}
+
+\item{test}{Test function for target.}
 }
 \value{
 \code{find_whitespace()} returns the indices of
@@ -62,7 +67,15 @@ marked as SPECIAL by the parser will be found.
 
 \code{find_block()} returns the index within \code{items}
 of blocks (i.e. sequences in {})
+
+\code{find_general()} returns \link{LaTeX2range} paths
+to objects matching the \code{test}.
 }
 \description{
 Miscellaneous low-level finders
+}
+\details{
+All of these functions return either a
+list of vectors (\code{all = TRUE}) or a single vector.  These vectors can be used as recursive indices into the
+\code{items} to retrieve the match to the test.
 }

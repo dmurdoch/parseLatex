@@ -31,8 +31,9 @@ can be a \link{LaTeX2} object, or a character string that will be
 converted to one.}
 }
 \value{
-\code{find_tableRow()} returns the indices of the
-entries corresponding to the content of row i of the table.
+\code{find_tableRow()} returns a \link{LaTeX2range} of
+the entries corresponding to the content of row i of
+the table.
 
 \code{tableRow()} returns a \link{LaTeX2} object containing
 all of the table content in the row.

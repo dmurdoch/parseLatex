@@ -4,18 +4,14 @@
 #' @name finders
 #' @param items A list of latex items.
 #' @param all If `FALSE`, return the first match
+#' @details  All of these functions return either a
+#' list of vectors (`all = TRUE`) or a single vector.  These vectors can be used as recursive indices into the
+#' `items` to retrieve the match to the test.
 #' @returns `find_whitespace()` returns the indices of
 #' whitespace in `items`.
 #' @export
-find_whitespace <- function(items, all = TRUE) {
-  if (all)
-    which(vapply(items, is_whitespace, TRUE))
-  else {
-    for (i in seq_along(items))
-      if (is_whitespace(items[[i]])) return(i)
-    integer()
-  }
-}
+find_whitespace <- function(items, all = TRUE)
+  find_general(items, is_whitespace, all = all)
 
 
 #' @rdname finders
@@ -23,82 +19,35 @@ find_whitespace <- function(items, all = TRUE) {
 #' @returns `find_env()` returns the indices within `items`
 #' of environments in `envtypes`.
 #' @export
-find_env <- function(items, envtypes, all = TRUE) {
-  if (all)
-    which(vapply(seq_along(items),
-               function(i)
-                 is_env(items[[i]]) &&
-                 envName(items[[i]]) %in% envtypes,
-               TRUE))
-  else {
-    for (i in seq_along(items))
-      if (is_env(items[[i]]) &&
-          envName(items[[i]]) %in% envtypes)
-        return(i)
-    integer()
-  }
-}
+find_env <- function(items, envtypes = NULL, all = TRUE)
+  find_general(items, is_env, envtypes = envtypes, all = all)
 
 #' @rdname finders
 #' @param macros Which types of macros to look for.
 #' @returns `find_macro()` returns the index within `items`
 #' of instances in `macros`.
 #' @export
-find_macro <- function(items, macros, all = TRUE) {
-  if (all)
-    which(vapply(seq_along(items),
-               function(i)
-                 is_macro(items[[i]]) &&
-                 macroName(items[[i]]) %in% macros,
-               TRUE))
-  else {
-    for (i in seq_along(items))
-      if (is_macro(items[[i]]) &&
-          macroName(items[[i]]) %in% macros)
-        return(i)
-    integer()
-  }
-}
+find_macro <- function(items, macros = NULL, all = TRUE)
+  find_general(items, is_macro, macros = macros, all = all)
 
 #' @rdname finders
 #' @param codes Which codes to look for.
 #' @returns `find_catcode()` returns the index within `items`.
 #' of specials matching `code`.
 #' @export
-find_catcode <- function(items, codes, all = TRUE) {
-  if (all)
-    which(vapply(seq_along(items),
-               function(i)
-                 latexTag(items[[i]]) == "SPECIAL" &&
-                 catcode(items[[i]]) %in% codes,
-               TRUE))
-  else {
-    for (i in seq_along(items))
-      if (latexTag(items[[i]]) == "SPECIAL" &&
-          catcode(items[[i]]) %in% codes)
-        return(i)
-    integer()
-  }
-}
+find_catcode <- function(items, codes, all = TRUE)
+  find_general(items, function(x)
+    latexTag(x) == "SPECIAL" && catcode(x) %in% codes,
+    all = all)
 
 #' @rdname finders
 #' @param tags Which tags to look for.
 #' @returns `find_tags()` returns the index within `items`.
 #' of items with tags matching `tags`.
 #' @export
-find_tags <- function(items, tags, all = TRUE) {
-  if (all)
-    which(vapply(seq_along(items),
-               function(i)
-                 latexTag(items[[i]]) %in% tags,
-               TRUE))
-  else {
-    for (i in seq_along(items))
-      if (latexTag(items[[i]]) %in% tags)
-        return(i)
-    integer()
-  }
-}
+find_tags <- function(items, tags, all = TRUE)
+  find_general(items, function(x) latexTag(x) %in% tags,
+               all = all)
 
 #' @rdname finders
 #' @param char Which character to look for.
@@ -106,43 +55,21 @@ find_tags <- function(items, tags, all = TRUE) {
 #' of characters matching `char`.  Only characters
 #' marked as SPECIAL by the parser will be found.
 #' @export
-find_char <- function(items, char, all = TRUE) {
-  if (all)
-    which(vapply(seq_along(items),
-               function(i)
-                 latexTag(items[[i]]) == "SPECIAL" &&
-                 items[[i]] == char,
-               TRUE))
-  else {
-    for (i in seq_along(items))
-      if (latexTag(items[[i]]) == "SPECIAL" &&
-          grepl(char, items[[i]], fixed = TRUE))
-        return(i)
-    integer()
-  }
-}
+find_char <- function(items, char, all = TRUE)
+  find_general(items, function(x) latexTag(x) == "SPECIAL" && x == char, all = all)
+
 
 #' @rdname finders
 #' @returns `find_block()` returns the index within `items`
 #' of blocks (i.e. sequences in {})
 #' @export
-find_block <- function(items, all = TRUE) {
-  if (all)
-    which(vapply(seq_along(items),
-               function(i)
-                 latexTag(items[[i]]) == "BLOCK",
-               TRUE))
-  else {
-    for (i in seq_along(items))
-      if (latexTag(items[[i]]) == "BLOCK")
-        return(i)
-    integer()
-  }
-}
+find_block <- function(items, all = TRUE)
+  find_general(items, is_block, all = TRUE)
+
 
 #' @title Find path to a particular kind of item
 #' @param items A list of latex items.
-#' @param is_fn Which test function to use.
+#' @param test Which test function to use.
 #' @param ... Additional parameters to pass to `is_fn`.
 #' @param all Return all paths, or just the first?
 #' @details `path_to()` does a recursive search in the order
@@ -154,20 +81,20 @@ find_block <- function(items, all = TRUE) {
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
 #' parsed <- parseLatex(latex)
 #' parsed
-#' path <- path_to(parsed, is_fn = is_env,
+#' path <- path_to(parsed, test = is_env,
 #'                         envtypes = "tabular")
 #' @export
-path_to <- function(items, is_fn, ..., all = FALSE) {
+path_to <- function(items, test, ..., all = FALSE) {
   hits <- if (all) list() else numeric()
   for (i in seq_along(items)) {
-    if (is_fn(items[[i]], ...)) {
+    if (test(items[[i]], ...)) {
       if (!all) return(i)
       else hits <- c(hits, list(i))
     }
     if (is.list(items[[i]])) {
       recurse <- path_to(get_contents(items[[i]]),
                          all = all,
-                         is_fn, ...)
+                         test, ...)
       if (all)
         hits <- c(hits, lapply(recurse, function(x) c(i, x)))
       else if (length(recurse))
@@ -274,19 +201,26 @@ find_pattern <- function(items, pattern, ..., all = FALSE) {
   deletes <- 0
   range <- seq_along(items)
   while (grepl(pattern, deparseLatex(items[range]), ...)) {
-    # Try narrowing the range
-    while ((n <- length(range)) > 1) {
-      if (grepl(pattern, deparseLatex(items[range[-n]]), ...)) {
-        range <- range[-n]
-      } else
-        break
+    # Try narrowing the range using bisection
+    low <- 1
+    high <- length(range)
+    while (low < high) {
+      mid <- floor((low + high) / 2)
+      if (grepl(pattern, deparseLatex(items[range[1:mid]]), ...))
+        high <- mid
+      else
+        low <- mid + 1
     }
-    while (length(range) > 1) {
-      if (grepl(pattern, deparseLatex(items[range[-1]]), ...)) {
-        range <- range[-1]
-      } else
-        break
+    high <- n <- low
+    low <- 1
+    while (low < high) {
+      mid <- ceiling((low + high) / 2)
+      if (grepl(pattern, deparseLatex(items[range[mid:n]]), ...))
+        low <- mid
+      else
+        high <- mid - 1
     }
+    range <- range[low:n]
     if (length(range) == 1 &&
         is.list(items[[range]])) {
       recurse <- find_pattern(get_contents(items[[range]]),
@@ -333,6 +267,32 @@ find_pattern <- function(items, pattern, ..., all = FALSE) {
 LaTeX2range <- function(path, range)
   structure(list(path = path, range = range),
             class = "LaTeX2range")
+
+path_to_range <- function(path) {
+  n <- length(path)
+  if (n == 0)
+    NULL
+  else if (n == 1)
+    LaTeX2range(NULL, path)
+  else
+    LaTeX2range(path[-n], path[n])
+}
+
+add_to_range <- function(range, add) {
+  if (is.null(range$range))
+    stop("Can't add to a NULL range")
+  LaTeX2range(range$path, c(range$range, seq_len(add) + max(range$range)))
+}
+
+extend_range <- function(range, newlimit) {
+  if (!identical(range$path, newlimit$path))
+    stop("Can't extend range to new path")
+  add <- max(newlimit$range) - max(range$range)
+  if (add > 0)
+    add_to_range(range, add)
+  else
+    range
+}
 
 #' @rdname LaTeX2range
 #' @param x Object to print.
@@ -427,4 +387,35 @@ get_range <- function(items, range) {
                    idx <= max(range$range)]
   }
   as_LaTeX2(items)
+}
+
+#' @rdname finders
+#' @param test Test function for target.
+#' @returns `find_general()` returns [LaTeX2range] paths
+#' to objects matching the `test`.
+#' @export
+
+find_general <- function(items, test, ..., all = TRUE) {
+  if (all) {
+    result <- list()
+    for (i in seq_along(items)) {
+      if (is_itemlist(items[[i]]))
+        result <- c(result,
+                    lapply(find_general(items[[i]], test, ..., all = TRUE),
+                           function(x) c(i, x)))
+      if (test(items[[i]], ...))
+        result <- c(result, list(i))
+    }
+    result
+  } else {
+    for (i in seq_along(items))
+      if (test(items[[i]], ...))
+        return(LaTeX2range(NULL, i))
+      else if (is_itemlist(items[[i]])) {
+        result <- find_general(items[[i]], test, ..., all = FALSE)
+        if (!is.null(result))
+          return(c(i, result))
+      }
+    NULL
+  }
 }

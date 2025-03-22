@@ -1,3 +1,4 @@
+
 #' @title Work with table cells
 #' @name tableCell
 #' @param table A tabular-like environment to work with.
@@ -16,34 +17,22 @@
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 #' parsed <- parseLatex(latex)
-#' table <- parsed[[find_tabular(parsed)]]
+#' table <- split_table(parsed[[find_tabular(parsed)]])
 #' find_tableCell(table, 1, 2)
 #'
 #' @export
 find_tableCell <- function(table, row, col) {
-  contentIdx <- find_tableRow(table, row)
-  if (is.null(contentIdx))
-    stop(sprintf("row %d is too high", row))
-  content <- as_LaTeX2(table[contentIdx])
-
-  fix <- expandMulticolumn(content, contentIdx)
-  content <- fix[[1]]
-  contentIdx <- fix[[2]]
-
-  terminated <- is_macro(content[[length(content)]],
-                         "\\\\")
-  breaks <- c(find_catcode(content, ALIGN),
-              if (terminated) length(content))
-  cells <- split_list(contentIdx, breaks)
-  if (terminated)
-    cells[[length(cells)]] <- NULL
-
-  if (col <= length(cells))
-    result <- cells[[col]]
-  else
-    stop(sprintf("col %d is too high", col))
-
-  result
+  rowidx <- list_idx(table)
+  if (is.null(rowidx))
+    stop("table row operations require a previous call to split_table()")
+  rows <- table[[rowidx]]
+  if (row > length(rows))
+    stop("row is beyond the end of the table")
+  therow <- rows[[row]]
+  colidx <- list_idx(therow)
+  if (is.null(colidx))
+    stop("table cell operations require a previous call to split_row()")
+  LaTeX2range(c(rowidx, row, colidx, col), range = NULL)
 }
 
 #' @rdname tableCell
@@ -55,10 +44,10 @@ find_tableCell <- function(table, row, col) {
 #' @export
 tableCell <- function(table, row, col) {
   entries <- find_tableCell(table, row, col)
-  if (any(is.na(entries)))
+  if (is.na(entries$path))
     warning("Cell is missing because of earlier \\multicolumn cell.")
   else
-    as_LaTeX2(table[entries])
+    as_LaTeX2(get_range(table, entries))
 }
 
 #' @rdname tableCell
@@ -91,56 +80,46 @@ tableCell <- function(table, row, col) {
   }
   if (row > tableNrow(table))
     tableRow(table, row) <- blankRow(table)
-  i <- find_tableCell(table, row, col)
-  if (any(is.na(i)))
+  entries <- find_tableCell(table, row, col)
+  if (is.na(entries))
     stop("Can't add cell covered by earlier \\multicolumn cell.")
-  if (!length(i)) {
-    i <- find_tableRow(table, row)
-    content <- table[i]
-    fix <- expandMulticolumn(content, i)
-    content <- fix[[1]]
-    i <- fix[[2]]
-    terminated <- is_macro(content[[length(content)]],
-                           "\\\\")
-    breaks <- c(find_catcode(content, ALIGN),
-                if (terminated) length(content))
-    i <- i[breaks[col]] - 0.5
-  }
-  replace_range(table, i, value)
+  if (is.null(entries))
+    stop("Cell not found.")
+  set_range(entries, new_itemlist(value))
 }
 
 # this expands multicolumn macros to
 # an equivalent number of columns.  The
 # index of the added stuff is NA
 
-expandMulticolumn <- function(items, idx) {
-  multis <- find_macro(items, "\\multicolumn")
-  if (length(multis)) {
-    whitespace <- find_whitespace(items)
-    for (i in rev(seq_along(multis))) {
-      multi <- multis[i]
-      args <- setdiff(multi + seq_len(length(items) - multi), whitespace)
+expandMulticolumn <- function(itemlist) {
+  if (!is_itemlist(itemlist))
+    stop("this needs to be an itemlist")
+
+  for (idx in rev(seq_along(itemlist))) {
+    items <- itemlist[[idx]]
+    multis <- find_macro(items, "\\multicolumn")
+
+    if (length(multis) > 1)
+      stop("cell has ", length(multis), " \\multicolumn macros")
+    if (length(multis)) {
+      whitespace <- find_whitespace(items)
+      args <- setdiff(multis + seq_len(length(items) - multis), whitespace)
       if (length(args) < 3)
         stop("Badly formed \\multicolumn")
       args <- args[1:3]
       arg <- args[1]
-      if (latexTag(items[[arg]]) == "BLOCK")
-        count <- as.numeric(items[arg][[1]])
+      if (is_block(items[[arg]]))
+        count <- as.numeric(deparseLatex(get_contents(items[arg])))
       else
-        count <- as.numeric(items[arg])
+        count <- as.numeric(items[[arg]])
       if (count > 1) {
-        # add some fake alignment markers
-        markers <- rep(as_LaTeX2("& "), count - 1)
-        i <- seq_along(items)
-        items <- as_LaTeX2(c(items[i <= args[3]],
-                             markers,
-                             items[i > args[3]]))
-        idx <- c(idx[i <= args[3]],
-                 rep(NA_integer_, length(markers)),
-                 idx[i > args[3]])
+        # add some placeholders
+        for (j in seq_len(count - 1))
+          itemlist <- insert_values(itemlist, idx + 1, placeholder())
       }
     }
   }
-  list(items, idx)
+  itemlist
 }
 

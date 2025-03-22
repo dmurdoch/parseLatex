@@ -162,6 +162,8 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
       )
       cat(rep(" ", indent), collapse="")
       tag <- attr(item, "latex_tag")
+      cat("tag=", tag, "\n")
+      if (length(tag) == 0) browser()
       if (tag  == "ENVIRONMENT") {
         cat(envName(item), ":\n", sep = "")
         lapply(item, showItem, indent + 2)
@@ -175,6 +177,9 @@ print.LaTeX2 <- function(x, tags = FALSE, ...) {
         cat(tag, "(", catcodes[1 + attr(item, "catcode")], "): ", sep = "")
         dput(c(item))
       } else if (tag == "DEFINITION") {
+        cat(tag, ":\n")
+        lapply(item, showItem, indent + 2)
+      } else if (tag == "ITEMLIST") {
         lapply(item, showItem, indent + 2)
       } else
         cat(tag, ":", item, "\n", sep = "")
@@ -219,6 +224,7 @@ deparseLatex <- function(x, dropBraces = FALSE)
                          Recall(a)
                        else
                          c("{", Recall(a), "}"),
+                       ITEMLIST =,
                        DEFINITION = Recall(a),
                        ENVIRONMENT = c(
                          "\\begin{", envName(a), "}",
@@ -227,6 +233,7 @@ deparseLatex <- function(x, dropBraces = FALSE)
                        MATH = c("$", Recall(a), "$"), # \( and \) parse as MACRO
                        DISPLAYMATH = c("$$", Recall(a), "$$"),
                        ERROR = Recall(a),
+                       PLACEHOLDER = {}, # do nothing
                        NULL = stop("Internal error, no tag", domain = NA)
                 ))
     lastTag <- tag

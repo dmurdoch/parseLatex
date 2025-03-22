@@ -9,7 +9,7 @@
 \alias{get_which}
 \title{Find path to a particular kind of item}
 \usage{
-path_to(items, is_fn, ..., all = FALSE)
+path_to(items, test, ..., all = FALSE)
 
 get_item(items, path)
 
@@ -24,7 +24,7 @@ get_which(path)
 \arguments{
 \item{items}{A list of latex items.}
 
-\item{is_fn}{Which test function to use.}
+\item{test}{Which test function to use.}
 
 \item{...}{Additional parameters to pass to \code{is_fn}.}
 
@@ -64,7 +64,7 @@ items appear in the deparse.
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample table")
 parsed <- parseLatex(latex)
 parsed
-path <- path_to(parsed, is_fn = is_env,
+path <- path_to(parsed, test = is_env,
                         envtypes = "tabular")
 get_item(parsed, path)
 }

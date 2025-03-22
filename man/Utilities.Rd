@@ -7,8 +7,6 @@
 \alias{drop_whitespace}
 \alias{trim_whitespace}
 \alias{include_whitespace}
-\alias{split_list}
-\alias{split_latex}
 \alias{split_chars}
 \alias{new_block}
 \alias{new_env}
@@ -24,10 +22,6 @@ trim_whitespace(items)
 
 include_whitespace(items, which)
 
-split_list(items, splits)
-
-split_latex(items, splits)
-
 split_chars(item, split = "")
 
 new_block(...)
@@ -39,8 +33,6 @@ new_env(name, ...)
 a \link{LaTeX2item} which is a list.}
 
 \item{which}{Which items to operate on.}
-
-\item{splits}{Which items divide the parts?}
 
 \item{item}{A non-list \link{LaTeX2item}.}
 
@@ -63,13 +55,6 @@ leading and trailing whitespace (blanks, tabs, newlines) removed.
 
 \code{include_whitespace()} returns \code{which} with
 following whitespace (blanks, tabs, newlines) included.
-
-\code{split_list()} returns a list of pieces
-separated at the splits.
-
-\code{split_latex()} returns a list of pieces
-separated at the splits.  Each piece is marked as
-a \link{LaTeX2} object.
 
 \code{split_chars()} returns a \link{LaTeX2}
 list containing the result of calling \link{strsplit}

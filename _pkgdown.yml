@@ -29,6 +29,7 @@ reference:
   - tableRule
   - vector_to_row
   - find_captions
+  - split_table
 - title: Utilities
   desc: Functions for working with parsed LaTeX
   contents:
@@ -38,6 +39,8 @@ reference:
   - get_contents
   - Utilities
   - reduce_whitespace
+  - splitting
+  - itemlist
 - title: Miscellaneous
   desc: Some more documentation
   contents:

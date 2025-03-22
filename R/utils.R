@@ -72,35 +72,43 @@ include_whitespace <- function(items, which) {
   }
 }
 
-#' @rdname Utilities
-#' @param splits Which items divide the parts?
+#' Splitting lists of items
+#' @name splitting
+#' @param splits Which item numbers divide the parts?
+#' @param include If `TRUE`, include the split item at
+#' the end of each part.
 #' @returns `split_list()` returns a list of pieces
 #' separated at the splits.
 #' @export
-split_list <- function(items, splits) {
+split_list <- function(items, splits, include = FALSE) {
   prev <- 0
   result <- lapply(splits, function(s) {
-    if (s > prev + 1) {
+    if (include)
+      sel <- items[(prev + 1):s]
+    else if (s > prev + 1)
       sel <- items[(prev + 1):(s - 1)]
-      prev <<- s
-      sel
-    } else
-      items[FALSE]
+    else
+      sel <- items[FALSE]
+    prev <<- s
+    sel
   })
   # Add in one more after the last split
-  extras <- items[seq_along(items) > max(splits)]
+  extras <- items[seq_along(items) > max(splits, 0)]
   result <- c(result, list(extras))
   result
 }
 
-#' @rdname Utilities
-#' @param splits Which items divide the parts?
+#' @rdname splitting
+#' @param ... Arguments to pass to `split_list`.
 #' @returns `split_latex()` returns a list of pieces
 #' separated at the splits.  Each piece is marked as
-#' a [LaTeX2] object.
+#' an `ITEMLIST` item, and the whole thing is
+#' also marked that way.
 #' @export
-split_latex <- function(items, splits) {
-  lapply(split_list(items, splits), as_LaTeX2)
+split_latex <- function(...) {
+  items <- split_list(...)
+  items <- lapply(items, new_itemlist)
+  new_itemlist(items)
 }
 
 
@@ -205,4 +213,69 @@ new_env <- function(name, ...) {
   class(result) <- "LaTeX2item"
   envName(result) <- name
   result
+}
+
+#' @name itemlist
+#' @aliases ITEMLIST
+#' @title Lists of items
+#' @param ... Items to be passed to `latex2()`.
+#' @details An `ITEMLIST` is a list of lists of items.
+#' Deparsing it just concatenates the parts.  This is
+#' intended to be used when parsing tables, for example,
+#' where it makes sense to break up the table into
+#' individual rows.  See `split_table` for more details.
+#' @returns `new_itemlist()` returns an `ITEMLIST` item containing the items.
+#' @export
+#'
+#' @examples
+#' new_itemlist(parseLatex("abc def"), label = "items")
+new_itemlist <- function(...) {
+  items <- latex2(...)
+  attr(items, "latex_tag") <- "ITEMLIST"
+  class(items) <- "LaTeX2item"
+  items
+}
+
+#' @rdname itemlist
+#' @param items A list of [LaTeX2item] objects.
+#' @param recursive Whether to proceed recursively.
+#' @returns `flatten_itemlists()` returns `items` with
+#'  `ITEMLIST` items expanded.  If `items` itself was an
+#'  `ITEMLIST`, it is returned as a [LaTeX2] object;
+#'  otherwise its type will be unchanged.
+#'  The result will never
+#'  include any `ITEMLIST` or `PLACEHOLDER` items at the top level,
+#'  and if `recursive` is `TRUE`, not at any level.
+#' @export
+flatten_itemlists <- function(items, recursive = FALSE) {
+  attrs <- attributes(items)
+  i <- 1
+  while (i <= length(items)) {
+    if (is_itemlist(items[[i]])) {
+      items <- insert_values(items, i + 1, items[[i]])
+      items <- drop_items(items, i)
+    } else if (is_placeholder(items[[i]])) {
+      items <- drop_items(items, i)
+    } else {
+      if (recursive && is.list(items[[i]]))
+        items[[i]] <- flatten_itemlists(items[[i]], recursive = TRUE)
+      i <- i + 1
+    }
+  }
+  tag <- attrs$latex_tag
+  if (!is.null(tag) && tag == "ITEMLIST")
+    items <- as_LaTeX2(items)
+
+  items
+}
+
+#' @rdname itemlist
+#' @aliases PLACEHOLDER
+#' @returns `placeholder()` returns a `LaTeX2item`
+#' object with tag `PLACEHOLDER`.  These will never
+#' print, and are used as spacers within an `ITEMLIST`.
+#' @export
+placeholder <- function() {
+  structure(character(), class = "LaTeX2item",
+            latex_tag = "PLACEHOLDER")
 }
