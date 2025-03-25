@@ -3,15 +3,11 @@
 #' @title Miscellaneous low-level finders
 #' @name finders
 #' @param items A list of latex items.
-#' @param all If `FALSE`, return the first match
-#' @details  All of these functions return either a
-#' list of vectors (`all = TRUE`) or a single vector.  These vectors can be used as recursive indices into the
-#' `items` to retrieve the match to the test.
 #' @returns `find_whitespace()` returns the indices of
 #' whitespace in `items`.
 #' @export
-find_whitespace <- function(items, all = TRUE)
-  find_general(items, is_whitespace, all = all)
+find_whitespace <- function(items, ...)
+  find_general(items, is_whitespace, ...)
 
 
 #' @rdname finders
@@ -19,35 +15,35 @@ find_whitespace <- function(items, all = TRUE)
 #' @returns `find_env()` returns the indices within `items`
 #' of environments in `envtypes`.
 #' @export
-find_env <- function(items, envtypes = NULL, all = TRUE)
-  find_general(items, is_env, envtypes = envtypes, all = all)
+find_env <- function(items, envtypes = NULL, ...)
+  find_general(items, is_env, envtypes = envtypes, ...)
 
 #' @rdname finders
 #' @param macros Which types of macros to look for.
 #' @returns `find_macro()` returns the index within `items`
 #' of instances in `macros`.
 #' @export
-find_macro <- function(items, macros = NULL, all = TRUE)
-  find_general(items, is_macro, macros = macros, all = all)
+find_macro <- function(items, macros = NULL, ...)
+  find_general(items, is_macro, macros = macros, ...)
 
 #' @rdname finders
 #' @param codes Which codes to look for.
 #' @returns `find_catcode()` returns the index within `items`.
 #' of specials matching `code`.
 #' @export
-find_catcode <- function(items, codes, all = TRUE)
+find_catcode <- function(items, codes, ...)
   find_general(items, function(x)
     latexTag(x) == "SPECIAL" && catcode(x) %in% codes,
-    all = all)
+    ...)
 
 #' @rdname finders
 #' @param tags Which tags to look for.
 #' @returns `find_tags()` returns the index within `items`.
 #' of items with tags matching `tags`.
 #' @export
-find_tags <- function(items, tags, all = TRUE)
+find_tags <- function(items, tags, ...)
   find_general(items, function(x) latexTag(x) %in% tags,
-               all = all)
+               ...)
 
 #' @rdname finders
 #' @param char Which character to look for.
@@ -55,16 +51,16 @@ find_tags <- function(items, tags, all = TRUE)
 #' of characters matching `char`.  Only characters
 #' marked as SPECIAL by the parser will be found.
 #' @export
-find_char <- function(items, char, all = TRUE)
-  find_general(items, function(x) latexTag(x) == "SPECIAL" && x == char, all = all)
+find_char <- function(items, char, ...)
+  find_general(items, function(x) latexTag(x) == "SPECIAL" && x == char, ...)
 
 
 #' @rdname finders
 #' @returns `find_block()` returns the index within `items`
 #' of blocks (i.e. sequences in {})
 #' @export
-find_block <- function(items, all = TRUE)
-  find_general(items, is_block, all = TRUE)
+find_block <- function(items, ...)
+  find_general(items, is_block, ...)
 
 
 #' @title Find path to a particular kind of item
@@ -107,14 +103,29 @@ path_to <- function(items, test, ..., all = FALSE) {
 #' @rdname path_to
 #'
 #' @param path Integer vector of subitems
+#' @param index Index into the flattened version of `items`.
 #'
-#' @returns `get_item()` returns the item at the given path.
+#' @returns `get_item()` returns the item at the given path.  If `index` is specified, `get_item()` will return that
+#' item in the flattened version of `items`.
 #' @export
 #'
 #' @examples
 #' get_item(parsed, path)
-get_item <- function(items, path)
+get_item <- function(items, path = index_to_path(index, items),
+                     index)
   items[[path]]
+
+#' @rdname path_to
+#'
+#' @param paths List of paths
+#' @param indices Vector of indices into the flattened version of `items`.
+#'
+#' @returns `get_items()` returns the items at the given paths as a [LaTeX2] object.  If `index` is specified, `get_items()` will return those
+#' items in the flattened version of `items`.
+#' @export
+get_items <- function(items, paths = lapply(indices, index_to_path, items), indices) {
+  latex2(lapply(paths, get_item, items))
+}
 
 #' @rdname path_to
 #' @param value A [LaTeX2item] to set as a value.
@@ -268,30 +279,45 @@ LaTeX2range <- function(path, range)
   structure(list(path = path, range = range),
             class = "LaTeX2range")
 
-path_to_range <- function(path) {
+#' @export
+path_to_index <- function(path, items) {
   n <- length(path)
   if (n == 0)
-    NULL
-  else if (n == 1)
-    LaTeX2range(NULL, path)
-  else
-    LaTeX2range(path[-n], path[n])
+    stop("path has no entries")
+
+  result <- 0L
+  current <- items
+  for (i in seq_along(path)) {
+    for (j in seq_len(path[i] - 1)) {
+      if (is_itemlist(current[[j]]))
+        result <- result + attr(current[[j]], "truecount")
+      else
+        result <- result + 1L
+    }
+    current <- current[[path[i]]]
+    if (is_itemlist(current) == (i == n))
+      stop("path must only traverse itemlist items and end at something else.")
+  }
+  result + 1L
 }
 
-add_to_range <- function(range, add) {
-  if (is.null(range$range))
-    stop("Can't add to a NULL range")
-  LaTeX2range(range$path, c(range$range, seq_len(add) + max(range$range)))
-}
-
-extend_range <- function(range, newlimit) {
-  if (!identical(range$path, newlimit$path))
-    stop("Can't extend range to new path")
-  add <- max(newlimit$range) - max(range$range)
-  if (add > 0)
-    add_to_range(range, add)
-  else
-    range
+#' @export
+index_to_path <- function(index, items) {
+  path <- integer()
+  current <- 0
+  i <- 0
+  while (current < index) {
+    i <- i + 1
+    if (is_itemlist(items[[i]])) {
+      truecount <- attr(items[[i]], "truecount")
+      if (truecount >= index)
+        return(c(i, index_to_path(index - current, items[[i]])))
+      else
+        current <- current + truecount
+    } else
+      current <- current + 1
+  }
+  i
 }
 
 #' @rdname LaTeX2range
@@ -329,7 +355,8 @@ print.LaTeX2range <- function(x, source = NULL, ...) {
 #' parsed <- parseLatex(latex)
 #' tablepath <- path_to(parsed, is_env, envtypes = "tabular")
 #' range <- LaTeX2range(tablepath, 11)
-#' set_range(parsed, range, "The 11th item")
+#' parsed <- set_range(parsed, range, "The 11th item")
+#' parsed
 #' @export
 set_range <- function(items, range, values) {
   path <- range$path
@@ -391,30 +418,62 @@ get_range <- function(items, range) {
 
 #' @rdname finders
 #' @param test Test function for target.
-#' @returns `find_general()` returns [LaTeX2range] paths
-#' to objects matching the `test`.
+#' @param ... For `find_general`, additional arguments
+#' to pass to `test`.  For the other `find_*` functions,
+#' additional arguments to pass to `find_general`.
+#' @param all If `FALSE`, return just the first match
+#' @param path If `TRUE`, return a path rather than an index.  See Details below.
+#' @details
+#' These functions search through `items` for individual
+#' objects that match a test.  In general they do not
+#' operate recursively, with one exception.  If `items`
+#' contains `ITEMLIST` objects, the search will always
+#' recurse into those.
+#'
+#' By default the return value is an index or a vector
+#' of indices of the matches.  These are the indices as
+#' they would be if any `ITEMLIST` objects had been
+#' flattened.
+#'
+#' However, if `path = TRUE`, the path to the
+#' object will be returned.  With `all = FALSE`, this will
+#' be a numeric vector such that `items[[result]]` is the
+#' matching item.  With `all = TRUE` it will be a list of
+#' such vectors.
+#'
+#' @returns `find_general()` returns locations of
+#'  objects matching the `test`.
 #' @export
 
-find_general <- function(items, test, ..., all = TRUE) {
+find_general <- function(items, test, ..., all = TRUE,
+                         path = FALSE) {
   if (all) {
     result <- list()
     for (i in seq_along(items)) {
       if (is_itemlist(items[[i]]))
         result <- c(result,
-                    lapply(find_general(items[[i]], test, ..., all = TRUE),
+                    lapply(find_general(items[[i]], test, ..., all = TRUE, path = TRUE),
                            function(x) c(i, x)))
       if (test(items[[i]], ...))
         result <- c(result, list(i))
     }
-    result
+    if (path)
+      result
+    else
+      vapply(result, path_to_index, 0L, items)
   } else {
     for (i in seq_along(items))
       if (test(items[[i]], ...))
-        return(LaTeX2range(NULL, i))
+        return(i)
       else if (is_itemlist(items[[i]])) {
         result <- find_general(items[[i]], test, ..., all = FALSE)
-        if (!is.null(result))
-          return(c(i, result))
+        if (!is.null(result)) {
+          result <- c(i, result)
+          if (path)
+            return(result)
+          else
+            return(path_to_index(result, items))
+        }
       }
     NULL
   }

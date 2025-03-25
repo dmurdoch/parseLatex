@@ -33,6 +33,7 @@ latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex", caption = "Sample t
 parsed <- parseLatex(latex)
 tablepath <- path_to(parsed, is_env, envtypes = "tabular")
 range <- LaTeX2range(tablepath, 11)
-set_range(parsed, range, "The 11th item")
+parsed <- set_range(parsed, range, "The 11th item")
+parsed
 get_range(parsed, range)
 }

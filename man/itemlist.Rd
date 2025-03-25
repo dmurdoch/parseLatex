@@ -7,6 +7,7 @@
 \alias{flatten_itemlists}
 \alias{placeholder}
 \alias{PLACEHOLDER}
+\alias{show_itemlists}
 \title{Lists of items}
 \usage{
 new_itemlist(...)
@@ -14,6 +15,8 @@ new_itemlist(...)
 flatten_itemlists(items, recursive = FALSE)
 
 placeholder()
+
+show_itemlists(items, indent = 0, verbose = FALSE)
 }
 \arguments{
 \item{...}{Items to be passed to \code{latex2()}.}
@@ -21,6 +24,11 @@ placeholder()
 \item{items}{A list of \link{LaTeX2item} objects.}
 
 \item{recursive}{Whether to proceed recursively.}
+
+\item{indent}{How much to indent the display?}
+
+\item{verbose}{Whether to show tags of non-itemlists
+and details of each itemlist.}
 }
 \value{
 \code{new_itemlist()} returns an \code{ITEMLIST} item containing the items.
@@ -36,6 +44,10 @@ and if \code{recursive} is \code{TRUE}, not at any level.
 \code{placeholder()} returns a \code{LaTeX2item}
 object with tag \code{PLACEHOLDER}.  These will never
 print, and are used as spacers within an \code{ITEMLIST}.
+
+\code{show_itemlists()} is called for the side
+effect of displaying the itemlist structure of an
+object.
 }
 \description{
 Lists of items

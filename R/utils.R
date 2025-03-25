@@ -81,6 +81,8 @@ include_whitespace <- function(items, which) {
 #' separated at the splits.
 #' @export
 split_list <- function(items, splits, include = FALSE) {
+  if (!is.numeric(splits))
+    stop("'splits' should be a numeric vector of locations")
   prev <- 0
   result <- lapply(splits, function(s) {
     if (include)
@@ -231,7 +233,14 @@ new_env <- function(name, ...) {
 #' new_itemlist(parseLatex("abc def"), label = "items")
 new_itemlist <- function(...) {
   items <- latex2(...)
+  truecount <- 0L
+  for (i in seq_along(items))
+    if (is_itemlist(items[[i]]))
+      truecount <- truecount + attr(items[[i]], "truecount")
+    else
+      truecount <- truecount + 1L
   attr(items, "latex_tag") <- "ITEMLIST"
+  attr(items, "truecount") <- truecount
   class(items) <- "LaTeX2item"
   items
 }
@@ -278,4 +287,45 @@ flatten_itemlists <- function(items, recursive = FALSE) {
 placeholder <- function() {
   structure(character(), class = "LaTeX2item",
             latex_tag = "PLACEHOLDER")
+}
+
+#' @rdname itemlist
+#' @param indent How much to indent the display?
+#' @param verbose Whether to show tags of non-itemlists
+#' and details of each itemlist.
+#' @returns `show_itemlists()` is called for the side
+#' effect of displaying the itemlist structure of an
+#' object.
+#' @export
+show_itemlists <- function(items, indent = 0, verbose = FALSE) {
+  shownonlists <- function(first, last) {
+    nonlisttags <- vapply(items[first:last], latexTag, "")
+    if (first == last)
+      cat(blanks, first, ": non-itemlist",
+          if (verbose) paste0(" tag = ", nonlisttags),
+          "\n", sep = "")
+    else
+      cat(blanks, first, "-", last, ": non-itemlists",
+          if (verbose) paste0(" tags = ", paste(nonlisttags, collapse = ", ")),
+          "\n", sep = "")
+
+    nonlist <<- 0
+  }
+  nonlist <- 0
+  nonlisttags <- character()
+  blanks <- rep(" ", indent)
+  for (i in seq_along(items)) {
+    if (is_itemlist(items[[i]])) {
+      if (nonlist > 0)
+        shownonlists(i-nonlist, i-1)
+      cat(blanks, i, ": itemlist",
+          if (verbose) paste0(" len = ", length(items[[i]]), " truecount = ", attr(items[[i]], "truecount")),
+          "\n", sep = "")
+      show_itemlists(items[[i]], indent + 2, verbose = verbose)
+    } else
+      nonlist <- nonlist + 1
+  }
+  if (nonlist > 0)
+    shownonlists(length(items) - nonlist + 1, length(items))
+  invisible()
 }

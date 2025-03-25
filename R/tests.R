@@ -21,7 +21,6 @@ is_env <- function(item,  envtypes = NULL) {
 #' @returns `is_macro()` returns a boolean indicating the match.
 #' @export
 is_macro <- function(item, macros = NULL) {
-  if (!is.null(macros)) print(macros)
   inherits(item, "LaTeX2item") &&
   !is.null(macroName(item)) &&
     (is.null(macros) || item %in% macros)

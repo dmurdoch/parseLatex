@@ -39,8 +39,8 @@ Find or drop captions
 \examples{
 parsed <- parseLatex("before \\\\caption{This is a caption} \\\\\\\\ after")
 idx <- find_captions(parsed)
-parsed[idx]
-parsed[attr(idx, "extra")[[1]]]
+get_item(parsed, idx)
+get_range(parsed, LaTeX2range(NULL, attr(idx, "extra")[[1]]))
 drop_captions(parsed)
 path_to_caption(parsed)
 }

@@ -3,9 +3,9 @@
 \name{split_table}
 \alias{split_table}
 \alias{split_row}
-\title{Split up a table by rows or columns}
+\title{Split up a table by rows}
 \usage{
-split_table(table)
+split_table(table, do_cells = FALSE)
 
 split_row(row)
 }
@@ -13,6 +13,8 @@ split_row(row)
 \item{table}{A tabular-like environment to work with.}
 
 \item{row}{A list of items from a single row of a table.}
+
+\item{do_rows}{Should the rows be split too?}
 }
 \value{
 A \link{LaTeX2item} object which is the same table
@@ -24,7 +26,7 @@ with an \link{ITEMLIST} holding the cells.  The attribute
 \code{has_itemlist} will be set to \code{TRUE}.
 }
 \description{
-Split up a table by rows or columns
+Split up a table by rows
 }
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")

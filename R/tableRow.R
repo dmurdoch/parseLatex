@@ -164,7 +164,7 @@ tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
 }
 
 blankRow <- function(table) {
-  paste0(rep(" & ", tableNcol(table) - 1), collapse = "")
+  latex2(paste0(rep(" & ", tableNcol(table) - 1), collapse = ""), "\\\\")
 }
 
 #' @rdname tableRow
@@ -194,15 +194,6 @@ blankRow <- function(table) {
                          withExtras = FALSE,
                          withData = TRUE,
                          value) {
-  value <- as_LaTeX2(value)
-  if (!asis) {
-    breaks <- find_macro(value, "\\\\")
-    if (!length(breaks))
-      value <- c(value, as_LaTeX2("\\\\"))
-    newlines <- find_catcode(value, NEWLINE)
-    # if (!(length(value) %in% newlines))
-    #   value <- c(value, as_LaTeX2("\n"))
-  }
 
   rowidx <- list_idx(table)
   if (is.null(rowidx)) {
@@ -210,13 +201,30 @@ blankRow <- function(table) {
     rowidx <- list_idx(table)
   }
   rows <- table[[rowidx]]
-  if (row > length(rows) + 1) {
+
+  value <- as_LaTeX2(value)
+  if (!asis) {
+    if (row <= length(rows)) {
+      if (!withExtras)
+        value <- latex2(tableRow(table, row, withExtras = TRUE, withData = FALSE), value)
+      if (!withData)
+        value <- latex2(value, tableRow(table, row, withExtras = FALSE, withData = TRUE))
+    }
+    breaks <- find_macro(value, "\\\\")
+    if (!length(breaks))
+      value <- latex2(value, "\\\\")
+    newlines <- find_catcode(value, NEWLINE)
+    if (!(1 %in% newlines))
+      value <- latex2("\n", value)
+  }
+
+  if (row > length(rows)) {
     # Need to insert rows
-    blank <- split_row(blankRow(table))
-    for (i in length(rows) + seq_len(row - length(rows) - 1))
+    blank <- split_row(latex2("\n", blankRow(table)))
+    for (i in length(rows):row)
       rows[[i]] <- blank
   }
-  rows[[row]] <- split_row(value)
+  rows[[row]] <- new_itemlist(split_row(value))
   table[[rowidx]] <- rows
 
   table
@@ -304,8 +312,9 @@ vector_to_latex2 <- function(x) {
   as_LaTeX2(do.call(c, lapply(x, as_LaTeX2)))
 }
 
-#' Split up a table by rows or columns
+#' Split up a table by rows
 #' @param table A tabular-like environment to work with.
+#' @param do_rows Should the rows be split too?
 #' @returns A [LaTeX2item] object which is the same table
 #' with an [ITEMLIST] holding the rows.  The attribute
 #' `has_itemlist` will be set to `TRUE`.
@@ -316,7 +325,7 @@ vector_to_latex2 <- function(x) {
 #' table <- split_table(parsed[[find_tabular(parsed)]])
 #' print(latex2(table), tags = TRUE)
 
-split_table <- function(table) {
+split_table <- function(table, do_cells = FALSE) {
   if (!is.null(list_idx(table)))
     return(table)
   start <- min(find_tableRow(table, 1, withExtras = TRUE)$range)
@@ -325,8 +334,9 @@ split_table <- function(table) {
     contents <- table[idx]
     linebreaks <- find_macro(contents, "\\\\", all = TRUE)
     rows <- split_latex(table[idx], linebreaks, include = TRUE)
-    for (i in seq_along(rows))
-      rows[[i]] <- split_row(rows[[i]])
+    if (do_cells)
+      for (i in seq_along(rows))
+        rows[[i]] <- split_row(rows[[i]])
     table <- drop_items(table, idx)
     table <- insert_values(table, length(table) + 1, rows)
     structure(table, has_itemlist = TRUE)
@@ -345,9 +355,12 @@ split_table <- function(table) {
 #' print(latex2(row), tags = TRUE)
 
 split_row <- function(row) {
+  row0 <- row
+  if (is_itemlist(row))
+    row <- get_contents(row)
   colidx <- list_idx(row)
   if (!is.null(colidx))
-    return(row)
+    return(row0)
 
   extras <- find_extras(row)
   if (length(extras))
@@ -356,12 +369,13 @@ split_row <- function(row) {
     start <- 1
 
   if (start <= length(row)) {
-    breaks <- find_catcode(row, ALIGN, all = TRUE)
+    breaks <- find_catcode(row[start:length(row)], ALIGN, all = TRUE)
     cols <- split_latex(row[start:length(row)], breaks, include = TRUE)
     cols <- expandMulticolumn(cols)
     row <- drop_items(row, start:length(row))
     row[[start]] <- cols
-  }
+  } else
+    row[[length(row) + 1]] <- new_itemlist()
 
   structure(new_itemlist(row), has_itemlist = TRUE)
 }

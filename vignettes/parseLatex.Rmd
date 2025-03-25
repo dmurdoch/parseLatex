@@ -84,6 +84,9 @@ We can extract the table, and use other functions to work with it:
 table <- parsed[[find_env(parsed, "tabular")]]
 # Get the alignment options from the content
 columnOptions(table)
+# To work with cells or rows in the table, we need
+# to preprocess it:
+table <- split_table(table, do_cells = TRUE)
 tableCell(table, 2,2) # The title counts as a row
 tableCell(table, 1,1) <- "Model"
 table

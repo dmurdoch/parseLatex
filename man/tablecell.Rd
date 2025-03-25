@@ -55,7 +55,7 @@ succeed.
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 parsed <- parseLatex(latex)
-table <- split_table(parsed[[find_tabular(parsed)]])
+table <- split_table(parsed[[find_tabular(parsed)]], do_cells = TRUE)
 find_tableCell(table, 1, 2)
 
 tableCell(table, 1, 2)

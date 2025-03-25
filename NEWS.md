@@ -29,7 +29,11 @@ the result.
 characters.
 * Constants for the TeX catcodes are now exported, e.g. `NEWLINE`.
 * The `find_*` functions now have an `all` argument, to allow
-the search to be stopped at the first success.
+the search to be stopped at the first success, and a `path` argument,
+to control the form of the return value.
+* Added `ITEMLIST` and `PLACEHOLDER` LaTeX tag values.  These are 
+used internally to organize long lists of items, e.g. to allow
+the rows of a table to be indexed directly.
 
 # parseLatex 0.3.0
 

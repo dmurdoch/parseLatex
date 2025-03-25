@@ -17,11 +17,13 @@
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 #' parsed <- parseLatex(latex)
-#' table <- split_table(parsed[[find_tabular(parsed)]])
+#' table <- split_table(parsed[[find_tabular(parsed)]], do_cells = TRUE)
 #' find_tableCell(table, 1, 2)
 #'
 #' @export
 find_tableCell <- function(table, row, col) {
+  if (row < 1 || col < 1)
+    stop("row and col must both be 1 or more.")
   rowidx <- list_idx(table)
   if (is.null(rowidx))
     stop("table row operations require a previous call to split_table()")
@@ -31,7 +33,9 @@ find_tableCell <- function(table, row, col) {
   therow <- rows[[row]]
   colidx <- list_idx(therow)
   if (is.null(colidx))
-    stop("table cell operations require a previous call to split_row()")
+    stop("table cell operations require a previous call to split_row() or split_table(do_cells = TRUE)")
+  if (col > length(therow[[colidx]]))
+    stop("col is beyond the length of the row")
   LaTeX2range(c(rowidx, row, colidx, col), range = NULL)
 }
 
@@ -44,7 +48,7 @@ find_tableCell <- function(table, row, col) {
 #' @export
 tableCell <- function(table, row, col) {
   entries <- find_tableCell(table, row, col)
-  if (is.na(entries$path))
+  if (latexTag(table[[entries$path]]) == "PLACEHOLDER")
     warning("Cell is missing because of earlier \\multicolumn cell.")
   else
     as_LaTeX2(get_range(table, entries))
@@ -75,17 +79,23 @@ tableCell <- function(table, row, col) {
     blanks <- find_catcode(value, SPACE)
     if (!(length(value) %in% blanks))
       value <- c(value, as_LaTeX2(" "))
-    if (!(1 %in% blanks))
+    if (col == tableNcol(table)) {
+      if (length(find_macro(value, "\\\\")) == 0)
+        value <- c(value, as_LaTeX2("\\\\\n"))
+    } else {
+      if (length(find_catcode(value, ALIGN)) == 0)
+        value <- c(value, as_LaTeX2("&"))
+    }
+    if (col > 1 && !(1 %in% blanks))
       value <- c(as_LaTeX2(" "), value)
+
   }
   if (row > tableNrow(table))
-    tableRow(table, row) <- blankRow(table)
+    tableRow(table, row) <- split_row(blankRow(table))
   entries <- find_tableCell(table, row, col)
-  if (is.na(entries))
+  if (latexTag(table[[entries$path]]) == "PLACEHOLDER")
     stop("Can't add cell covered by earlier \\multicolumn cell.")
-  if (is.null(entries))
-    stop("Cell not found.")
-  set_range(entries, new_itemlist(value))
+  set_range(table, entries, new_itemlist(value))
 }
 
 # this expands multicolumn macros to

@@ -12,26 +12,28 @@
 \alias{find_general}
 \title{Miscellaneous low-level finders}
 \usage{
-find_whitespace(items, all = TRUE)
+find_whitespace(items, ...)
 
-find_env(items, envtypes = NULL, all = TRUE)
+find_env(items, envtypes = NULL, ...)
 
-find_macro(items, macros = NULL, all = TRUE)
+find_macro(items, macros = NULL, ...)
 
-find_catcode(items, codes, all = TRUE)
+find_catcode(items, codes, ...)
 
-find_tags(items, tags, all = TRUE)
+find_tags(items, tags, ...)
 
-find_char(items, char, all = TRUE)
+find_char(items, char, ...)
 
-find_block(items, all = TRUE)
+find_block(items, ...)
 
-find_general(items, test, ..., all = TRUE)
+find_general(items, test, ..., all = TRUE, path = FALSE)
 }
 \arguments{
 \item{items}{A list of latex items.}
 
-\item{all}{If \code{FALSE}, return the first match}
+\item{...}{For \code{find_general}, additional arguments
+to pass to \code{test}.  For the other \verb{find_*} functions,
+additional arguments to pass to \code{find_general}.}
 
 \item{envtypes}{Which types of environment to look for.}
 
@@ -44,6 +46,10 @@ find_general(items, test, ..., all = TRUE)
 \item{char}{Which character to look for.}
 
 \item{test}{Test function for target.}
+
+\item{all}{If \code{FALSE}, return just the first match}
+
+\item{path}{If \code{TRUE}, return a path rather than an index.  See Details below.}
 }
 \value{
 \code{find_whitespace()} returns the indices of
@@ -68,14 +74,27 @@ marked as SPECIAL by the parser will be found.
 \code{find_block()} returns the index within \code{items}
 of blocks (i.e. sequences in {})
 
-\code{find_general()} returns \link{LaTeX2range} paths
-to objects matching the \code{test}.
+\code{find_general()} returns locations of
+objects matching the \code{test}.
 }
 \description{
 Miscellaneous low-level finders
 }
 \details{
-All of these functions return either a
-list of vectors (\code{all = TRUE}) or a single vector.  These vectors can be used as recursive indices into the
-\code{items} to retrieve the match to the test.
+These functions search through \code{items} for individual
+objects that match a test.  In general they do not
+operate recursively, with one exception.  If \code{items}
+contains \code{ITEMLIST} objects, the search will always
+recurse into those.
+
+By default the return value is an index or a vector
+of indices of the matches.  These are the indices as
+they would be if any \code{ITEMLIST} objects had been
+flattened.
+
+However, if \code{path = TRUE}, the path to the
+object will be returned.  With \code{all = FALSE}, this will
+be a numeric vector such that \code{items[[result]]} is the
+matching item.  With \code{all = TRUE} it will be a list of
+such vectors.
 }

@@ -10,34 +10,26 @@
 #' @examples
 #' parsed <- parseLatex("before \\caption{This is a caption} \\\\ after")
 #' idx <- find_captions(parsed)
-#' parsed[idx]
-#' parsed[attr(idx, "extra")[[1]]]
+#' get_item(parsed, idx)
+#' get_range(parsed, LaTeX2range(NULL, attr(idx, "extra")[[1]]))
 find_captions <- function(items) {
-  nextitem <- function(j) {
-    j[length(j)] <- j[length(j)] + 1
-    j
-  }
-  previtem <- function(j) {
-    j[length[j]] <- j[length(j)] - 1
-    j
-  }
   macros <- find_macro(items, "\\caption")
-  actual <- list()
-  extra <- lapply(macros, path_to_range)
+  actual <- integer()
+  extra <- as.list(macros)
   for (i in seq_along(macros)) {
-    j <- nextitem(macros[[i]])
-    if (is_char(items[[j]], "*")) j <- nextitem(j) # \caption*
-    while (is_whitespace(items[[j]])) j <- nextitem(j)
-    if (is_bracket(items[[j]], "[")) {
-      j <- nextitem(j)
-      while (!is_bracket(items[[j]], "]")) j <- nextitem(j)
+    j <- macros[i] + 1
+    if (is_char(get_item(items, j), "*")) j <- j + 1 # \caption*
+    while (is_whitespace(get_item(items, j))) j <- j + 1
+    if (is_bracket(get_item(items, j), "[")) {
+      j <- j + 1
+      while (!is_bracket(get_item(items, j), "]")) j <- j + 1
     }
-    while (is_whitespace(items[[j]])) j <- nextitem(j)
-    actual <- c(actual, list(j)) # the actual caption, typically a block
-    j <- nextitem(j)
-    while (is_whitespace(items[[j]])) j <- nextitem(j)
-    if (is_macro(items[[j]], "\\\\")) j <- nextitem(j)
-    extra[[i]] <- extend_range(extra[[i]], path_to_range(previtem(j)))
+    while (is_whitespace(get_item(items, j))) j <- j + 1
+    actual <- c(actual, j) # the actual caption, typically a block
+    j <- j + 1
+    while (is_whitespace(get_item(items, j))) j <- j + 1
+    if (is_macro(get_item(items, j), "\\\\")) j <- j + 1
+    extra[[i]] <- macros[i]:(j-1)
   }
   structure(actual, extra = extra)
 }
