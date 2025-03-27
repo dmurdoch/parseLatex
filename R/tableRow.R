@@ -1,4 +1,8 @@
 find_extras <- function(row) {
+  # prepare_row puts the extras in item 1.
+  if (has_itemlist(row))
+    return(1L)
+
   # Find all the extras
   # The rules and addlinespace
   extras <- find_macro(row, c("\\hline", "\\toprule",
@@ -61,16 +65,16 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
     }
   }
 
-  rowidx <- list_idx(table)
-  if (!is.null(rowidx)) {
-    rows <- table[[rowidx]]
-    if (row < 1 || row > length(rows))
-      return(integer())
-    content <- rows[[row]]
+  has_itemlist <- has_itemlist(table)
+
+  if (has_itemlist) {
+    if (row < 1 || row > length(table) - 2)
+      return(NULL)
+    content <- table[[row + 1]]
     contentIdx <- seq_along(content)
     if (!withExtras && !withData) {
-      if (length(row) > 0 && is_macro(row[[length(row)]], "\\\\"))
-        return(LaTeX2range(path = c(rowidx, row)), range = length(row))
+      if (length(content) > 0 && is_macro(content[[length(content)]], "\\\\"))
+        return(LaTeX2range(path = c(row + 1)), range = length(row))
       else
         return(NULL)
     }
@@ -79,13 +83,10 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
     content <- as_LaTeX2(table[contentIdx])
 
     # Drop the captions
-    idx <- find_captions(content)
+    idx <- find_caption(content)
     if (length(idx)) {
-
-      # not done yet
-
       idx <- unlist(attr(idx, "extra"))
-      drop(idx)
+      drop(idx$range)
     }
 
     breaks <- contentIdx[find_macro(content, "\\\\")]
@@ -94,9 +95,9 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
 
     if (!withExtras && !withData) {
       if (row > length(breaks))
-        return(integer())
+        return(NULL)
       else
-        return(breaks[row ])
+        return(breaks[row])
     }
 
     breaks <- c(0, breaks, Inf)
@@ -120,18 +121,14 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
     else
       return(NULL)
   }
-  if (is.null(rowidx))
+  if (!has_itemlist)
     LaTeX2range(NULL, result)
   else
-    LaTeX2range(c(rowidx, row), result)
+    LaTeX2range(row + 1, result)
 }
 
 list_idx <- function(table) {
-  if (isTRUE(attr(table, "has_itemlist")) &&
-      is_itemlist(table[[length(table)]]))
-    length(table)
-  else
-    NULL
+  attr(table, "itemlist_start")
 }
 
 #' @rdname tableRow
@@ -143,21 +140,20 @@ list_idx <- function(table) {
 #'
 #' @export
 tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
-  if (!is.null(rowidx <- list_idx(table))) {
-    row <- table[[c(rowidx, row)]]
+  if (has_itemlist(table)) {
+    row <- table[[row + 1]]
     if (withExtras && withData)
-      as_LaTeX2(row)
+      row
     else if (!withExtras && !withData)
       as_LaTeX2(NULL)
     else {
-      if (is.null(colidx <- list_idx(row))) {
-          row <- split_row(row)
-          colidx <- list_idx(row)
-      }
+      if (!has_itemlist(row))
+          row <- prepare_row(row)
       if (withExtras) # && !withData
-        as_LaTeX2(row[seq_len(colidx - 1)])
+        result <- as_LaTeX2(row[1])
       else  #  !withExtras && withData
-        as_LaTeX2(row[[colidx]])
+        result <- as_LaTeX2(row[2:length(row)])
+      structure(result, has_itemlist = TRUE)
     }
   } else
     as_LaTeX2(get_range(table, find_tableRow(table, row, withExtras, withData)))
@@ -195,16 +191,13 @@ blankRow <- function(table) {
                          withData = TRUE,
                          value) {
 
-  rowidx <- list_idx(table)
-  if (is.null(rowidx)) {
-    table <- split_table(table)
-    rowidx <- list_idx(table)
-  }
-  rows <- table[[rowidx]]
+  has_itemlist <- has_itemlist(table)
+  if (!has_itemlist)
+    table <- prepare_table(table)
 
-  value <- as_LaTeX2(value)
+  value <- flatten_itemlists(as_LaTeX2(value))
   if (!asis) {
-    if (row <= length(rows)) {
+    if (row <= length(table) - 2) {
       if (!withExtras)
         value <- latex2(tableRow(table, row, withExtras = TRUE, withData = FALSE), value)
       if (!withData)
@@ -218,14 +211,15 @@ blankRow <- function(table) {
       value <- latex2("\n", value)
   }
 
-  if (row > length(rows)) {
+  n <- tableNrow(table)
+  if (row > n) {
     # Need to insert rows
-    blank <- split_row(latex2("\n", blankRow(table)))
-    for (i in length(rows):row)
-      rows[[i]] <- blank
+    lastlist <- table[[length(table)]]
+    blank <- prepare_row(new_itemlist(latex2("\n", blankRow(table))))
+    for (i in (n+1):(row))
+      table <- insert_values(table, i + 1, blank)
   }
-  rows[[row]] <- new_itemlist(split_row(value))
-  table[[rowidx]] <- rows
+  table[[row + 1]] <- prepare_row(value)
 
   table
 }
@@ -314,53 +308,64 @@ vector_to_latex2 <- function(x) {
 
 #' Split up a table by rows
 #' @param table A tabular-like environment to work with.
-#' @param do_rows Should the rows be split too?
+#' @param do_cells Should the rows be prepared too?
 #' @returns A [LaTeX2item] object which is the same table
-#' with an [ITEMLIST] holding the rows.  The attribute
-#' `has_itemlist` will be set to `TRUE`.
+#' but with the contents divided into [ITEMLIST]s.  The first element is an [ITEMLIST]
+#' holding everything before the first row, then
+#' each row is in its own [ITEMLIST], and finally
+#' one more holding everything after the last row. The attribute
+#' `has_itemlists` will be set to `TRUE`.
 #' @export
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 #' parsed <- parseLatex(latex)
-#' table <- split_table(parsed[[find_tabular(parsed)]])
+#' table <- prepare_table(parsed[[find_tabular(parsed)]])
 #' print(latex2(table), tags = TRUE)
 
-split_table <- function(table, do_cells = FALSE) {
-  if (!is.null(list_idx(table)))
+prepare_table <- function(table, do_cells = TRUE) {
+  has_itemlist <- has_itemlist(table)
+  if (has_itemlist)
     return(table)
-  start <- min(find_tableRow(table, 1, withExtras = TRUE)$range)
+  start <- find_tableRow(table, 1, withExtras = TRUE)$range
   if (length(start)) {
+    start <- min(start)
+    if (start > 1)
+      firstlist <- new_itemlist(table[1:(start - 1)])
+    else
+      firstlist <- new_itemlist(placeholder())
     idx <- start:length(table)
     contents <- table[idx]
     linebreaks <- find_macro(contents, "\\\\", all = TRUE)
     rows <- split_latex(table[idx], linebreaks, include = TRUE)
     if (do_cells)
       for (i in seq_along(rows))
-        rows[[i]] <- split_row(rows[[i]])
-    table <- drop_items(table, idx)
-    table <- insert_values(table, length(table) + 1, rows)
+        rows[[i]] <- prepare_row(rows[[i]])
+    table <- drop_items(table, 1:length(table))
+    table <- insert_values(table, 1, firstlist)
+    table <- insert_values(table, 2, rows)
     structure(table, has_itemlist = TRUE)
   } else
     table
 }
 
-#' @rdname split_table
+#' @rdname prepare_table
 #' @param row A list of items from a single row of a table.
-#' @returns A [LaTeX2item] object which is the same row
-#' with an [ITEMLIST] holding the cells.  The attribute
-#' `has_itemlist` will be set to `TRUE`.
+#' @returns `prepare_row()` returns a [LaTeX2item] object which is the same row
+#' with [ITEMLIST]s holding the cells.  The attribute
+#' `has_itemlist` will be set to `TRUE`.  The first
+#' list will be the "extras" at the start of the row;
+#' each cell will be in the following [ITEMLIST]s.
+#' The following cell delimiter will be included in the cell.
 #' @export
 #' @examples
-#' row <- split_row(tableRow(table, 2))
+#' row <- prepare_row(tableRow(table, 2))
 #' print(latex2(row), tags = TRUE)
 
-split_row <- function(row) {
-  row0 <- row
-  if (is_itemlist(row))
-    row <- get_contents(row)
-  colidx <- list_idx(row)
-  if (!is.null(colidx))
-    return(row0)
+prepare_row <- function(row) {
+  if (has_itemlist(row))
+    return(row)
+
+  row <- flatten_itemlists(row)
 
   extras <- find_extras(row)
   if (length(extras))
@@ -368,14 +373,17 @@ split_row <- function(row) {
   else
     start <- 1
 
+  if (start > 1)
+    firstlist <- new_itemlist(row[1:(start-1)])
+  else
+    firstlist <- new_itemlist(placeholder())
+
   if (start <= length(row)) {
     breaks <- find_catcode(row[start:length(row)], ALIGN, all = TRUE)
     cols <- split_latex(row[start:length(row)], breaks, include = TRUE)
     cols <- expandMulticolumn(cols)
-    row <- drop_items(row, start:length(row))
-    row[[start]] <- cols
   } else
-    row[[length(row) + 1]] <- new_itemlist()
+    cols <- NULL
 
-  structure(new_itemlist(row), has_itemlist = TRUE)
+  structure(new_itemlist(firstlist, cols), has_itemlist = TRUE)
 }

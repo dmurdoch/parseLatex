@@ -10,13 +10,13 @@
 \alias{brace_options<-}
 \title{Find or modify macro or environment options}
 \usage{
-find_bracket_options(items, which = 1, start = 1)
+find_bracket_options(items, which = 1L, start = 1L)
 
-bracket_options(items, which = 1, start = 1)
+bracket_options(items, which = 1L, start = 1L)
 
 bracket_options(items, which = 1, start = 1, asis = FALSE) <- value
 
-find_brace_options(items, which = 1, start = 1)
+find_brace_options(items, which = 1L, start = 1L, path = FALSE)
 
 brace_options(items, which = 1, start = 1)
 
@@ -28,7 +28,8 @@ brace_options(items, which = 1, start = 1, asis = FALSE) <- value
 \item{which}{Which options do you want?  Some
 macros support more than one set.}
 
-\item{start}{Start looking at \code{items[[start]]}.}
+\item{start}{Start looking at \code{items[[start]]}.
+\code{start} may be a path.}
 
 \item{asis}{Should newlines be added around the
 value?}
@@ -36,15 +37,19 @@ value?}
 \item{value}{The content to be inserted into the cell.  This
 can be a \link{LaTeX2} object, or a character string that will be
 converted to one.}
+
+\item{path}{If \code{TRUE}, return a path rather than
+an index, as with \code{\link[=find_general]{find_general()}},}
 }
 \value{
-\code{find_bracket_options} returns indices into \code{items} of the options (including the
+\code{find_bracket_options} returns a \link{LaTeX2range} object pointing to the options within \code{items} (including the
 brackets).
 
 \code{bracket_options} returns a \link{LaTeX2} object containing
 the specified options.
 
-\code{find_brace_options} returns the index of the block containing the options.
+\code{find_brace_options} returns the index
+or path to the block containing the options.
 
 \code{brace_options} returns a \link{LaTeX2} object containing
 the specified options.

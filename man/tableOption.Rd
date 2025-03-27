@@ -62,8 +62,8 @@ Only some tabular-like environments have these.
 \code{widthOption()} returns a \link{LaTeX2} object containing the
 "width" option, if the table has one.
 
-\code{find_columnOptions()} returns the index of the
-block corresponding to the column spec.
+\code{find_columnOptions()} returns a \link{LaTeX2range}
+object for the column options of the table.
 
 \code{columnOptions()} returns a \link{LaTeX2} object containing the
 "column" options.

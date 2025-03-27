@@ -28,8 +28,8 @@ reference:
   - tableCell
   - tableRule
   - vector_to_row
-  - find_captions
-  - split_table
+  - find_caption
+  - prepare_table
 - title: Utilities
   desc: Functions for working with parsed LaTeX
   contents:
@@ -49,4 +49,6 @@ reference:
   - vector_to_latex2
   - defaultCatcodes
   - get_leftovers
+  - path_to_index
   - print.LaTeX2item
+  - rmSrcrefs

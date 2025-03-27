@@ -13,7 +13,8 @@ tableContent(table)
 tableContent(table, asis = FALSE) <- value
 }
 \arguments{
-\item{table}{A tabular-like environment to work with.}
+\item{table}{A tabular-like environment to work with.  It
+must not be one for which \code{\link[=prepare_table]{prepare_table()}} has been called.}
 
 \item{asis}{Should newlines be added around the
 value?}

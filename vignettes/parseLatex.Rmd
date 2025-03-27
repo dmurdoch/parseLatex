@@ -86,7 +86,7 @@ table <- parsed[[find_env(parsed, "tabular")]]
 columnOptions(table)
 # To work with cells or rows in the table, we need
 # to preprocess it:
-table <- split_table(table, do_cells = TRUE)
+table <- prepare_table(table, do_cells = TRUE)
 tableCell(table, 2,2) # The title counts as a row
 tableCell(table, 1,1) <- "Model"
 table

@@ -11,6 +11,8 @@ split_list(items, splits, include = FALSE)
 split_latex(...)
 }
 \arguments{
+\item{items}{A \link{LaTeX2} or similar list.}
+
 \item{splits}{Which item numbers divide the parts?}
 
 \item{include}{If \code{TRUE}, include the split item at

@@ -45,7 +45,8 @@ and if \code{recursive} is \code{TRUE}, not at any level.
 object with tag \code{PLACEHOLDER}.  These will never
 print, and are used as spacers within an \code{ITEMLIST}.
 
-\code{show_itemlists()} is called for the side
+\code{show_itemlists()} is a debugging function
+called for the side
 effect of displaying the itemlist structure of an
 object.
 }
@@ -53,11 +54,11 @@ object.
 Lists of items
 }
 \details{
-An \code{ITEMLIST} is a list of lists of items.
+An \code{ITEMLIST} is a list of items.
 Deparsing it just concatenates the parts.  This is
 intended to be used when parsing tables, for example,
 where it makes sense to break up the table into
-individual rows.  See \code{split_table} for more details.
+individual rows.  See \link{prepare_table} for more details.
 }
 \examples{
 new_itemlist(parseLatex("abc def"), label = "items")

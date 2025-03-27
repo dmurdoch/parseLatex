@@ -98,3 +98,6 @@ be a numeric vector such that \code{items[[result]]} is the
 matching item.  With \code{all = TRUE} it will be a list of
 such vectors.
 }
+\seealso{
+\code{\link[=index_to_path]{index_to_path()}}, \code{\link[=path_to_index]{path_to_index()}}
+}

@@ -32,7 +32,7 @@ new_env(name, ...)
 \item{items}{A \link{LaTeX2} object or list of items, or
 a \link{LaTeX2item} which is a list.}
 
-\item{which}{Which items to operate on.}
+\item{which}{A \link{LaTeX2range} object describing which items to operate on, or a vector of indices into \code{items}.}
 
 \item{item}{A non-list \link{LaTeX2item}.}
 

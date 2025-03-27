@@ -8,35 +8,33 @@
 #' tabular-like environments.  Cells are numbered with the first
 #' row (typically column titles) being row 1.  Rules (i.e.
 #' horizontal lines) are not considered part of a cell.
-#' @returns `find_tableCell()` returns the indices of the
-#' entries corresponding to the content of the cell (row, col) of the table.
-#' @details `find_tableCell()` returns `NA` if the requested
+#' @returns `find_tableCell()` returns a [LaTeX2range] object
+#' giving the location of the requested cell.
+#' @details `find_tableCell()` returns `NULL` if the requested
 #' cell is missing because an earlier cell covered multiple
 #' columns.  It signals an error if a request is made beyond
 #' the bounds of the table.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 #' parsed <- parseLatex(latex)
-#' table <- split_table(parsed[[find_tabular(parsed)]], do_cells = TRUE)
+#' table <- prepare_table(parsed[[find_tabular(parsed)]], do_cells = TRUE)
 #' find_tableCell(table, 1, 2)
 #'
 #' @export
 find_tableCell <- function(table, row, col) {
   if (row < 1 || col < 1)
     stop("row and col must both be 1 or more.")
-  rowidx <- list_idx(table)
-  if (is.null(rowidx))
-    stop("table row operations require a previous call to split_table()")
-  rows <- table[[rowidx]]
-  if (row > length(rows))
+
+  if (!has_itemlist(table))
+    stop("table row operations require a previous call to prepare_table()")
+  if (row > tableNrow(table))
     stop("row is beyond the end of the table")
-  therow <- rows[[row]]
-  colidx <- list_idx(therow)
-  if (is.null(colidx))
-    stop("table cell operations require a previous call to split_row() or split_table(do_cells = TRUE)")
-  if (col > length(therow[[colidx]]))
+  therow <- tableRow(table, row, withExtras = TRUE)
+  if (!has_itemlist(therow))
+    stop("table cell operations require a previous call to prepare_row() or prepare_table(do_cells = TRUE)")
+  if (col > length(therow) - 1)
     stop("col is beyond the length of the row")
-  LaTeX2range(c(rowidx, row, colidx, col), range = NULL)
+  LaTeX2range(c(row + 1, col + 1), range = NULL)
 }
 
 #' @rdname tableCell
@@ -91,7 +89,7 @@ tableCell <- function(table, row, col) {
 
   }
   if (row > tableNrow(table))
-    tableRow(table, row) <- split_row(blankRow(table))
+    tableRow(table, row) <- prepare_row(blankRow(table))
   entries <- find_tableCell(table, row, col)
   if (latexTag(table[[entries$path]]) == "PLACEHOLDER")
     stop("Can't add cell covered by earlier \\multicolumn cell.")
@@ -103,9 +101,6 @@ tableCell <- function(table, row, col) {
 # index of the added stuff is NA
 
 expandMulticolumn <- function(itemlist) {
-  if (!is_itemlist(itemlist))
-    stop("this needs to be an itemlist")
-
   for (idx in rev(seq_along(itemlist))) {
     items <- itemlist[[idx]]
     multis <- find_macro(items, "\\multicolumn")
@@ -120,16 +115,18 @@ expandMulticolumn <- function(itemlist) {
       args <- args[1:3]
       arg <- args[1]
       if (is_block(items[[arg]]))
-        count <- as.numeric(deparseLatex(get_contents(items[arg])))
+        count <- as.numeric(deparseLatex(get_contents(items[[arg]])))
       else
         count <- as.numeric(items[[arg]])
       if (count > 1) {
         # add some placeholders
         for (j in seq_len(count - 1))
-          itemlist <- insert_values(itemlist, idx + 1, placeholder())
+          itemlist <- insert_values(itemlist, idx + 1, new_itemlist(placeholder()))
       }
     }
   }
   itemlist
 }
 
+has_itemlist <- function(table)
+  isTRUE(attr(table, "has_itemlist"))

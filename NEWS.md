@@ -1,4 +1,4 @@
-# parseLatex 0.3.12
+# parseLatex 0.4.0
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -13,7 +13,7 @@
 * Added `trim_whitespace()`, `envName()<-`, `find_block()` and `insert_values()`
   to help with `kableExtra` support.
 * Added support for `tabu` tables.
-* Added `is_char()`, `find_captions()`, `drop_captions()`, `path_to_caption()`,
+* Added `is_char()`, `find_caption()`, `drop_caption()`, `path_to_caption()`,
   `get_range()`.
 * `drop_items()` now works on `LaTeX2Item` lists.
 * `tableRow()` by default ignores `\pagebreak` and `\nopagebreak`. 

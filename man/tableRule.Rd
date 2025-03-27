@@ -13,9 +13,9 @@ find_rules(table)
 
 rules(table, idx = find_rules(table))
 
-find_rule(table, row, idx = find_rules(table))
+find_rule(table, row)
 
-rule(table, row, idx = find_rules(table))
+rule(table, row)
 
 rule(table, row, asis = FALSE, idx = find_rules(table)) <- value
 }
@@ -35,18 +35,20 @@ can be a \link{LaTeX2} object, or a character string that will be
 converted to one.}
 }
 \value{
-\code{find_rules()} returns a list of the indices
-of rules before each row, including the whitespace
-following each one.
+\code{find_rules()} returns a list of \link{LaTeX2range}
+objects giving the locations of the rules before each
+line.  The last item in the list gives the location
+of any rules after the last line.
 
 \code{rules(table)} returns a list of the rules
 before each row.  The last entry will be the rule(s)
 following the last row.
 
-\code{find_rule(table, row)} returns the indices
-of the rule(s) before \code{row}, not including the final whitespace.
+\code{find_rule(table, row)} returns a \link{LaTeX2range}
+for the rule before \code{row}, not including the final
+whitespace.
 
-\code{rule(table, row)} returns the indices
+\code{rule(table, row)} returns the
 rule(s) before \code{row}.
 }
 \description{
@@ -57,7 +59,7 @@ These functions let rules be extracted or modified.
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 parsed <- parseLatex(latex)
 table <- parsed[[find_tabular(parsed)]]
-table
+table <- prepare_table(table)
 find_rules(table)
 
 rules(table)
@@ -68,4 +70,7 @@ rule(table, 1)
 
 rule(table, 2) <- "\\\\midrule"
 table
+}
+\seealso{
+Use \code{\link[=index_to_path]{index_to_path()}} to convert to a path.
 }

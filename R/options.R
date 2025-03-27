@@ -3,6 +3,7 @@
 #' @title Find or modify macro or environment options
 #' @param items A list of latex items.
 #' @param start Start looking at `items[[start]]`.
+#' `start` may be a path.
 #' @param which Which options do you want?  Some
 #' macros support more than one set.
 #' @description
@@ -10,28 +11,50 @@
 #' wrapped in square brackets.  `find_bracket_options` finds those,
 #' assuming they come immediately after the macro.
 #'
-#' @returns `find_bracket_options` returns indices into `items` of the options (including the
+#' @returns `find_bracket_options` returns a [LaTeX2range] object pointing to the options within `items` (including the
 #' brackets).
 #'
 #' @export
-find_bracket_options <- function(items, which = 1, start = 1) {
-  begin <- NA
-  n <- length(items)
-  if (start <= n)
-    for (i in start:n) {
-      if (is.na(begin) && is_bracket(items[[i]], "[")) {
-        which <- which - 1
-        begin <- i
-      } else if (!is.na(begin) && is_bracket(items[[i]], "]")) {
-        if (which == 0) {
-          result <- seq.int(begin, i)
-          return(result)
-        } else
-          begin <- NA
-      } else if (is.na(begin) && !is_whitespace(items[[i]]))
-        break
-    }
-  invisible()
+find_bracket_options <- function(items, which = 1L, start = 1L) {
+  startpath <- start[-length(start)]
+  start <- start[length(start)]
+  if (length(startpath) > 1)
+    items <- items[[startpath]]
+  else
+    startpath <- NULL
+
+  first <- find_char(items[start:length(items)],
+                      "[",
+                       all = which > 1L,
+                       path = TRUE)
+
+  if (length(first) == 0 || which > 1L && length(first) < which)
+    return(NULL)
+
+  if (which > 1L)
+    first <- first[[which]]
+
+  if (start > 1L)
+    first[1] <- first[1] + start - 1L
+
+  thepath <- first[-length(first)]
+  first <- first[length(first)]
+
+  if (length(thepath) > 0)
+    items <- items[[thepath]]
+  else
+    thepath <- NULL
+
+  if (first >= length(items))
+    return(NULL)
+
+  last <- find_char(items[(first + 1L):length(items)], "]", all = FALSE)
+  if (length(last) < 1L)
+    return(NULL)
+  else
+    last <- last + first
+
+  LaTeX2range(c(startpath, thepath), first:last)
 }
 
 #' @rdname options
@@ -44,18 +67,29 @@ find_bracket_options <- function(items, which = 1, start = 1) {
 #' bracket_options(parsed, start = macro + 1)
 #'
 #' @export
-bracket_options <- function(items, which = 1, start = 1) {
-  as_LaTeX2(items[find_bracket_options(items, which, start)])
+bracket_options <- function(items, which = 1L, start = 1L) {
+  as_LaTeX2(get_range(items,
+                      find_bracket_options(items, which, start)))
 }
 
 replace_range <- function(items, i, value) {
+  path <- i$path
+  i <- i$range
+  if (length(path) > 0) {
+    items0 <- items
+    items <- items0[[path]]
+  }
   attrs <- attributes(items)
   iold <- seq_along(items)
   items <- c(items[iold < min(i)],
              value,
              items[iold > max(i)])
   attributes(items) <- attrs
-  items
+  if (length(path) > 0) {
+    items0[[path]] <- items
+    items0
+  } else
+    items
 }
 
 #' @rdname options
@@ -77,47 +111,55 @@ replace_range <- function(items, i, value) {
     if (!is_bracket(value[[length(value)]], "]"))
       value <- c(value, as_LaTeX2("]"))
   }
-  i <- find_bracket_options(items, which, start)
-  if (!length(i)){
-    while(which > 1) {
-      which <- which - 1
-      i <- find_bracket_options(items, which, start)
-      if (length(i)) {
-        i <- max(i) + 0.5
+  # `range` will be the range of the existing option to be replaced,
+  # or to NULL if there isn't one. .
+  # `path` will point to the insertion location
+  range <- find_bracket_options(items, which, start)
+  if (length(range)) {
+    items <- drop_items(items, range)
+    path <- c(range$path, min(range$range))
+  } else {
+    while(which > 1L) {
+      which <- which - 1L
+      range <- find_bracket_options(items, which, start)
+      if (length(range)) {
+        path <- c(range$path, max(range$range) + 1L)
         break
       } else
         value <- c(as_LaTeX2("[]"), value)
     }
-    if (!length(i))
-      i <- start - 0.5
+    if (!length(range))
+      path <- c(start[-length(start)], start[length(start)])
   }
-  replace_range(items, i, value)
+  insert_values(items, path, value)
 }
 
 #' @rdname options
-#'
+#' @param path If `TRUE`, return a path rather than
+#' an index, as with [find_general()],
 #' @description
 #' Some Latex environments and macros take optional parameters
 #' wrapped in curly brackets (braces). `find_brace_options` finds those
 #' if they immediately follow the environment or macro (and possibly
 #' some bracketed options).
-#' @returns `find_brace_options` returns the index of the block containing the options.
+#' @returns `find_brace_options` returns the index
+#' or path to the block containing the options.
 #' @export
-find_brace_options <- function(items, which = 1, start = 1) {
-  n <- length(items)
-  i <- start
-  while (i <= n) {
-    if (is_block(items[[i]])) {
-      which <- which - 1
-      if (which == 0)
-        return(i)
-    } else if (is_bracket(items[[i]], "["))
-      i <- max(find_bracket_options(items, start = i))
-    else if (!is_whitespace(items[[i]]))
-      return(invisible())
-    i <- i + 1
-  }
-  invisible()
+find_brace_options <- function(items, which = 1L, start = 1L, path = FALSE) {
+  result <- find_block(items[start:length(items)],
+                       all = which > 1L,
+                       path = path)
+
+  if (length(result) < which)
+    return(NULL)
+
+  if (which > 1L)
+    result <- result[[which]]
+
+  if (start > 1L)
+    result[1] <- result[1] + start - 1L
+
+  result
 }
 
 #' @rdname options
@@ -129,7 +171,9 @@ find_brace_options <- function(items, which = 1, start = 1) {
 #'
 #' @export
 brace_options <- function(items, which = 1, start = 1) {
-  as_LaTeX2(items[find_brace_options(items, which, start)])
+  path <- find_brace_options(items, which, start, path = TRUE)
+  if (length(path))
+    as_LaTeX2(items[[path]])
 }
 
 #' @rdname options
@@ -142,31 +186,34 @@ brace_options <- function(items, which = 1, start = 1) {
   value <- as_LaTeX2(value)
   if (!asis) {
     if (length(value) != 1 || !is_block(value[[1]]))
-      value <- as_LaTeX2(paste0("{", deparseLatex(value), "}"))
+      value <- new_block(value)
   }
-  i <- find_brace_options(items, which, start)
-  if (!length(i)){
-    while(which > 1) {
-      which <- which - 1
-      i <- find_brace_options(items, which, start)
-      if (length(i)) {
-        i <- max(i) + 0.5
+  # Get the path to the existing option.  If it exists,
+  # remove it, otherwise get the path to the last thing
+  # before it, and increment the final entry.
+  path <- find_brace_options(items, which, start, path = TRUE)
+  if (length(path))
+    items <- drop_items(items, LaTeX2range(path, NULL))
+  else {
+    while(which > 1L) {
+      which <- which - 1L
+      path <- find_brace_options(items, which, start, path = TRUE)
+      if (length(path)) {
+        path[length(path)] <- path[length(path)] + 1L
         break
       } else
         value <- c(as_LaTeX2("{}"), value)
     }
-  }
-  if (!length(i)) {  # we have no brace options, find
-                     # the last bracket option
-    repeat {
-      i <- find_bracket_options(items, start = start)
-      if (length(i))
-        start <- max(i) + 1
-      else
-        break
+    if (!length(path)) {  # we have no brace options, find
+                          # the last bracket option
+      repeat {
+        range <- find_bracket_options(items, start = start)
+        if (length(range))
+          path <- c(range$path, max(range$range) + 1L)
+        else
+          break
+      }
     }
-    i <- start - 0.5
   }
-
-  replace_range(items, i, value)
+  insert_values(items, path, value)
 }

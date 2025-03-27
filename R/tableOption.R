@@ -15,11 +15,20 @@
 #'
 #' @export
 find_posOption <- function(table) {
+  has_itemlist <- has_itemlist(table)
+  if (has_itemlist) {
+    content <- table[[1]]
+  } else
+    content <- table
   if (is_env(table, "tabu"))
-    start <- min(c(find_char(table, "["), find_block(table, all = FALSE)))
+    start <- min(c(find_char(content, "[", all = FALSE),
+                   find_block(content, all = FALSE)))
   else
     start <- 1
-  find_bracket_options(table, start = start)
+  result <- find_bracket_options(content, start = start)
+  if (has_itemlist)
+    result$path <- c(1L, result$path)
+  result
 }
 
 #' @rdname tableOption
@@ -30,7 +39,7 @@ find_posOption <- function(table) {
 #'
 #' @export
 posOption <- function(table) {
-  as_LaTeX2(table[find_posOption(table)])
+  as_LaTeX2(get_range(table, find_posOption(table)))
 }
 
 #' @param value A character string or [LaTeX2] object.
@@ -92,21 +101,31 @@ widthOption <- function(table) {
 }
 
 #' @rdname tableOption
-#' @returns `find_columnOptions()` returns the index of the
-#' block corresponding to the column spec.
+#' @returns `find_columnOptions()` returns a [LaTeX2range]
+#' object for the column options of the table.
 #' @examples
 #' find_columnOptions(table)
 #' @export
 find_columnOptions <- function(table) {
-  start <- 1
-  which <- 1
-  if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
-    which <- 2
-  if (envName(table) == "tabu") {
+  table0 <- table
+  has_itemlist <- has_itemlist(table)
+  if (has_itemlist)
+    table <- table[[1]]
+
+  start <- 1L
+  which <- 1L
+  if (envName(table0) %in% c("tabular*", "tabularx", "tabulary"))
+    which <- 2L
+
+  if (envName(table0) == "tabu") {
     while (!is_bracket(table[[start]], "[") &&
-           !is_block(table[[start]])) start <- start + 1
+           !is_block(table[[start]])) start <- start + 1L
   }
-  find_brace_options(table, which = which, start = start)
+  result <- find_brace_options(table, which = which, start = start)
+  if (has_itemlist)
+    LaTeX2range(1L, result)
+  else
+    LaTeX2range(NULL, result)
 }
 
 #' @rdname tableOption
@@ -117,7 +136,7 @@ find_columnOptions <- function(table) {
 #'
 #' @export
 columnOptions <- function(table) {
-  as_LaTeX2(table[find_columnOptions(table)])
+  get_range(table, find_columnOptions(table))
 }
 
 #' @rdname tableOption
@@ -129,24 +148,24 @@ columnOptions <- function(table) {
 #' @examples
 #' columnOption(table, 3)
 columnOption <- function(table, column) {
-  opts <- get_contents(columnOptions(table)[[1]])
+  opts <- get_contents(columnOptions(table))
   result <- NULL
   start <- 0
-  for (i in seq_along(opts)) {
-    x <- opts[[i]]
-    if (latexTag(x) == "TEXT") {
-      stop <- start + nchar(x)
-      if (column <= stop) {
-        j <- column - start
-        result <- latex2(substr(x, j, j))
-        if (j == nchar(x))
-          result <- latex2(result, brace_options(opts, start = i + 1))
-        if (j == 1 && i > 2 && is_block(opts[[i-1]]) && !is_text(opts[[i-2]]))
-          result <- insert_values(result, 1, opts[c(i-2, i-1)])
-        break
-      }
-      start <- stop
+  letters <- find_tags(opts, "TEXT", all = TRUE)
+  for (i in seq_along(letters)) {
+    x <- opts[[letters[i]]]
+    stop <- start + nchar(x)
+    if (column <= stop) {
+      j <- column - start
+      result <- latex2(substr(x, j, j))
+      if (j == nchar(x))
+
+        result <- latex2(result, brace_options(opts, start = letters[i] + 1))
+      if (j == 1 && i > 2 && is_block(opts[[i-1]]) && !is_text(opts[[i-2]]))
+        result <- insert_values(result, 1, opts[c(i-2, i-1)])
+      break
     }
+    start <- stop
   }
   result
 }

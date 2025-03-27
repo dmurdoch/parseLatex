@@ -19,13 +19,20 @@ items_are_equal(items1, items2)
 \item{items1, items2}{Two \link{LaTeX2} or \link{LaTeX2item} objects.}
 }
 \value{
-\code{find_sequence()} returns a path or list of paths where \code{sequence}
-occurs within \code{items}.
+\code{find_sequence()} returns a \link{LaTeX2range} or list of them where \code{sequence} occurs within \code{items}.
 
 \code{items_are_equal} returns a logical indicator of equality after removing source references.
 }
 \description{
 Find a code sequence
+}
+\details{
+\code{find_sequence()} will only match sequences that
+are entirely contained within a single list in \code{items}.
+Thus if \code{\link[=prepare_table]{prepare_table()}} is called on a table, then
+\code{find_sequence()} will find sequences in the code before
+or after the rows, or entirely within a single cell,
+but not crossing alignment markers (\code{"&"}).
 }
 \examples{
 find_sequence(parseLatex("a & b & c"), "b & c")

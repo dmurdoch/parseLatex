@@ -2,63 +2,68 @@
 #'
 #' @param items  A [LaTeX2] or other list of [LaTeX2item]s.
 #'
-#' @returns `find_captions()` returns the indices within the items of any caption
-#' text, with an attribute `extra` holding indices of
+#' @returns `find_caption()` returns a [LaTeX2range] object
+#' for any caption
+#' text, with an attribute `extra` holding the range of
 #' associated  macros and whitespace.
 #' @export
 #'
 #' @examples
 #' parsed <- parseLatex("before \\caption{This is a caption} \\\\ after")
-#' idx <- find_captions(parsed)
-#' get_item(parsed, idx)
-#' get_range(parsed, LaTeX2range(NULL, attr(idx, "extra")[[1]]))
-find_captions <- function(items) {
-  macros <- find_macro(items, "\\caption")
-  actual <- integer()
-  extra <- as.list(macros)
-  for (i in seq_along(macros)) {
-    j <- macros[i] + 1
-    if (is_char(get_item(items, j), "*")) j <- j + 1 # \caption*
-    while (is_whitespace(get_item(items, j))) j <- j + 1
-    if (is_bracket(get_item(items, j), "[")) {
-      j <- j + 1
-      while (!is_bracket(get_item(items, j), "]")) j <- j + 1
-    }
-    while (is_whitespace(get_item(items, j))) j <- j + 1
-    actual <- c(actual, j) # the actual caption, typically a block
-    j <- j + 1
-    while (is_whitespace(get_item(items, j))) j <- j + 1
-    if (is_macro(get_item(items, j), "\\\\")) j <- j + 1
-    extra[[i]] <- macros[i]:(j-1)
+#' idx <- find_caption(parsed)
+#' get_range(parsed, idx)
+#' get_range(parsed, attr(idx, "extra"))
+find_caption <- function(items) {
+  items0 <- items
+  macro <- find_macro(items, "\\caption", all = FALSE, path = TRUE)
+  result <- NULL
+  if (length(macro) == 0) return(NULL)
+  start <- macro[length(macro)]
+  path <- macro[-length(macro)]
+  if (length(path) > 0)
+    items <- items[[path]]
+  n <- length(items)
+  j <- start + 1L
+  if (j > n) return(NULL)
+  if (is_char(items[[j]], "*")) j <- j + 1L # \caption*
+  if (j > n) return(NULL)
+  block <- find_brace_options(items, start = j)
+  if (length(block) > 0L) {
+    result <- LaTeX2range(c(path, block), NULL)
+    j <- block + 1L
+    while(j < n && (is_whitespace(items[[j]]))) j <- j + 1L
+    if (j < n && is_macro(items[[j]], "\\\\")) j < j + 1L
+    attr(result, "extra") <- LaTeX2range(path, start:j)
   }
-  structure(actual, extra = extra)
+  result
 }
 
-#' @rdname find_captions
+#' @rdname find_caption
 #' @param idx `NULL` or a vector of the same length as `items`
-#' @returns `drop_captions()` returns the `items` with
+#' @returns `drop_caption()` returns the `items` with
 #' captions dropped as a [LaTeX2] object.  It has an attribute
 #' named `idx` that is the `idx` argument with corresponding
 #' elements dropped.
 #' @export
 #'
 #' @examples
-#' drop_captions(parsed)
-drop_captions <- function(items, idx = NULL) {
-  caps <- find_captions(items)
+#' drop_caption(parsed)
+drop_caption <- function(items, idx = NULL) {
+  has_itemlist <- has_itemlist(items)
+  caps <- find_caption(items)
   extras <- unlist(attr(caps, "extra"))
   if (length(extras)) {
     items <- items[-extras]
     if (!is.null(idx))
       idx <- idx[-extras]
   }
-  structure(latex2(items), idx = idx)
+  structure(latex2(items), idx = idx, has_itemlist = has_itemlist)
 }
 
-#' @rdname find_captions
+#' @rdname find_caption
 #' @returns `path_to_caption()` returns a path
 #'  containing the location of the first caption
-#'  block within `items`.  It has an attribute `idx`
+#'  block within `items`.  It has an attribute `extra`
 #'  containing a [LaTeX2range] object for the
 #'  associated macros and whitespace.
 #' @export
@@ -67,20 +72,18 @@ drop_captions <- function(items, idx = NULL) {
 #' path_to_caption(parsed)
 path_to_caption <- function(items) {
   result <- NULL
-  loc <- find_captions(items)
-  if (length(loc)) {
-    result <- loc[1]
-    idx <- attr(loc, "idx")[[1]]
-    attr(result, "idx") <- LaTeX2range(NULL, idx)
-  } else {
+  loc <- find_caption(items)
+  if (length(loc))
+    result <- structure(loc$path, extra = attr(loc, "extra"))
+  else {
     for (i in seq_along(items))
       if (is.list(items[[i]])) {
         result <- path_to_caption(items[[i]])
         if (length(result)) {
-          idx <- attr(result, "idx")
-          idx$path <- c(i, idx$path)
+          extra <- attr(result, "extra")
+          extra$path <- c(i, extra$path)
           result <- c(i, result)
-          attr(result, "idx") <- idx
+          attr(result, "extra") <- extra
           break
         }
       }

@@ -24,8 +24,8 @@ can be a \link{LaTeX2} object, or a character string that will be
 converted to one.}
 }
 \value{
-\code{find_tableCell()} returns the indices of the
-entries corresponding to the content of the cell (row, col) of the table.
+\code{find_tableCell()} returns a \link{LaTeX2range} object
+giving the location of the requested cell.
 
 \code{tableCell()} returns a \link{LaTeX2} object containing
 all of the table content in the cell (but not the &).
@@ -37,7 +37,7 @@ row (typically column titles) being row 1.  Rules (i.e.
 horizontal lines) are not considered part of a cell.
 }
 \details{
-\code{find_tableCell()} returns \code{NA} if the requested
+\code{find_tableCell()} returns \code{NULL} if the requested
 cell is missing because an earlier cell covered multiple
 columns.  It signals an error if a request is made beyond
 the bounds of the table.
@@ -55,7 +55,7 @@ succeed.
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 parsed <- parseLatex(latex)
-table <- split_table(parsed[[find_tabular(parsed)]], do_cells = TRUE)
+table <- prepare_table(parsed[[find_tabular(parsed)]], do_cells = TRUE)
 find_tableCell(table, 1, 2)
 
 tableCell(table, 1, 2)

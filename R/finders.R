@@ -124,7 +124,7 @@ get_item <- function(items, path = index_to_path(index, items),
 #' items in the flattened version of `items`.
 #' @export
 get_items <- function(items, paths = lapply(indices, index_to_path, items), indices) {
-  latex2(lapply(paths, get_item, items))
+  latex2(lapply(paths, get_item, items = items))
 }
 
 #' @rdname path_to
@@ -146,8 +146,8 @@ insert_values <- function(items, path, values) {
   if (length(path) > 1) {
     head <- path[-length(path)]
     tail <- path[length(path)]
-    item <- insert_values(item[[head]], tail, values)
-    items[[head]] <- items
+    item <- insert_values(items[[head]], tail, values)
+    items[[head]] <- item
   } else {
     # length 1 path
     values <- latex2(values)
@@ -279,6 +279,14 @@ LaTeX2range <- function(path, range)
   structure(list(path = path, range = range),
             class = "LaTeX2range")
 
+#' Convert between paths and indices
+#' @param path A vector of integers, assumed to be
+#' a path through "ITEMLIST" entries in a [LaTeX2]
+#' or [LaTeX2item] object.
+#' @param items The referenced object.
+#' @returns `path_to_index` returns a scalar value
+#' corresponding the the index if `items` was flattened.
+#' @seealso [flatten_itemlists()]
 #' @export
 path_to_index <- function(path, items) {
   n <- length(path)
@@ -301,6 +309,11 @@ path_to_index <- function(path, items) {
   result + 1L
 }
 
+#' @rdname path_to_index
+#' @param index A scalar integer which would be
+#' the index to an item if `items` was flattened.
+#' @returns `index_to_path` returns a vector of integers
+#' which would index the specified item.
 #' @export
 index_to_path <- function(index, items) {
   path <- integer()
@@ -310,7 +323,7 @@ index_to_path <- function(index, items) {
     i <- i + 1
     if (is_itemlist(items[[i]])) {
       truecount <- attr(items[[i]], "truecount")
-      if (truecount >= index)
+      if (current + truecount >= index)
         return(c(i, index_to_path(index - current, items[[i]])))
       else
         current <- current + truecount
@@ -440,7 +453,7 @@ get_range <- function(items, range) {
 #' be a numeric vector such that `items[[result]]` is the
 #' matching item.  With `all = TRUE` it will be a list of
 #' such vectors.
-#'
+#' @seealso [index_to_path()], [path_to_index()]
 #' @returns `find_general()` returns locations of
 #'  objects matching the `test`.
 #' @export
@@ -466,7 +479,7 @@ find_general <- function(items, test, ..., all = TRUE,
       if (test(items[[i]], ...))
         return(i)
       else if (is_itemlist(items[[i]])) {
-        result <- find_general(items[[i]], test, ..., all = FALSE)
+        result <- find_general(items[[i]], test, ..., all = FALSE, path = TRUE)
         if (!is.null(result)) {
           result <- c(i, result)
           if (path)

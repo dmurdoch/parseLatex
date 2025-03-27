@@ -3,18 +3,36 @@
 #'
 #' @param items A [LaTeX2] object or list of items, or
 #' a [LaTeX2item] which is a list.
-#' @param which Which items to operate on.
+#' @param which A [LaTeX2range] object describing which items to operate on, or a vector of indices into `items`.
 #' @returns `drop_items()` returns the list of items with specific items removed.
 #' @export
 drop_items <- function(items, which) {
-  saveattr <- attributes(items)
-  if (length(which))
-    items <- items[-which]
-  attributes(items) <- saveattr
-  if (inherits(items, "LaTeX2item"))
-    items
+  if (!inherits(which, "LaTeX2range")) {
+    path <- NULL
+    range <- which
+  } else {
+    path <- which$path
+    range <- which$range
+  }
+  if (!length(range)) {
+    if (!length(path))
+      return(items)
+    range <- path[length(path)]
+    path <- path[-length(path)]
+  }
+  if (length(path))
+    content <- items[[path]]
   else
-    as_LaTeX2(items)
+    content <- items
+
+  saveattr <- attributes(content)
+  content <- content[-range]
+  attributes(content) <- saveattr
+  if (length(path))
+    items[[path]] <- content
+  else
+    items <- content
+  items
 }
 
 #' @rdname Utilities
@@ -74,6 +92,7 @@ include_whitespace <- function(items, which) {
 
 #' Splitting lists of items
 #' @name splitting
+#' @param items A [LaTeX2] or similar list.
 #' @param splits Which item numbers divide the parts?
 #' @param include If `TRUE`, include the split item at
 #' the end of each part.
@@ -110,7 +129,7 @@ split_list <- function(items, splits, include = FALSE) {
 split_latex <- function(...) {
   items <- split_list(...)
   items <- lapply(items, new_itemlist)
-  new_itemlist(items)
+  latex2(items)
 }
 
 
@@ -221,11 +240,11 @@ new_env <- function(name, ...) {
 #' @aliases ITEMLIST
 #' @title Lists of items
 #' @param ... Items to be passed to `latex2()`.
-#' @details An `ITEMLIST` is a list of lists of items.
+#' @details An `ITEMLIST` is a list of items.
 #' Deparsing it just concatenates the parts.  This is
 #' intended to be used when parsing tables, for example,
 #' where it makes sense to break up the table into
-#' individual rows.  See `split_table` for more details.
+#' individual rows.  See [prepare_table] for more details.
 #' @returns `new_itemlist()` returns an `ITEMLIST` item containing the items.
 #' @export
 #'
@@ -258,10 +277,12 @@ new_itemlist <- function(...) {
 #' @export
 flatten_itemlists <- function(items, recursive = FALSE) {
   attrs <- attributes(items)
+  if (is_itemlist(items))
+    items <- get_contents(items)
   i <- 1
   while (i <= length(items)) {
     if (is_itemlist(items[[i]])) {
-      items <- insert_values(items, i + 1, items[[i]])
+      items <- insert_values(items, i + 1, get_contents(items[[i]]))
       items <- drop_items(items, i)
     } else if (is_placeholder(items[[i]])) {
       items <- drop_items(items, i)
@@ -293,7 +314,8 @@ placeholder <- function() {
 #' @param indent How much to indent the display?
 #' @param verbose Whether to show tags of non-itemlists
 #' and details of each itemlist.
-#' @returns `show_itemlists()` is called for the side
+#' @returns `show_itemlists()` is a debugging function
+#' called for the side
 #' effect of displaying the itemlist structure of an
 #' object.
 #' @export

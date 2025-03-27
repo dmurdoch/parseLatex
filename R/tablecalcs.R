@@ -13,12 +13,9 @@
 #' tableNrow(table)
 #' @export
 tableNrow <- function(table) {
-  content <- tableContent(table)
-
-  # Skip captions which can occur in a longtable
-  content <- drop_captions(content)
-
-  length(find_macro(content, "\\\\"))
+  if (!has_itemlist(table))
+    table <- prepare_table(table)
+  length(table) - 2L
 }
 
 #' @rdname tablecalcs
@@ -27,11 +24,11 @@ tableNrow <- function(table) {
 #' tableNcol(table)
 #' @export
 tableNcol <- function(table) {
-  opts <- drop_whitespace(get_contents(columnOptions(table)[[1]]))
+  opts <- drop_whitespace(get_contents(columnOptions(table)))
   opts <- drop_items(opts, find_char(opts, "|"))
-  sum(sapply(opts, function(x)
+  sum(vapply(opts, function(x)
     if(latexTag(x) == "TEXT") nchar(x)
-    else 0))
+    else 0L, 0L))
 }
 
 #' @rdname tablecalcs

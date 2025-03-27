@@ -1,11 +1,15 @@
 #' @title Functions relating to the data content of a table
 #' @rdname tableContent
-#' @param table A tabular-like environment to work with.
+#' @param table A tabular-like environment to work with.  It
+#' must not be one for which [prepare_table()] has been called.
 #' @returns `find_tableContent()` returns the indices of the
 #' entries corresponding to content of the table.
 #'
 #' @export
 find_tableContent <- function(table) {
+  if (has_itemlist(table))
+    stop("this function does not work with itemlists.")
+
   skip <- length(find_posOption(table)) +
     length(find_widthOption(table)) +
     length(find_columnOptions(table))
@@ -55,6 +59,13 @@ tableContent <- function(table)
     if (!(1 %in% newlines))
       value <- c(as_LaTeX2("\n"), value)
   }
+  has_itemlist <- has_itemlist(table)
+  if (has_itemlist)
+    table <- flatten_itemlists(table)
   i <- find_tableContent(table)
-  replace_range(table, i, value)
+  table <- drop_items(table, i)
+  table <- insert_values(table, min(i), value)
+  if (has_itemlist)
+    table <- prepare_table(table)
+  table
 }
