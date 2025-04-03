@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,10 +50,6 @@
 <span></span>
 <span><span class="fu">include_whitespace</span><span class="op">(</span><span class="va">items</span>, <span class="va">which</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">split_list</span><span class="op">(</span><span class="va">items</span>, <span class="va">splits</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">split_latex</span><span class="op">(</span><span class="va">items</span>, <span class="va">splits</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">split_chars</span><span class="op">(</span><span class="va">item</span>, split <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">new_block</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
@@ -71,11 +67,7 @@ a <a href="parseLatex_fn.html">LaTeX2item</a> which is a list.</p></dd>
 
 
 <dt id="arg-which">which<a class="anchor" aria-label="anchor" href="#arg-which"></a></dt>
-<dd><p>Which items to operate on.</p></dd>
-
-
-<dt id="arg-splits">splits<a class="anchor" aria-label="anchor" href="#arg-splits"></a></dt>
-<dd><p>Which items divide the parts?</p></dd>
+<dd><p>A <a href="LaTeX2range.html">LaTeX2range</a> object describing which items to operate on, or a vector of indices into <code>items</code>.</p></dd>
 
 
 <dt id="arg-item">item<a class="anchor" aria-label="anchor" href="#arg-item"></a></dt>
@@ -104,11 +96,6 @@ whitespace (blanks, tabs, newlines) removed.</p>
 leading and trailing whitespace (blanks, tabs, newlines) removed.</p>
 <p><code>include_whitespace()</code> returns <code>which</code> with
 following whitespace (blanks, tabs, newlines) included.</p>
-<p><code>split_list()</code> returns a list of pieces
-separated at the splits.</p>
-<p><code>split_latex()</code> returns a list of pieces
-separated at the splits.  Each piece is marked as
-a <a href="parseLatex_fn.html">LaTeX2</a> object.</p>
 <p><code>split_chars()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a>
 list containing the result of calling <a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a>
 on the text of the <code>item</code>.</p>

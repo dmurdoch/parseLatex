@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -144,13 +144,16 @@ it:</p>
 <span><span class="co"># Get the alignment options from the content</span></span>
 <span><span class="fu"><a href="../reference/tableOption.html">columnOptions</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span>
 <span><span class="co">#&gt; {l|r|r}</span></span>
+<span><span class="co"># To work with cells or rows in the table, we need</span></span>
+<span><span class="co"># to preprocess it:</span></span>
+<span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_table.html">prepare_table</a></span><span class="op">(</span><span class="va">table</span>, do_cells <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/tablecell.html">tableCell</a></span><span class="op">(</span><span class="va">table</span>, <span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span> <span class="co"># The title counts as a row</span></span>
-<span><span class="co">#&gt;  21</span></span>
+<span><span class="co">#&gt;  21 &amp;</span></span>
 <span><span class="fu"><a href="../reference/tablecell.html">tableCell</a></span><span class="op">(</span><span class="va">table</span>, <span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Model"</span></span>
 <span><span class="va">table</span></span>
 <span><span class="co">#&gt; ENVIRONMENT: \begin{tabular}{l|r|r}</span></span>
 <span><span class="co">#&gt; \hline</span></span>
-<span><span class="co">#&gt;  Model &amp; mpg &amp; cyl\\</span></span>
+<span><span class="co">#&gt; Model &amp; mpg &amp; cyl\\</span></span>
 <span><span class="co">#&gt; \hline</span></span>
 <span><span class="co">#&gt; Mazda RX4 &amp; 21 &amp; 6\\</span></span>
 <span><span class="co">#&gt; \hline</span></span>

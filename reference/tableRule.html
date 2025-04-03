@@ -9,7 +9,7 @@ These functions let rules be extracted or modified.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,9 +47,9 @@ These functions let rules be extracted or modified.</p>
 <span></span>
 <span><span class="fu">rules</span><span class="op">(</span><span class="va">table</span>, idx <span class="op">=</span> <span class="fu">find_rules</span><span class="op">(</span><span class="va">table</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_rule</span><span class="op">(</span><span class="va">table</span>, <span class="va">row</span>, idx <span class="op">=</span> <span class="fu">find_rules</span><span class="op">(</span><span class="va">table</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">find_rule</span><span class="op">(</span><span class="va">table</span>, <span class="va">row</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">rule</span><span class="op">(</span><span class="va">table</span>, <span class="va">row</span>, idx <span class="op">=</span> <span class="fu">find_rules</span><span class="op">(</span><span class="va">table</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">rule</span><span class="op">(</span><span class="va">table</span>, <span class="va">row</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">rule</span><span class="op">(</span><span class="va">table</span>, <span class="va">row</span>, asis <span class="op">=</span> <span class="cn">FALSE</span>, idx <span class="op">=</span> <span class="fu">find_rules</span><span class="op">(</span><span class="va">table</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
@@ -84,16 +84,22 @@ converted to one.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>find_rules()</code> returns a list of the indices
-of rules before each row, including the whitespace
-following each one.</p>
+    <p><code>find_rules()</code> returns a list of <a href="LaTeX2range.html">LaTeX2range</a>
+objects giving the locations of the rules before each
+line.  The last item in the list gives the location
+of any rules after the last line.</p>
 <p><code>rules(table)</code> returns a list of the rules
 before each row.  The last entry will be the rule(s)
 following the last row.</p>
-<p><code>find_rule(table, row)</code> returns the indices
-of the rule(s) before <code>row</code>, not including the final whitespace.</p>
-<p><code>rule(table, row)</code> returns the indices
+<p><code>find_rule(table, row)</code> returns a <a href="LaTeX2range.html">LaTeX2range</a>
+for the rule before <code>row</code>, not including the final
+whitespace.</p>
+<p><code>rule(table, row)</code> returns the
 rule(s) before <code>row</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Use <code><a href="path_to_index.html">index_to_path()</a></code> to convert to a path.</p></div>
     </div>
 
     <div class="section level2">
@@ -101,34 +107,25 @@ rule(s) before <code>row</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">latex</span> <span class="op">&lt;-</span> <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kbl.html" class="external-link">kbl</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="va">parsed</span><span class="op">[[</span><span class="fu"><a href="tables.html">find_tabular</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">table</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENVIRONMENT: \begin{tabular}[t]{l|r|r}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   &amp; mpg &amp; cyl\\</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 &amp; 21 &amp; 6\\</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 Wag &amp; 21 &amp; 6\\</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> \end{tabular}</span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_table.html">prepare_table</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">find_rules</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6 7 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path=2,1 range=2:3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 18 19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path=3,1 range=2:3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 35 36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path=4,1 range=2:3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 54 55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path=5,1 range=2:3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">rules</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
@@ -144,7 +141,7 @@ rule(s) before <code>row</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">find_rule</span><span class="op">(</span><span class="va">table</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path=2,1 range=2:2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">rule</span><span class="op">(</span><span class="va">table</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>

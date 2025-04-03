@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,9 +67,17 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>find_sequence()</code> returns a path or list of paths where <code>sequence</code>
-occurs within <code>items</code>.</p>
+    <p><code>find_sequence()</code> returns a <a href="LaTeX2range.html">LaTeX2range</a> or list of them where <code>sequence</code> occurs within <code>items</code>.</p>
 <p><code>items_are_equal</code> returns a logical indicator of equality after removing source references.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><code>find_sequence()</code> will only match sequences that
+are entirely contained within a single list in <code>items</code>.
+Thus if <code><a href="prepare_table.html">prepare_table()</a></code> is called on a table, then
+<code>find_sequence()</code> will find sequences in the code before
+or after the rows, or entirely within a single cell,
+but not crossing alignment markers (<code>"&amp;"</code>).</p>
     </div>
 
     <div class="section level2">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,8 +82,9 @@ converted to one.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>find_tableRow()</code> returns the indices of the
-entries corresponding to the content of row i of the table.</p>
+    <p><code>find_tableRow()</code> returns a <a href="LaTeX2range.html">LaTeX2range</a> of
+the entries corresponding to the content of row i of
+the table.</p>
 <p><code>tableRow()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing
 all of the table content in the row.</p>
     </div>
@@ -107,7 +108,7 @@ assignment function.</p>
 <span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="va">parsed</span><span class="op">[[</span><span class="fu"><a href="tables.html">find_tabular</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">find_tableRow</span><span class="op">(</span><span class="va">table</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  8  9 10 11 12 13 14 15 16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path= range=8:16</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">tableRow</span><span class="op">(</span><span class="va">table</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   &amp; mpg &amp; cyl\\</span>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,8 @@ specified range and returns it as a <a href="parseLatex_fn.html">LaTeX2</a> obje
 <span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tablepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="path_to.html">path_to</a></span><span class="op">(</span><span class="va">parsed</span>, <span class="va">is_env</span>, envtypes <span class="op">=</span> <span class="st">"tabular"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">range</span> <span class="op">&lt;-</span> <span class="fu"><a href="LaTeX2range.html">LaTeX2range</a></span><span class="op">(</span><span class="va">tablepath</span>, <span class="fl">11</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">set_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span>, <span class="st">"The 11th item"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu">set_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span>, <span class="st">"The 11th item"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \begin{table}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \caption{Sample table}</span>
@@ -93,7 +94,7 @@ specified range and returns it as a <a href="parseLatex_fn.html">LaTeX2</a> obje
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{tabular}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{table}</span>
 <span class="r-in"><span><span class="fu">get_range</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">range</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

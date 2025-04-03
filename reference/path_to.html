@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,9 +40,11 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_to</span><span class="op">(</span><span class="va">items</span>, <span class="va">is_fn</span>, <span class="va">...</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_to</span><span class="op">(</span><span class="va">items</span>, <span class="va">test</span>, <span class="va">...</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_item</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span><span class="op">)</span></span>
+<span><span class="fu">get_item</span><span class="op">(</span><span class="va">items</span>, path <span class="op">=</span> <span class="fu"><a href="path_to_index.html">index_to_path</a></span><span class="op">(</span><span class="va">index</span>, <span class="va">items</span><span class="op">)</span>, <span class="va">index</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_items</span><span class="op">(</span><span class="va">items</span>, paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">indices</span>, <span class="va">index_to_path</span>, <span class="va">items</span><span class="op">)</span>, <span class="va">indices</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">set_item</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
@@ -61,7 +63,7 @@
 <dd><p>A list of latex items.</p></dd>
 
 
-<dt id="arg-is-fn">is_fn<a class="anchor" aria-label="anchor" href="#arg-is-fn"></a></dt>
+<dt id="arg-test">test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
 <dd><p>Which test function to use.</p></dd>
 
 
@@ -77,6 +79,18 @@
 <dd><p>Integer vector of subitems</p></dd>
 
 
+<dt id="arg-index">index<a class="anchor" aria-label="anchor" href="#arg-index"></a></dt>
+<dd><p>Index into the flattened version of <code>items</code>.</p></dd>
+
+
+<dt id="arg-paths">paths<a class="anchor" aria-label="anchor" href="#arg-paths"></a></dt>
+<dd><p>List of paths</p></dd>
+
+
+<dt id="arg-indices">indices<a class="anchor" aria-label="anchor" href="#arg-indices"></a></dt>
+<dd><p>Vector of indices into the flattened version of <code>items</code>.</p></dd>
+
+
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
 <dd><p>A <a href="parseLatex_fn.html">LaTeX2item</a> to set as a value.</p></dd>
 
@@ -90,7 +104,10 @@
     <p><code>path_to()</code> returns the recursive path to the
 first example matching the <code>is_fn</code> conditions,
 or a list of paths to all matching items.</p>
-<p><code>get_item()</code> returns the item at the given path.</p>
+<p><code>get_item()</code> returns the item at the given path.  If <code>index</code> is specified, <code>get_item()</code> will return that
+item in the flattened version of <code>items</code>.</p>
+<p><code>get_items()</code> returns the items at the given paths as a <a href="parseLatex_fn.html">LaTeX2</a> object.  If <code>index</code> is specified, <code>get_items()</code> will return those
+items in the flattened version of <code>items</code>.</p>
 <p><code>set_item()</code> replaces the item at the given path, and returns the modified version of <code>items</code>.</p>
 <p><code>insert_values()</code> inserts the <code>values</code> before the item mentioned in <code>path</code>, and returns the modified version of <code>items</code>.</p>
 <p><code>get_container()</code> returns the item
@@ -123,7 +140,7 @@ items appear in the deparse.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{tabular}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{table}</span>
-<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">path_to</span><span class="op">(</span><span class="va">parsed</span>, is_fn <span class="op">=</span> <span class="va">is_env</span>,</span></span>
+<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">path_to</span><span class="op">(</span><span class="va">parsed</span>, test <span class="op">=</span> <span class="va">is_env</span>,</span></span>
 <span class="r-in"><span>                        envtypes <span class="op">=</span> <span class="st">"tabular"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">get_item</span><span class="op">(</span><span class="va">parsed</span>, <span class="va">path</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ENVIRONMENT: \begin{tabular}[t]{l|r|r}</span>

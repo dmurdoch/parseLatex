@@ -19,7 +19,7 @@ some bracketed options)."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,13 +58,13 @@ some bracketed options).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_bracket_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1</span>, start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_bracket_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1L</span>, start <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">bracket_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1</span>, start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu">bracket_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1L</span>, start <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">bracket_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1</span>, start <span class="op">=</span> <span class="fl">1</span>, asis <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
-<span><span class="fu">find_brace_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1</span>, start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu">find_brace_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1L</span>, start <span class="op">=</span> <span class="fl">1L</span>, path <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">brace_options</span><span class="op">(</span><span class="va">items</span>, which <span class="op">=</span> <span class="fl">1</span>, start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
@@ -85,7 +85,8 @@ macros support more than one set.</p></dd>
 
 
 <dt id="arg-start">start<a class="anchor" aria-label="anchor" href="#arg-start"></a></dt>
-<dd><p>Start looking at <code>items[[start]]</code>.</p></dd>
+<dd><p>Start looking at <code>items[[start]]</code>.
+<code>start</code> may be a path.</p></dd>
 
 
 <dt id="arg-asis">asis<a class="anchor" aria-label="anchor" href="#arg-asis"></a></dt>
@@ -98,14 +99,20 @@ value?</p></dd>
 can be a <a href="parseLatex_fn.html">LaTeX2</a> object, or a character string that will be
 converted to one.</p></dd>
 
+
+<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
+<dd><p>If <code>TRUE</code>, return a path rather than
+an index, as with <code><a href="finders.html">find_general()</a></code>,</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>find_bracket_options</code> returns indices into <code>items</code> of the options (including the
+    <p><code>find_bracket_options</code> returns a <a href="LaTeX2range.html">LaTeX2range</a> object pointing to the options within <code>items</code> (including the
 brackets).</p>
 <p><code>bracket_options</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing
 the specified options.</p>
-<p><code>find_brace_options</code> returns the index of the block containing the options.</p>
+<p><code>find_brace_options</code> returns the index
+or path to the block containing the options.</p>
 <p><code>brace_options</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing
 the specified options.</p>
     </div>

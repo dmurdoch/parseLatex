@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,19 +40,21 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_whitespace</span><span class="op">(</span><span class="va">items</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_whitespace</span><span class="op">(</span><span class="va">items</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_env</span><span class="op">(</span><span class="va">items</span>, <span class="va">envtypes</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">find_env</span><span class="op">(</span><span class="va">items</span>, envtypes <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_macro</span><span class="op">(</span><span class="va">items</span>, <span class="va">macros</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">find_macro</span><span class="op">(</span><span class="va">items</span>, macros <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_catcode</span><span class="op">(</span><span class="va">items</span>, <span class="va">codes</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">find_catcode</span><span class="op">(</span><span class="va">items</span>, <span class="va">codes</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_tags</span><span class="op">(</span><span class="va">items</span>, <span class="va">tags</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">find_tags</span><span class="op">(</span><span class="va">items</span>, <span class="va">tags</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_char</span><span class="op">(</span><span class="va">items</span>, <span class="va">char</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">find_char</span><span class="op">(</span><span class="va">items</span>, <span class="va">char</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">find_block</span><span class="op">(</span><span class="va">items</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">find_block</span><span class="op">(</span><span class="va">items</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">find_general</span><span class="op">(</span><span class="va">items</span>, <span class="va">test</span>, <span class="va">...</span>, all <span class="op">=</span> <span class="cn">TRUE</span>, path <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,8 +65,10 @@
 <dd><p>A list of latex items.</p></dd>
 
 
-<dt id="arg-all">all<a class="anchor" aria-label="anchor" href="#arg-all"></a></dt>
-<dd><p>If <code>FALSE</code>, return the first match</p></dd>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>For <code>find_general</code>, additional arguments
+to pass to <code>test</code>.  For the other <code>find_*</code> functions,
+additional arguments to pass to <code>find_general</code>.</p></dd>
 
 
 <dt id="arg-envtypes">envtypes<a class="anchor" aria-label="anchor" href="#arg-envtypes"></a></dt>
@@ -86,6 +90,18 @@
 <dt id="arg-char">char<a class="anchor" aria-label="anchor" href="#arg-char"></a></dt>
 <dd><p>Which character to look for.</p></dd>
 
+
+<dt id="arg-test">test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
+<dd><p>Test function for target.</p></dd>
+
+
+<dt id="arg-all">all<a class="anchor" aria-label="anchor" href="#arg-all"></a></dt>
+<dd><p>If <code>FALSE</code>, return just the first match</p></dd>
+
+
+<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
+<dd><p>If <code>TRUE</code>, return a path rather than an index.  See Details below.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -104,6 +120,29 @@ of characters matching <code>char</code>.  Only characters
 marked as SPECIAL by the parser will be found.</p>
 <p><code>find_block()</code> returns the index within <code>items</code>
 of blocks (i.e. sequences in )</p>
+<p><code>find_general()</code> returns locations of
+objects matching the <code>test</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>These functions search through <code>items</code> for individual
+objects that match a test.  In general they do not
+operate recursively, with one exception.  If <code>items</code>
+contains <code>ITEMLIST</code> objects, the search will always
+recurse into those.</p>
+<p>By default the return value is an index or a vector
+of indices of the matches.  These are the indices as
+they would be if any <code>ITEMLIST</code> objects had been
+flattened.</p>
+<p>However, if <code>path = TRUE</code>, the path to the
+object will be returned.  With <code>all = FALSE</code>, this will
+be a numeric vector such that <code>items[[result]]</code> is the
+matching item.  With <code>all = TRUE</code> it will be a list of
+such vectors.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="path_to_index.html">index_to_path()</a></code>, <code><a href="path_to_index.html">path_to_index()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

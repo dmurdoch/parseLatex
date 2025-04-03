@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">parseLatex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,8 +96,8 @@ block corresponding to the "width" option, if there is one.
 Only some tabular-like environments have these.</p>
 <p><code>widthOption()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "width" option, if the table has one.</p>
-<p><code>find_columnOptions()</code> returns the index of the
-block corresponding to the column spec.</p>
+<p><code>find_columnOptions()</code> returns a <a href="LaTeX2range.html">LaTeX2range</a>
+object for the column options of the table.</p>
 <p><code>columnOptions()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object containing the
 "column" options.</p>
 <p><code>columnOption()</code> returns a <a href="parseLatex_fn.html">LaTeX2</a> object
@@ -126,7 +126,7 @@ can be specified with or without the enclosing brackets.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \end{tabular}</span>
 <span class="r-in"><span><span class="fu">find_posOption</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path= range=1:3</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">posOption</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [t]</span>
@@ -141,7 +141,7 @@ can be specified with or without the enclosing brackets.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">find_columnOptions</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> path= range=4:4</span>
 <span class="r-in"><span><span class="fu">columnOptions</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> {l|r|r}</span>
 <span class="r-in"><span></span></span>
