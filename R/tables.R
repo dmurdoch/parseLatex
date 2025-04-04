@@ -3,16 +3,16 @@
 #' @name tables
 #' @rdname tables
 #' @param item An item from a [LaTeX2] list object.
-#' @returns `is_Tabular()` returns boolean indicating if this is
+#' @returns `is_tabular()` returns boolean indicating if this is
 #' a tabular-like environment.
 #' @examples
 #' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 #' parsed <- parseLatex(latex)
-#' is_Tabular(parsed[[2]])
+#' is_tabular(parsed[[2]])
 #'
 #'
 #' @export
-is_Tabular <- function(item) {
+is_tabular <- function(item) {
   name <- envName(item)
   length(name) == 1 &&
     name %in% c("tabular", "tabular*", "tabularx", "tabulary",
@@ -33,7 +33,7 @@ is_Tabular <- function(item) {
 find_tabular <- function(items, start = 1) {
   if (start <= length(items))
     for (i in seq_along(items))
-      if (is_Tabular(items[[i]]))
+      if (is_tabular(items[[i]]))
         return(i)
   NA
 }

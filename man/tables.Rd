@@ -2,11 +2,11 @@
 % Please edit documentation in R/tables.R
 \name{tables}
 \alias{tables}
-\alias{is_Tabular}
+\alias{is_tabular}
 \alias{find_tabular}
 \title{Functions related to parsing LaTeX tables}
 \usage{
-is_Tabular(item)
+is_tabular(item)
 
 find_tabular(items, start = 1)
 }
@@ -18,7 +18,7 @@ find_tabular(items, start = 1)
 \item{start}{Where to start looking.}
 }
 \value{
-\code{is_Tabular()} returns boolean indicating if this is
+\code{is_tabular()} returns boolean indicating if this is
 a tabular-like environment.
 
 \code{find_tabular()} returns the index of the first
@@ -30,7 +30,7 @@ Functions related to parsing LaTeX tables
 \examples{
 latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
 parsed <- parseLatex(latex)
-is_Tabular(parsed[[2]])
+is_tabular(parsed[[2]])
 
 
 find_tabular(parsed)
