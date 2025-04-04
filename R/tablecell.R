@@ -46,10 +46,23 @@ find_tableCell <- function(table, row, col) {
 #' @export
 tableCell <- function(table, row, col) {
   entries <- find_tableCell(table, row, col)
-  if (latexTag(table[[entries$path]]) == "PLACEHOLDER")
+  if (latexTag(table[[entries$path]]) == "PLACEHOLDER") {
+    result <- NULL
     warning("Cell is missing because of earlier \\multicolumn cell.")
-  else
-    as_LaTeX2(get_range(table, entries))
+  } else {
+    result <- flatten_itemlists(get_range(table, entries))
+    changed <- TRUE # at least once through
+    while (changed && length(result)) {
+      last <- result[[length(result)]]
+      changed <- is_whitespace(last) ||
+                 is_macro(last, "\\\\") ||
+                 is_catcode(last, ALIGN)
+      if (changed)
+        length(result) <- length(result) - 1
+    }
+    result <- trim_whitespace(result)
+  }
+  result
 }
 
 #' @rdname tableCell

@@ -295,7 +295,7 @@ flatten_itemlists <- function(items, recursive = FALSE) {
   tag <- attrs$latex_tag
   if (!is.null(tag) && tag == "ITEMLIST")
     items <- as_LaTeX2(items)
-
+  attr(items, "has_itemlist") <- NULL
   items
 }
 

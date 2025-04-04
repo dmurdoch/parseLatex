@@ -5,15 +5,15 @@ test_that("tableCell fns work", {
   expect_error(find_tableCell(table, 2, 2))
   table <- prepare_table(table)
   expect_output(print(tableCell(table, 2,2)),
-                " 21 &")
+                "21")
   tableCell(table, 2, 2) <- "22 &"
   expect_output(print(tableCell(table, 2,2)),
-                " 22 &")
+                "22")
   tableCell(table, 2, 2) <- "23"
   expect_output(print(tableCell(table, 2,2)),
-                " 23 &")
+                "23")
   tableRow(table, 2) <- "\\multicolumn{2}{c}{Multi}\\\\"
   expect_output(print(tableCell(table, 2, 1)),
-                "\\multicolumn{2}{c}{Multi}\\\\", fixed = TRUE)
+                "\\multicolumn{2}{c}{Multi}", fixed = TRUE)
 
 })

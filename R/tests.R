@@ -109,3 +109,13 @@ is_placeholder <- function(item) {
 #' @export
 is_char <- function(item, char)
   latexTag(item) == "SPECIAL" && item == char
+
+#' @rdname tests
+#' @param code A catcode to match
+#' @returns `is_catcode()` returns a boolean indicating if the
+#' `item` is a `SPECIAL` with the given catcode.
+#' @export
+is_catcode <- function(item, code) {
+  c <- catcode(item)
+  !is.null(c) && c == code
+}

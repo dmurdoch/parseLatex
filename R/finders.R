@@ -288,6 +288,12 @@ LaTeX2range <- function(path, range)
 #' corresponding the the index if `items` was flattened.
 #' @seealso [flatten_itemlists()]
 #' @export
+#' @examples
+#' latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
+#' parsed <- parseLatex(latex)
+#' tablepath <- path_to(parsed, is_env, envtypes = "tabular")
+#' table <- prepare_table(parsed[[tablepath]])
+#' path_to_index(c(4,1,1), table)
 path_to_index <- function(path, items) {
   n <- length(path)
   if (n == 0)
@@ -315,6 +321,9 @@ path_to_index <- function(path, items) {
 #' @returns `index_to_path` returns a vector of integers
 #' which would index the specified item.
 #' @export
+#' @examples
+#' index_to_path(3, table)
+#'
 index_to_path <- function(index, items) {
   path <- integer()
   current <- 0
@@ -331,6 +340,73 @@ index_to_path <- function(index, items) {
       current <- current + 1
   }
   i
+}
+
+#' @rdname path_to_index
+#' @param path1,path2 Paths into the same destination list.
+#' @returns `paths_to_range` returns a list of [LaTeX2range] objects covering all entries
+#' extending from `path1` to `path2`.
+#' @export
+#' @examples
+#' ranges <- paths_to_ranges(index_to_path(3, table),
+#'                           c(4,1,1), table)
+#' lapply(ranges, get_range, items = table)
+#'
+paths_to_ranges <- function(path1, path2, items) {
+  common <- path1
+  for (i in seq_along(path1)) {
+    if (length(path2) < i)
+      stop("path2 overlaps path1")
+    if (path2[i] < path1[i])
+      stop("path2 precedes path1")
+    if (path2[i] > path1[i]) {
+      common <- path1[-(i:length(path1))]
+      if (length(common)) {
+        items <- items[[common]]
+        path1 <- path1[-seq_along(common)]
+        path2 <- path2[-seq_along(common)]
+      }
+      break
+    }
+  }
+  if (length(common) == length(path1)) {
+    # no differences seen
+    if (length(common) < length(path2))
+      stop("path1 overlaps path2")
+    return(list(LaTeX2range(path1, NULL)))
+  }
+  # Now we have path1 different from path2 from the start
+  # Form a list of ranges
+  result <- list()
+  n <- length(path1)
+  for (i in rev(seq_along(path1)[-1L])) {
+    path <- path1[-(i:n)]
+    if (length(path))
+      len <- length(items[[path]])
+    else
+      len <- length(items)
+    if (i < n && path1[i] < len)
+      result <- c(result, list(LaTeX2range(c(common, path1[-(i:n)]),
+                                         (path1[i]+1L):len)))
+    else # the last one
+      result <- c(result, list(LaTeX2range(c(common, path1[-(i:n)]),
+                                           path1[i]:len)))
+
+  }
+  if (path1[1L] < path2[1L] - 1L)
+    for (i in (path1[1L]+1L):(path2[1L]-1L))
+      result <- c(result, list(LaTeX2range(c(common, i), NULL)))
+  n <- length(path2)
+  for (i in seq_along(path2)[-1L]) {
+    if (i < n) {
+      if (path2[i] > 1L)
+        result <- c(result, list(LaTeX2range(c(common, path2[-(i:n)]),
+                                         1L:(path2[i] - 1L))))
+    } else
+      result <- c(result, list(LaTeX2range(c(common, path2[-(i:n)]),
+                                           1L:path2[i])))
+  }
+  result
 }
 
 #' @rdname LaTeX2range
@@ -427,6 +503,21 @@ get_range <- function(items, range) {
                    idx <= max(range$range)]
   }
   as_LaTeX2(items)
+}
+
+#' @rdname path_to_index
+#' @param ranges A list of [LaTeX2range] objects, such as
+#' that produced by [paths_to_ranges()].
+#' @returns `get_ranges()` extracts the
+#' specified ranges, concatenates them, and returns them as a [LaTeX2] object.
+#' @examples
+#' get_ranges(table, ranges)
+#' @export
+get_ranges <- function(items, ranges) {
+  lapply(ranges, get_range, items = items) |>
+    lapply(new_itemlist) |>
+    latex2() |>
+    flatten_itemlists()
 }
 
 #' @rdname finders

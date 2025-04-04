@@ -12,6 +12,7 @@
 \alias{is_itemlist}
 \alias{is_placeholder}
 \alias{is_char}
+\alias{is_catcode}
 \title{Test objects}
 \usage{
 is_env(item, envtypes = NULL)
@@ -33,6 +34,8 @@ is_itemlist(item)
 is_placeholder(item)
 
 is_char(item, char)
+
+is_catcode(item, code)
 }
 \arguments{
 \item{item}{An object of class \link{LaTeX2item} to test.}
@@ -45,6 +48,8 @@ e.g. \code{"table"}.}
 \item{bracket}{Which bracket are we looking for?}
 
 \item{char}{A character to match}
+
+\item{code}{A catcode to match}
 }
 \value{
 \code{is_env()} returns a boolean if the item matches.
@@ -73,6 +78,9 @@ specified type.
 
 \code{is_char()} returns a boolean indicating if the
 \code{item} is a \code{SPECIAL} matching \code{char}.
+
+\code{is_catcode()} returns a boolean indicating if the
+\code{item} is a \code{SPECIAL} with the given catcode.
 }
 \description{
 Test objects

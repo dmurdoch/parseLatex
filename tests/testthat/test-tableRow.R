@@ -18,4 +18,7 @@ test_that("tableRow works", {
   expect_output(print(tableRow(table, 5)),
                 "Mazda RX4 & 21 & 6\\\\")
   expect_equal(tableNrow(table), 5)
+  expect_equal(row_to_vector("1 & 2 & content \\\\"),
+               c("1", "2", "content"))
+  expect_output(print(vector_to_row(1:3)), "1 & 2 & 3\\\\")
 })

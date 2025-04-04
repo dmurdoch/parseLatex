@@ -3,6 +3,18 @@ find_extras <- function(row) {
   if (has_itemlist(row))
     return(1L)
 
+  # First, find an upper limit
+  upper <- find_catcode(row, ALIGN, all = FALSE)
+  if (!length(upper))
+    upper <- find_macro(row, "\\\\", all = FALSE)
+  if (!length(upper))
+    upper <- length(row) + 1
+
+  if (upper < 2)
+    return(NULL)
+
+  row <- row[1:(upper - 1)]
+
   # Find all the extras
   # The rules and addlinespace
   extras <- find_macro(row, c("\\hline", "\\toprule",
@@ -85,8 +97,8 @@ find_tableRow <- function(table, row, withExtras = FALSE, withData = TRUE) {
     # Drop the captions
     idx <- find_caption(content)
     if (length(idx)) {
-      idx <- unlist(attr(idx, "extra"))
-      drop(idx$range)
+      idx <- attr(idx, "extra")
+      drop(seq_len(max(idx$range)))
     }
 
     breaks <- contentIdx[find_macro(content, "\\\\")]
@@ -210,7 +222,7 @@ blankRow <- function(table) {
     if (!(1 %in% newlines))
       value <- latex2("\n", value)
   }
-
+  newrows <- length(find_macro(value, "\\\\"))
   n <- tableNrow(table)
   if (row > n) {
     # Need to insert rows
@@ -219,7 +231,13 @@ blankRow <- function(table) {
     for (i in (n+1):(row))
       table <- insert_values(table, i + 1, blank)
   }
-  table[[row + 1]] <- prepare_row(value)
+  if (newrows > 1) {
+    # adding more than one row, so need to re-prepare
+    table[[row + 1]] <- new_itemlist(value)
+    table <- flatten_itemlists(table)
+    table <- prepare_table(table)
+  } else  # for just one row, only prepare the row.
+    table[[row + 1]] <- prepare_row(value)
 
   table
 }
@@ -264,26 +282,22 @@ vector_to_row <- function(cells, asis = FALSE, linebreak = TRUE) {
 #' row_to_vector("1 & 2 & content \\\\")
 #' row_to_vector("1 & 2 & content \\\\", deparse = FALSE)
 row_to_vector <- function(row, asis = FALSE, deparse = TRUE) {
+  # We don't know if the row coming in has already had
+  # extras removed, so prepare it again.
   row <- as_LaTeX2(row)
-  amp <- find_catcode(row, 4)
-  eol <- find_macro(row, "\\\\", all = FALSE)
-  if (length(eol) > 1)
-    warning("This row has a line break.  Only first line used")
-  if (!length(eol))
-    eol <- length(row) + 1
-  br <- c(0, amp[amp < eol], eol)
+  row <- flatten_itemlists(row)
+  row <- prepare_row(row)
+  row <- row[-1] # leave off extras
+  for (i in seq_along(row)) {
+    last <- row[[i]]
+    last <- last[[length(last)]]
+    if (is_macro(last, "\\\\") || is_catcode(last, ALIGN))
+      length(row[[i]]) <- length(row[[i]]) - 1L
+  }
   if (deparse)
-    result <- rep("", length(br) - 1)
+    result <- vapply(row, deparseLatex, "")
   else
-    result <- vector("list", length(br) - 1)
-  for (i in seq_along(result))
-    if (br[i+1] > br[i] + 1) {
-      value <- row[(br[i] + 1):(br[i+1] - 1)]
-      if (deparse)
-        result[i] <- deparseLatex(value)
-      else
-        result[[i]] <- as_LaTeX2(value)
-    }
+    result <- unclass(row)
   if (!asis) {
     if (deparse)
       result <- trimws(result)

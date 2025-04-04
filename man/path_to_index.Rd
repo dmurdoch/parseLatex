@@ -3,11 +3,17 @@
 \name{path_to_index}
 \alias{path_to_index}
 \alias{index_to_path}
+\alias{paths_to_ranges}
+\alias{get_ranges}
 \title{Convert between paths and indices}
 \usage{
 path_to_index(path, items)
 
 index_to_path(index, items)
+
+paths_to_ranges(path1, path2, items)
+
+get_ranges(items, ranges)
 }
 \arguments{
 \item{path}{A vector of integers, assumed to be
@@ -18,6 +24,11 @@ or \link{LaTeX2item} object.}
 
 \item{index}{A scalar integer which would be
 the index to an item if \code{items} was flattened.}
+
+\item{path1, path2}{Paths into the same destination list.}
+
+\item{ranges}{A list of \link{LaTeX2range} objects, such as
+that produced by \code{\link[=paths_to_ranges]{paths_to_ranges()}}.}
 }
 \value{
 \code{path_to_index} returns a scalar value
@@ -25,9 +36,29 @@ corresponding the the index if \code{items} was flattened.
 
 \code{index_to_path} returns a vector of integers
 which would index the specified item.
+
+\code{paths_to_range} returns a list of \link{LaTeX2range} objects covering all entries
+extending from \code{path1} to \code{path2}.
+
+\code{get_ranges()} extracts the
+specified ranges, concatenates them, and returns them as a \link{LaTeX2} object.
 }
 \description{
 Convert between paths and indices
+}
+\examples{
+latex <- kableExtra::kbl(mtcars[1:2, 1:2], format = "latex")
+parsed <- parseLatex(latex)
+tablepath <- path_to(parsed, is_env, envtypes = "tabular")
+table <- prepare_table(parsed[[tablepath]])
+path_to_index(c(4,1,1), table)
+index_to_path(3, table)
+
+ranges <- paths_to_ranges(index_to_path(3, table),
+                          c(4,1,1), table)
+lapply(ranges, get_range, items = table)
+
+get_ranges(table, ranges)
 }
 \seealso{
 \code{\link[=flatten_itemlists]{flatten_itemlists()}}

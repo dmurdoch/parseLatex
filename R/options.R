@@ -23,19 +23,45 @@ find_bracket_options <- function(items, which = 1L, start = 1L) {
   else
     startpath <- NULL
 
-  first <- find_char(items[start:length(items)],
+  subset <- flatten_itemlists(items)
+  if (start > length(subset))
+    return(NULL)
+
+  subset <- subset[start:length(subset)]
+  first <- find_char(subset,
                       "[",
                        all = which > 1L,
-                       path = TRUE)
+                       path = FALSE)
 
   if (length(first) == 0 || which > 1L && length(first) < which)
     return(NULL)
 
-  if (which > 1L)
-    first <- first[[which]]
+  depth <- 0L
+  for (i in start:max(first)) {
+    # All items before the one we are matching must be
+    # blocks, whitespace, or other bracket options
+    item <- subset[[index_to_path(i, subset)]]
+    if (depth > 0L && is_bracket(item, "]"))
+      depth <- depth - 1L
+    else {
+      if (is_bracket(item, "[")) {
+        if (depth == 0L) {
+          which <- which - 1L
+          if (which == 0L) {
+            first <- i
+            break
+          }
+        }
+        depth <- depth + 1L
+      } else if (!is_block(item) && !is_whitespace(item))
+        return(NULL)
+    }
+  }
 
   if (start > 1L)
-    first[1] <- first[1] + start - 1L
+    first <- first + start - 1L
+
+  first <- index_to_path(first, items)
 
   thepath <- first[-length(first)]
   first <- first[length(first)]
