@@ -134,7 +134,7 @@ expandMulticolumn <- function(itemlist) {
       if (count > 1) {
         # add some placeholders
         for (j in seq_len(count - 1))
-          itemlist <- insert_values(itemlist, idx + 1, new_itemlist(placeholder()))
+          itemlist <- insert_values(itemlist, idx, new_itemlist(placeholder()), after = TRUE)
       }
     }
   }

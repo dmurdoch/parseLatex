@@ -229,7 +229,7 @@ new_env <- function(name, ...) {
     insert_values(result, 1, "\n")
   n <- length(result)
   if (!is_char(result[[n]], "\n"))
-    insert_values(result, n+1, "\n")
+    insert_values(result, n, "\n", after = TRUE)
   attr(result, "latex_tag") <- "ENVIRONMENT"
   class(result) <- "LaTeX2item"
   envName(result) <- name
@@ -282,7 +282,7 @@ flatten_itemlists <- function(items, recursive = FALSE) {
   i <- 1
   while (i <= length(items)) {
     if (is_itemlist(items[[i]])) {
-      items <- insert_values(items, i + 1, get_contents(items[[i]]))
+      items <- insert_values(items, i, get_contents(items[[i]]), after = TRUE)
       items <- drop_items(items, i)
     } else if (is_placeholder(items[[i]])) {
       items <- drop_items(items, i)

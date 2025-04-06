@@ -18,7 +18,7 @@ get_items(items, paths = lapply(indices, index_to_path, items), indices)
 
 set_item(items, path, value)
 
-insert_values(items, path, values)
+insert_values(items, path, values, after = FALSE)
 
 get_container(items, path)
 
@@ -58,7 +58,9 @@ items in the flattened version of \code{items}.
 
 \code{set_item()} replaces the item at the given path, and returns the modified version of \code{items}.
 
-\code{insert_values()} inserts the \code{values} before the item mentioned in \code{path}, and returns the modified version of \code{items}.
+\code{insert_values()} inserts the \code{values} before
+the item mentioned in \code{path} (or after if requested),
+and returns the modified version of \code{items}.
 
 \code{get_container()} returns the item
 containing the given path

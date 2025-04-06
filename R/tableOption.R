@@ -229,8 +229,8 @@ columnOption <- function(table, column) {
           if (j > 1)
             opts[[i]] <- substr(x, 1, j-1)
           if (j < n)
-            opts <- insert_values(opts, i+1, substr(x, j+1, n))
-          opts <- insert_values(opts, i+1, value)
+            opts <- insert_values(opts, i, substr(x, j+1, n), after = TRUE)
+          opts <- insert_values(opts, i, value, after = TRUE)
           if (j == 1)
             opts <- drop_items(opts, i)
         } else

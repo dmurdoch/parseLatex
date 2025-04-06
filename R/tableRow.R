@@ -229,7 +229,7 @@ blankRow <- function(table) {
     lastlist <- table[[length(table)]]
     blank <- prepare_row(new_itemlist(latex2("\n", blankRow(table))))
     for (i in (n+1):(row))
-      table <- insert_values(table, i + 1, blank)
+      table <- insert_values(table, i, blank, after = TRUE)
   }
   if (newrows > 1) {
     # adding more than one row, so need to re-prepare
