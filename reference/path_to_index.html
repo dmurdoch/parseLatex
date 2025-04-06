@@ -42,7 +42,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_to_index</span><span class="op">(</span><span class="va">path</span>, <span class="va">items</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">index_to_path</span><span class="op">(</span><span class="va">index</span>, <span class="va">items</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">index_to_path</span><span class="op">(</span><span class="va">index</span>, <span class="va">items</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">paths_to_ranges</span><span class="op">(</span><span class="va">path1</span>, <span class="va">path2</span>, <span class="va">items</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_ranges</span><span class="op">(</span><span class="va">items</span>, <span class="va">ranges</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,6 +67,15 @@ or <a href="parseLatex_fn.html">LaTeX2item</a> object.</p></dd>
 <dd><p>A scalar integer which would be
 the index to an item if <code>items</code> was flattened.</p></dd>
 
+
+<dt id="arg-path-path-">path1, path2<a class="anchor" aria-label="anchor" href="#arg-path-path-"></a></dt>
+<dd><p>Paths into the same destination list.</p></dd>
+
+
+<dt id="arg-ranges">ranges<a class="anchor" aria-label="anchor" href="#arg-ranges"></a></dt>
+<dd><p>A list of <a href="LaTeX2range.html">LaTeX2range</a> objects, such as
+that produced by <code>paths_to_ranges()</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -70,12 +83,57 @@ the index to an item if <code>items</code> was flattened.</p></dd>
 corresponding the the index if <code>items</code> was flattened.</p>
 <p><code>index_to_path</code> returns a vector of integers
 which would index the specified item.</p>
+<p><code>paths_to_range</code> returns a list of <a href="LaTeX2range.html">LaTeX2range</a> objects covering all entries
+extending from <code>path1</code> to <code>path2</code>.</p>
+<p><code>get_ranges()</code> extracts the
+specified ranges, concatenates them, and returns them as a <a href="parseLatex_fn.html">LaTeX2</a> object.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="itemlist.html">flatten_itemlists()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">latex</span> <span class="op">&lt;-</span> <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kbl.html" class="external-link">kbl</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="parseLatex_fn.html">parseLatex</a></span><span class="op">(</span><span class="va">latex</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tablepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="path_to.html">path_to</a></span><span class="op">(</span><span class="va">parsed</span>, <span class="va">is_env</span>, envtypes <span class="op">=</span> <span class="st">"tabular"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_table.html">prepare_table</a></span><span class="op">(</span><span class="va">parsed</span><span class="op">[[</span><span class="va">tablepath</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">path_to_index</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, <span class="va">table</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 34</span>
+<span class="r-in"><span><span class="fu">index_to_path</span><span class="op">(</span><span class="fl">3</span>, <span class="va">table</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 3</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ranges</span> <span class="op">&lt;-</span> <span class="fu">paths_to_ranges</span><span class="op">(</span><span class="fu">index_to_path</span><span class="op">(</span><span class="fl">3</span>, <span class="va">table</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                          <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, <span class="va">table</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">ranges</span>, <span class="va">get_range</span>, items <span class="op">=</span> <span class="va">table</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ]{l|r|r}</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   &amp; mpg &amp; cyl\\</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 &amp; 21 &amp; 6\\</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">get_ranges</span><span class="op">(</span><span class="va">table</span>, <span class="va">ranges</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ]{l|r|r}</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   &amp; mpg &amp; cyl\\</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> \hline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 &amp; 21 &amp; 6\\</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -48,7 +48,7 @@
 <span></span>
 <span><span class="fu">set_item</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">insert_values</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span>, <span class="va">values</span><span class="op">)</span></span>
+<span><span class="fu">insert_values</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span>, <span class="va">values</span>, after <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">get_container</span><span class="op">(</span><span class="va">items</span>, <span class="va">path</span><span class="op">)</span></span>
 <span></span>
@@ -109,7 +109,9 @@ item in the flattened version of <code>items</code>.</p>
 <p><code>get_items()</code> returns the items at the given paths as a <a href="parseLatex_fn.html">LaTeX2</a> object.  If <code>index</code> is specified, <code>get_items()</code> will return those
 items in the flattened version of <code>items</code>.</p>
 <p><code>set_item()</code> replaces the item at the given path, and returns the modified version of <code>items</code>.</p>
-<p><code>insert_values()</code> inserts the <code>values</code> before the item mentioned in <code>path</code>, and returns the modified version of <code>items</code>.</p>
+<p><code>insert_values()</code> inserts the <code>values</code> before
+the item mentioned in <code>path</code> (or after if requested),
+and returns the modified version of <code>items</code>.</p>
 <p><code>get_container()</code> returns the item
 containing the given path</p>
 <p><code>get_which()</code> returns the index

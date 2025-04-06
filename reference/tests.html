@@ -58,7 +58,9 @@
 <span></span>
 <span><span class="fu">is_placeholder</span><span class="op">(</span><span class="va">item</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">is_char</span><span class="op">(</span><span class="va">item</span>, <span class="va">char</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">is_char</span><span class="op">(</span><span class="va">item</span>, <span class="va">char</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">is_catcode</span><span class="op">(</span><span class="va">item</span>, <span class="va">code</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -85,6 +87,10 @@ e.g. <code>"table"</code>.</p></dd>
 <dt id="arg-char">char<a class="anchor" aria-label="anchor" href="#arg-char"></a></dt>
 <dd><p>A character to match</p></dd>
 
+
+<dt id="arg-code">code<a class="anchor" aria-label="anchor" href="#arg-code"></a></dt>
+<dd><p>A catcode to match</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -105,6 +111,8 @@ specified type.</p>
 <code>item</code> is a <a href="itemlist.html">PLACEHOLDER</a> item.</p>
 <p><code>is_char()</code> returns a boolean indicating if the
 <code>item</code> is a <code>SPECIAL</code> matching <code>char</code>.</p>
+<p><code>is_catcode()</code> returns a boolean indicating if the
+<code>item</code> is a <code>SPECIAL</code> with the given catcode.</p>
     </div>
 
     <div class="section level2">
