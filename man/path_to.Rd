@@ -44,6 +44,8 @@ get_which(path)
 \item{value}{A \link{LaTeX2item} to set as a value.}
 
 \item{values}{A \link{LaTeX2} list or a \link{LaTeX2item}.}
+
+\item{after}{If \code{TRUE}, insert the values after \code{path}.}
 }
 \value{
 \code{path_to()} returns the recursive path to the

@@ -140,6 +140,7 @@ set_item <- function(items, path, value) {
 
 #' @rdname path_to
 #' @param values A [LaTeX2] list or a [LaTeX2item].
+#' @param after If `TRUE`, insert the values after `path`.
 #' @returns `insert_values()` inserts the `values` before
 #'  the item mentioned in `path` (or after if requested),
 #'  and returns the modified version of `items`.
