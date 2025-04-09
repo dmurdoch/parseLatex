@@ -19,12 +19,14 @@
     Code
       find_caption(table)
     Output
-      NULL
+      path=1,3 range=all
 
 ---
 
     Code
       path_to_caption(parsed)
     Output
-      NULL
+      [1] 1 1 3
+      attr(,"extra")
+      path=1,1 range=2:4
 

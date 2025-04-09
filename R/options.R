@@ -172,6 +172,8 @@ replace_range <- function(items, i, value) {
 #' or path to the block containing the options.
 #' @export
 find_brace_options <- function(items, which = 1L, start = 1L, path = FALSE) {
+  if (has_itemlist(items))
+    stop("this function doesn't work with itemlists.")
   result <- find_block(items[start:length(items)],
                        all = which > 1L,
                        path = path)

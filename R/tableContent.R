@@ -10,11 +10,9 @@ find_tableContent <- function(table) {
   if (has_itemlist(table))
     stop("this function does not work with itemlists.")
 
-  skip <- length(find_posOption(table)) +
-    length(find_widthOption(table)) +
-    length(find_columnOptions(table))
-  if (skip < length(table))
-    seq.int(skip + 1, length(table))
+  skip <- find_columnOptions(table)
+  if (length(skip))
+    seq.int(skip$range + 1, length(table))
   else
     integer()
 }

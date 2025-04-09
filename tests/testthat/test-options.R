@@ -19,10 +19,8 @@ test_that("options fns work", {
   expect_output(print(bracket_options(table)), "[t]")
   bracket_options(table) <- "[H]"
   expect_output(print(bracket_options(table)), "[H]")
-  find_brace_options(table)
-  expect_equal(find_brace_options(table), 4)
-  brace_options(table)
-  expect_output(print(brace_options(table)), "{l|r|r}", fixed = TRUE)
-  brace_options(table) <- "l|ll"
-  expect_output(print(brace_options(table)), "{l|ll}", fixed = TRUE)
+  expect_equal(find_brace_options(table[[1]]), 4)
+  expect_output(print(brace_options(table[[1]])), "{l|r|r}", fixed = TRUE)
+  brace_options(table[[1]]) <- "l|ll"
+  expect_output(print(brace_options(table[[1]])), "{l|ll}", fixed = TRUE)
 })

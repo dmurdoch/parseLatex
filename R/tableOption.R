@@ -26,7 +26,7 @@ find_posOption <- function(table) {
   else
     start <- 1
   result <- find_bracket_options(content, start = start)
-  if (has_itemlist)
+  if (!is.null(result) && has_itemlist)
     result$path <- c(1L, result$path)
   result
 }
@@ -182,10 +182,17 @@ columnOption <- function(table, column) {
   if (envName(table) %in% c("tabular*", "tabularx", "tabulary"))
     which <- 2
   if (envName(table) == "tabu") {
-    while (!is_bracket(table[[start]], "[") &&
-           !is_block(table[[start]])) start <- start + 1
+    startpath <- index_to_path(start, table)
+    while (!is_bracket(table[[startpath]], "[") &&
+           !is_block(table[[startpath]])) {
+      start <- start + 1
+      startpath <- index_to_path(start, table)
+    }
   }
-  brace_options(table, which = which, start = start, asis = asis) <- value
+  if (has_itemlist(table))
+    brace_options(table[[1]], which = which, start = start, asis = asis) <- value
+  else
+    brace_options(table, which = which, start = start, asis = asis) <- value
   table
 }
 
