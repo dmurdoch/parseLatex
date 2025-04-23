@@ -1,4 +1,4 @@
-# parseLatex 0.4.0
+# parseLatex 0.4.1
 
 * Added `row_to_vector()`.
 * Added `is_text()` and `is_error()`.
@@ -34,6 +34,7 @@ to control the form of the return value.
 * Added `ITEMLIST` and `PLACEHOLDER` LaTeX tag values.  These are 
 used internally to organize long lists of items, e.g. to allow
 the rows of a table to be indexed directly.
+* Fixed bug in `parseLatex()` in handling `$` within a definition.
 
 # parseLatex 0.3.0
 

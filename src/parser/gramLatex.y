@@ -470,6 +470,13 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
   return ans;
 }
 
+// static void RprintMode(const char *msg);
+
+// static void RprintMode(const char *msg) {
+//   Rprintf("getArgs=%d IgnoreKeywords=%d Bracedepth=%d BracketDepth =%d MathMode=%d %s\n", parseState.xxGetArgs,parseState.xxIgnoreKeywords,
+//   parseState.xxBraceDepth, parseState.xxBracketDepth, parseState.xxMathMode, msg);
+// }
+
 static SEXP xxenterMathMode(void) {
     SEXP ans;
     PRESERVE_SV(ans = allocVector(INTSXP, 5));
@@ -478,8 +485,6 @@ static SEXP xxenterMathMode(void) {
     INTEGER(ans)[2] = parseState.xxBraceDepth;
     INTEGER(ans)[3] = parseState.xxBracketDepth;
     INTEGER(ans)[4] = parseState.xxMathMode;
-    parseState.xxBraceDepth = 0;
-    parseState.xxBracketDepth = 0;
     parseState.xxMathMode = 1;
     return ans;
 
@@ -1407,6 +1412,9 @@ static int magicComment(const uint8_t *s, int len)
 static int mkDollar(int c)
 {
   int retval = c, cat;
+
+  if (parseState.xxGetArgs > 0)
+    return mkSpecial(c, 5);
 
   if (parseState.xxMathMode != 1) {
     c = xxgetc();
