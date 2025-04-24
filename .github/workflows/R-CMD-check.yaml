@@ -45,6 +45,11 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install dependencies on MacOS
+        if: runner.os == 'macOS'
+        run: |
+          sudo Rscript -e "source('https://mac.R-project.org/bin/install.R'); install.libs('gettext')"
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
