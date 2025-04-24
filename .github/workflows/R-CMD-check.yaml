@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies on MacOS
         if: runner.os == 'macOS'
         run: |
-          sudo curl https://mac.r-project.org/bin/darwin20/x86_64/gettext-0.22.5-darwin.20-x86_64.tar.xz | tar xz -C /
+          sudo curl https://mac.r-project.org/bin/darwin20/arm64/gettext-0.22.5-darwin.20-arm64.tar.xz | tar xz -C /
 
       - uses: r-lib/actions/check-r-package@v2
         with:
