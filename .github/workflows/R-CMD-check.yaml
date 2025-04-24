@@ -45,11 +45,6 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install dependencies on MacOS
-        if: runner.os == 'macOS'
-        run: |
-          curl https://mac.r-project.org/bin/darwin20/arm64/gettext-0.22.5-darwin.20-arm64.tar.xz | sudo tar xz -C /
-
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
