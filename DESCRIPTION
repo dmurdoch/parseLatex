@@ -24,8 +24,9 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Imports: utils
+Depends: R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
-SystemRequirements: gettext, bison >= 3.0
+SystemRequirements: gettext, bison (>= 3.0)
 Config/testthat/edition: 3
