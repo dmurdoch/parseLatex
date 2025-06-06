@@ -1,15 +1,7 @@
-## parseLatex 0.3.0
+## parseLatex 0.4.1
 
-* This submission was requested by CRAN to deal with new compiler
-warnings on the use of `NORET`.  Coincidentally, that attribute
-had already been removed when the `recover` argument was
-added.
-* The submission also includes several improvements and bug
-fixes.
-
-
-## R CMD check results
-
-0 errors | 0 warnings | 0 notes
-
-
+* This revision adds a number of functions in support of
+reading and editing tables.
+* It also includes a few bug fixes, and updates to the
+DESCRIPTION file to declare version dependencies for
+R and Bison.
