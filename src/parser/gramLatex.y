@@ -170,6 +170,7 @@ struct ParseState {
                              collecting args */
   int   xxBracketDepth;   /* So is bracket depth */
   int   xxMathMode;       /* In single $ mode */
+  int   xxOptionalEquals; /* Looking for = in \let or \def */
 
   SEXP  mset; /* precious mset for protecting parser semantic values */
   int   recover;          /* Whether to attempt to recover */
@@ -193,10 +194,11 @@ static SEXP  xxenv(SEXP, SEXP, SEXP, YYLTYPE *);
 static SEXP  xxnewdef(SEXP, SEXP, YYLTYPE *);
 static SEXP  xxmath(SEXP, YYLTYPE *, Rboolean);
 static SEXP  xxenterMathMode(void);
+static SEXP  xxenterDefMode(int, int);
 static SEXP  xxblock(SEXP, YYLTYPE *);
 static SEXP  xxerrblock(SEXP, YYLTYPE *);
 static void  xxSetInVerbEnv(SEXP);
-static SEXP  xxpushMode(int, int);
+static SEXP  xxpushMode(int, int, int, int);
 static void  xxpopMode(SEXP);
 static void  xxArg(SEXP);
 
@@ -233,7 +235,7 @@ static SEXP LatexTagSymbol = NULL;
 %token    TEXT COMMENT
 %token    BEGIN END VERB VERB2 NEWENV NEWCMD END_OF_ARGS
 %token    TWO_DOLLARS
-%token    SPECIAL
+%token    SPECIAL LET_OR_DEF
 
 /* Recent bison has <> to represent all of the destructors below, but we don't assume it */
 
@@ -329,17 +331,21 @@ block:    '{'  Items  '}' { $$ = xxblock($2, &@$); }
   | '{' Items error       { xxincomplete(mkString("{"), &@1);
                             $$ = xxwrapError(xxfakeStart("{", $2), &@$); }
 
-newdefine :  NEWCMD       { $$ = xxpushMode(2, 1); }
+newdefine :  NEWCMD       { $$ = xxenterDefMode(2, 0); }
                Items END_OF_ARGS
                           { xxpopMode($2);
                             $$ = xxnewdef(xxtag($1, MACRO, &@1),
                                         $3, &@$); }
-  |          NEWENV       { $$ = xxpushMode(3, 1); }
+  |          NEWENV       { $$ = xxenterDefMode(3, 0); }
                Items END_OF_ARGS
                           {  xxpopMode($2);
                              $$ = xxnewdef(xxtag($1, MACRO, &@1),
                                         $3, &@$); }
-
+  |          LET_OR_DEF   {  $$ = xxenterDefMode(2, 1); }
+             Items END_OF_ARGS
+                          {  xxpopMode($2);
+                            $$ = xxnewdef(xxtag($1, MACRO, &@1),
+                                        $3, &@$); }
 %%
 
 static int parseError(void)
@@ -478,31 +484,32 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
 // }
 
 static SEXP xxenterMathMode(void) {
-    SEXP ans;
-    PRESERVE_SV(ans = allocVector(INTSXP, 5));
-    INTEGER(ans)[0] = parseState.xxGetArgs;
-    INTEGER(ans)[1] = parseState.xxIgnoreKeywords;
-    INTEGER(ans)[2] = parseState.xxBraceDepth;
-    INTEGER(ans)[3] = parseState.xxBracketDepth;
-    INTEGER(ans)[4] = parseState.xxMathMode;
-    parseState.xxMathMode = 1;
-    return ans;
-
+    return xxpushMode(0, 0, 1, 0);
 }
+
+static SEXP xxenterDefMode(int args, int equals) {
+    return xxpushMode(args, 1, 0, equals);
+}
+
 static SEXP xxpushMode(int getArgs,
-                       int ignoreKeywords) {
+                       int ignoreKeywords,
+                       int mathMode,
+                       int optionalEquals) {
     SEXP ans;
 
-    PRESERVE_SV(ans = allocVector(INTSXP, 5));
+    PRESERVE_SV(ans = allocVector(INTSXP, 6));
     INTEGER(ans)[0] = parseState.xxGetArgs;
     INTEGER(ans)[1] = parseState.xxIgnoreKeywords;
     INTEGER(ans)[2] = parseState.xxBraceDepth;
     INTEGER(ans)[3] = parseState.xxBracketDepth;
     INTEGER(ans)[4] = parseState.xxMathMode;
+    INTEGER(ans)[5] = parseState.xxOptionalEquals;
     parseState.xxGetArgs = getArgs;
     parseState.xxIgnoreKeywords = ignoreKeywords;
     parseState.xxBraceDepth = 0;
     parseState.xxBracketDepth = 0;
+    parseState.xxMathMode = mathMode;
+    parseState.xxOptionalEquals = optionalEquals;
     return ans;
 }
 
@@ -512,6 +519,7 @@ static void xxpopMode(SEXP oldmode) {
   parseState.xxBraceDepth = INTEGER(oldmode)[2];
   parseState.xxBracketDepth = INTEGER(oldmode)[3];
   parseState.xxMathMode = INTEGER(oldmode)[4];
+  parseState.xxOptionalEquals = INTEGER(oldmode)[5];
   RELEASE_SV(oldmode);
 }
 
@@ -532,6 +540,15 @@ static void xxArg(SEXP arg) {
     case 8:
       parseState.xxGetArgs--;  /* &, ^ and _ can be args */
       break;
+    case 12:   /* ignore '=' in \let or \def */
+      if (!parseState.xxOptionalEquals ||
+          parseState.xxGetArgs != 1 ||
+          strcmp(CHAR(STRING_ELT(arg, 0)), "=") != 0)
+        /* it's an arg */
+        parseState.xxGetArgs--;
+      else
+        /* it's an ignorable equal sign. There's only one of those */
+        parseState.xxOptionalEquals = 0;
     }
   } else {
     parseState.xxGetArgs--;
@@ -863,6 +880,7 @@ static void PutState(ParseState *state) {
     state->xxKwdType = parseState.xxKwdType;
     state->xxGetArgs = parseState.xxGetArgs;
     state->xxIgnoreKeywords = parseState.xxIgnoreKeywords;
+    state->xxOptionalEquals = parseState.xxOptionalEquals;
     state->xxBraceDepth = parseState.xxBraceDepth;
     state->xxBracketDepth = parseState.xxBracketDepth;
     state->xxMathMode = parseState.xxMathMode;
@@ -894,6 +912,7 @@ static SEXP ParseLatex(ParseStatus *status)
     parseState.xxBraceDepth = 0;
     parseState.xxBracketDepth = 0;
     parseState.xxMathMode = 0;
+    parseState.xxOptionalEquals = 0;
 
     parseState.xxlineno = 1;
     parseState.xxcolno = 1;
@@ -961,6 +980,8 @@ static keywords[] = {
     { "\\begin",  BEGIN },
     { "\\end",    END },
     { "\\verb",   VERB },
+    { "\\let",    LET_OR_DEF },
+    { "\\def",    LET_OR_DEF },
     { 0,     0        }
     /* All other markup macros are rejected. */
 };
