@@ -1,3 +1,7 @@
+# parseLatex 0.4.2
+
+* Improved support for syntax of `\let` and `\def`.
+
 # parseLatex 0.4.1
 
 * Added `row_to_vector()`.
