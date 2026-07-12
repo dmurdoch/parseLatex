@@ -20,6 +20,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Duncan Murdoch \email{murdoch.duncan@gmail.com}
 
+Authors:
+\itemize{
+  \item Duncan Murdoch \email{murdoch.duncan@gmail.com}
+}
+
 Other contributors:
 \itemize{
   \item The R Core Team [contributor, copyright holder]
