@@ -53,11 +53,13 @@ cat(latex)
 parsed <- parseLatex(latex)
 # This is a blank followed by a table; drop the blank
 table <- parsed[[find_env(parsed, "tabular")]]
+# Break up the table into individual cells
+table <- prepare_table(table)
 # Get the alignment options from the content
 brace_options(get_contents(table))
 #> {l|r|r}
 tableCell(table, 2,2) # The title counts!
-#>  21
+#> 21
 tableCell(table, 2,2) <- "Changed!"
 table
 #> ENVIRONMENT: \begin{tabular}[t]{l|r|r}
