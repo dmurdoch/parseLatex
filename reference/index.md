@@ -1,0 +1,176 @@
+# Package index
+
+## Main functions
+
+The main high-level functions
+
+- [`parseLatex()`](https://dmurdoch.github.io/parseLatex/reference/parseLatex_fn.md)
+  : Parse LaTeX code
+- [`deparseLatex()`](https://dmurdoch.github.io/parseLatex/reference/deparseLatex.md)
+  : Convert latex object into character vector
+- [`showErrors()`](https://dmurdoch.github.io/parseLatex/reference/showErrors.md)
+  : Show errors in parsed Latex object
+
+## Searching
+
+Functions to find and modify things
+
+- [`find_sequence()`](https://dmurdoch.github.io/parseLatex/reference/find_sequence.md)
+  [`items_are_equal()`](https://dmurdoch.github.io/parseLatex/reference/find_sequence.md)
+  : Find a code sequence
+- [`find_pattern()`](https://dmurdoch.github.io/parseLatex/reference/find_pattern.md)
+  : Find a pattern in deparsed items
+- [`find_whitespace()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_env()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_macro()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_catcode()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_tags()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_char()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_block()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  [`find_general()`](https://dmurdoch.github.io/parseLatex/reference/finders.md)
+  : Miscellaneous low-level finders
+- [`path_to()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  [`get_item()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  [`get_items()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  [`set_item()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  [`insert_values()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  [`get_container()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  [`get_which()`](https://dmurdoch.github.io/parseLatex/reference/path_to.md)
+  : Find path to a particular kind of item
+- [`set_range()`](https://dmurdoch.github.io/parseLatex/reference/set_range.md)
+  [`get_range()`](https://dmurdoch.github.io/parseLatex/reference/set_range.md)
+  : Set items in a LaTeX2 object
+- [`find_bracket_options()`](https://dmurdoch.github.io/parseLatex/reference/options.md)
+  [`bracket_options()`](https://dmurdoch.github.io/parseLatex/reference/options.md)
+  [`` `bracket_options<-`() ``](https://dmurdoch.github.io/parseLatex/reference/options.md)
+  [`find_brace_options()`](https://dmurdoch.github.io/parseLatex/reference/options.md)
+  [`brace_options()`](https://dmurdoch.github.io/parseLatex/reference/options.md)
+  [`` `brace_options<-`() ``](https://dmurdoch.github.io/parseLatex/reference/options.md)
+  : Find or modify macro or environment options
+
+## Tables
+
+Working with tables in the document
+
+- [`is_tabular()`](https://dmurdoch.github.io/parseLatex/reference/tables.md)
+  [`find_tabular()`](https://dmurdoch.github.io/parseLatex/reference/tables.md)
+  : Functions related to parsing LaTeX tables
+- [`tableNrow()`](https://dmurdoch.github.io/parseLatex/reference/tablecalcs.md)
+  [`tableNcol()`](https://dmurdoch.github.io/parseLatex/reference/tablecalcs.md)
+  [`tableDim()`](https://dmurdoch.github.io/parseLatex/reference/tablecalcs.md)
+  : Calculations on tables
+- [`find_posOption()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`posOption()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`` `posOption<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`find_widthOption()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`widthOption()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`` `widthOption<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`find_columnOptions()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`columnOptions()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`columnOption()`](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`` `columnOptions<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  [`` `columnOption<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableOption.md)
+  : Functions related to table options.
+- [`find_tableContent()`](https://dmurdoch.github.io/parseLatex/reference/tableContent.md)
+  [`tableContent()`](https://dmurdoch.github.io/parseLatex/reference/tableContent.md)
+  [`` `tableContent<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableContent.md)
+  : Functions relating to the data content of a table
+- [`find_tableRow()`](https://dmurdoch.github.io/parseLatex/reference/tableRow.md)
+  [`tableRow()`](https://dmurdoch.github.io/parseLatex/reference/tableRow.md)
+  [`` `tableRow<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableRow.md)
+  : Functions to work with rows in tables
+- [`find_tableCell()`](https://dmurdoch.github.io/parseLatex/reference/tablecell.md)
+  [`tableCell()`](https://dmurdoch.github.io/parseLatex/reference/tablecell.md)
+  [`` `tableCell<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tablecell.md)
+  : Work with table cells
+- [`find_rules()`](https://dmurdoch.github.io/parseLatex/reference/tableRule.md)
+  [`rules()`](https://dmurdoch.github.io/parseLatex/reference/tableRule.md)
+  [`find_rule()`](https://dmurdoch.github.io/parseLatex/reference/tableRule.md)
+  [`rule()`](https://dmurdoch.github.io/parseLatex/reference/tableRule.md)
+  [`` `rule<-`() ``](https://dmurdoch.github.io/parseLatex/reference/tableRule.md)
+  : Work with rules in tables
+- [`vector_to_row()`](https://dmurdoch.github.io/parseLatex/reference/vector_to_row.md)
+  [`row_to_vector()`](https://dmurdoch.github.io/parseLatex/reference/vector_to_row.md)
+  : Convert vector to table row and back
+- [`find_caption()`](https://dmurdoch.github.io/parseLatex/reference/find_caption.md)
+  [`drop_caption()`](https://dmurdoch.github.io/parseLatex/reference/find_caption.md)
+  [`path_to_caption()`](https://dmurdoch.github.io/parseLatex/reference/find_caption.md)
+  : Find or drop captions
+- [`prepare_table()`](https://dmurdoch.github.io/parseLatex/reference/prepare_table.md)
+  [`prepare_row()`](https://dmurdoch.github.io/parseLatex/reference/prepare_table.md)
+  : Split up a table by rows
+
+## Utilities
+
+Functions for working with parsed LaTeX
+
+- [`as_LaTeX2()`](https://dmurdoch.github.io/parseLatex/reference/as_LaTeX2.md)
+  [`latex2()`](https://dmurdoch.github.io/parseLatex/reference/as_LaTeX2.md)
+  : Coerce to LaTeX2
+- [`latexTag()`](https://dmurdoch.github.io/parseLatex/reference/names.md)
+  [`catcode()`](https://dmurdoch.github.io/parseLatex/reference/names.md)
+  [`envName()`](https://dmurdoch.github.io/parseLatex/reference/names.md)
+  [`` `envName<-`() ``](https://dmurdoch.github.io/parseLatex/reference/names.md)
+  [`macroName()`](https://dmurdoch.github.io/parseLatex/reference/names.md)
+  : Utility functions finding names and types of objects
+- [`is_env()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_macro()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_block()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_bracket()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_whitespace()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_text()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_error()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_itemlist()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_placeholder()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_char()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  [`is_catcode()`](https://dmurdoch.github.io/parseLatex/reference/tests.md)
+  : Test objects
+- [`get_contents()`](https://dmurdoch.github.io/parseLatex/reference/get_contents.md)
+  [`set_contents()`](https://dmurdoch.github.io/parseLatex/reference/get_contents.md)
+  : Convenience functions to get or set contents of item
+- [`drop_items()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`select_items()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`drop_whitespace()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`trim_whitespace()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`include_whitespace()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`split_chars()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`new_block()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  [`new_env()`](https://dmurdoch.github.io/parseLatex/reference/Utilities.md)
+  : Miscellaneous utilities
+- [`reduce_whitespace()`](https://dmurdoch.github.io/parseLatex/reference/reduce_whitespace.md)
+  : Remove excess whitespace recursively
+- [`split_list()`](https://dmurdoch.github.io/parseLatex/reference/splitting.md)
+  [`split_latex()`](https://dmurdoch.github.io/parseLatex/reference/splitting.md)
+  : Splitting lists of items
+- [`new_itemlist()`](https://dmurdoch.github.io/parseLatex/reference/itemlist.md)
+  [`flatten_itemlists()`](https://dmurdoch.github.io/parseLatex/reference/itemlist.md)
+  [`placeholder()`](https://dmurdoch.github.io/parseLatex/reference/itemlist.md)
+  [`show_itemlists()`](https://dmurdoch.github.io/parseLatex/reference/itemlist.md)
+  : Lists of items
+
+## Miscellaneous
+
+Some more documentation
+
+- [`parseLatex-package`](https://dmurdoch.github.io/parseLatex/reference/parseLatex_pkg.md)
+  [`parseLatex_pkg`](https://dmurdoch.github.io/parseLatex/reference/parseLatex_pkg.md)
+  : The parseLatex package
+- [`LaTeX2range()`](https://dmurdoch.github.io/parseLatex/reference/LaTeX2range.md)
+  [`print(`*`<LaTeX2range>`*`)`](https://dmurdoch.github.io/parseLatex/reference/LaTeX2range.md)
+  : Ranges within LaTeX2 lists.
+- [`vector_to_latex2()`](https://dmurdoch.github.io/parseLatex/reference/vector_to_latex2.md)
+  : Convert vector to items
+- [`defaultCatcodes`](https://dmurdoch.github.io/parseLatex/reference/defaultCatcodes.md)
+  : The default "catcodes" used by parseLatex.
+- [`get_leftovers()`](https://dmurdoch.github.io/parseLatex/reference/get_leftovers.md)
+  : Retrieve source from beyond the end of the document.
+- [`path_to_index()`](https://dmurdoch.github.io/parseLatex/reference/path_to_index.md)
+  [`index_to_path()`](https://dmurdoch.github.io/parseLatex/reference/path_to_index.md)
+  [`paths_to_ranges()`](https://dmurdoch.github.io/parseLatex/reference/path_to_index.md)
+  [`get_ranges()`](https://dmurdoch.github.io/parseLatex/reference/path_to_index.md)
+  : Convert between paths and indices
+- [`print(`*`<LaTeX2item>`*`)`](https://dmurdoch.github.io/parseLatex/reference/print.LaTeX2item.md)
+  [`print(`*`<LaTeX2>`*`)`](https://dmurdoch.github.io/parseLatex/reference/print.LaTeX2item.md)
+  : Print methods
+- [`rmSrcrefs()`](https://dmurdoch.github.io/parseLatex/reference/rmSrcrefs.md)
+  : Remove srcrefs
