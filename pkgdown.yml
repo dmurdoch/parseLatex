@@ -3,7 +3,7 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   parseLatex: parseLatex.html
-last_built: 2026-07-18T16:15Z
+last_built: 2026-07-18T16:46Z
 urls:
   reference: https://dmurdoch.github.io/parseLatex/reference
   article: https://dmurdoch.github.io/parseLatex/articles
