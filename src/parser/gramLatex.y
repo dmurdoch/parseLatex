@@ -260,12 +260,14 @@ Items:    Item         { $$ = xxnewlist($1); }
   |  Items displaymath { $$ = xxlist($1, $2); }
   |  Items error       { yyclearin;
                          parseError();
-                         GrowList($1, xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &@2));
+                         GrowList($1, xxwrapError(PROTECT(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL)), &@2));
+                         UNPROTECT(1);
                          $$ = $1;
                        }
   | error              { yyclearin;
                          parseError();
-                         $$ = xxnewlist(xxwrapError(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL), &@1));
+                         $$ = xxnewlist(PROTECT(xxwrapError(PROTECT(xxfakeStart(CHAR(STRING_ELT(yylval, 0)), NULL)), &@1)));
+                         UNPROTECT(2);
                        }
 
 nonMath:  Item         { $$ = xxnewlist($1); }
@@ -299,10 +301,12 @@ environment:  begin Items END '{' envname '}'
                           { $$ = xxenv($1, NULL, $4, &@$);
                             RELEASE_SV($2); }
   |           begin error { xxincompleteBegin($1, &@1);
-                            $$ = xxwrapError(xxfakeBegin($1, NULL), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeBegin($1, NULL)), &@$);
+                            UNPROTECT(1); }
   |           begin Items error {
                             xxincompleteBegin($1, &@1);
-                            $$ = xxwrapError(xxfakeBegin($1, $2), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeBegin($1, $2)), &@$);
+                            UNPROTECT(1); }
 
 mathstart: '$'            { $$ = xxenterMathMode(); }
 
@@ -310,26 +314,32 @@ math:   mathstart nonMath '$'   { xxpopMode($1);
                             $$ = xxmath($2, &@$, FALSE); }
   |     mathstart error   { xxpopMode($1);
                             xxincomplete(mkString("$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$", NULL), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeStart("$", NULL)), &@$);
+                            UNPROTECT(1); }
   |     mathstart nonMath error { xxpopMode($1);
                             xxincomplete(mkString("$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$", $2), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeStart("$", $2)), &@$);
+                            UNPROTECT(1); }
 
 displaymath:    TWO_DOLLARS nonMath TWO_DOLLARS
                           { $$ = xxmath($2, &@$, TRUE); }
   |             TWO_DOLLARS error
                           { xxincomplete(mkString("$$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$$", NULL), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeStart("$$", NULL)), &@$);
+                            UNPROTECT(1); }
   |             TWO_DOLLARS nonMath error
                           { xxincomplete(mkString("$$"), &@1);
-                            $$ = xxwrapError(xxfakeStart("$$", $2), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeStart("$$", $2)), &@$);
+                            UNPROTECT(1); }
 
 block:    '{'  Items  '}' { $$ = xxblock($2, &@$); }
   |  '{' '}'              { $$ = xxblock(NULL, &@$); }
   | '{' error             { xxincomplete(mkString("{"), &@1);
-                            $$ = xxwrapError(xxfakeStart("{", NULL), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeStart("{", NULL)), &@$);
+                            UNPROTECT(1); }
   | '{' Items error       { xxincomplete(mkString("{"), &@1);
-                            $$ = xxwrapError(xxfakeStart("{", $2), &@$); }
+                            $$ = xxwrapError(PROTECT(xxfakeStart("{", $2)), &@$);
+                            UNPROTECT(1); }
 
 newdefine :  NEWCMD       { $$ = xxenterDefMode(2, 0); }
                Items END_OF_ARGS
@@ -440,13 +450,14 @@ static SEXP xxenv(SEXP begin, SEXP body, SEXP end, YYLTYPE *lloc)
     PRESERVE_SV(ans = allocVector(VECSXP, 0));
 
 
-  setAttrib(ans, install("envname"), mkString(ename1));
+  setAttrib(ans, install("envname"), PROTECT(mkString(ename1)));
   RELEASE_SV(begin);
   if (!isNull(end))
     RELEASE_SV(end);
-  setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, LatexTagSymbol, mkString("ENVIRONMENT"));
-  setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
+  setAttrib(ans, install("srcref"), PROTECT(makeSrcref(lloc)));
+  setAttrib(ans, LatexTagSymbol, PROTECT(mkString("ENVIRONMENT")));
+  setAttrib(ans, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+  UNPROTECT(4);
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
 #endif
@@ -459,19 +470,19 @@ static SEXP xxnewdef(SEXP cmd, SEXP items,
   SEXP ans, temp;
   int n;
 
-  PRESERVE_SV(temp = PairToVectorList(CDR(items)));
+  PROTECT(temp = PairToVectorList(CDR(items)));
   RELEASE_SV(items);
   n = length(temp);
   PRESERVE_SV(ans = allocVector(VECSXP, n + 1));
   for (int i=0; i < n; i++)
     SET_VECTOR_ELT(ans, i + 1, VECTOR_ELT(temp, i));
-  RELEASE_SV(temp);
   SET_VECTOR_ELT(ans, 0, cmd);
   RELEASE_SV(cmd);
 
-  setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, LatexTagSymbol, mkString("DEFINITION"));
-  setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
+  setAttrib(ans, install("srcref"), PROTECT(makeSrcref(lloc)));
+  setAttrib(ans, LatexTagSymbol, PROTECT(mkString("DEFINITION")));
+  setAttrib(ans, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+  UNPROTECT(4);
 
   return ans;
 }
@@ -568,10 +579,11 @@ static SEXP xxmath(SEXP body, YYLTYPE *lloc, Rboolean display)
 #endif
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
-    setAttrib(ans, install("srcref"), makeSrcref(lloc));
+    setAttrib(ans, install("srcref"), PROTECT(makeSrcref(lloc)));
     setAttrib(ans, LatexTagSymbol,
-    mkString(display ? "DISPLAYMATH" : "MATH"));
-    setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
+      PROTECT(mkString(display ? "DISPLAYMATH" : "MATH")));
+    setAttrib(ans, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+    UNPROTECT(3);
 #if DEBUGVALS
     Rprintf(" result: %p\n", ans);
 #endif
@@ -590,9 +602,10 @@ static SEXP xxblock(SEXP body, YYLTYPE *lloc)
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
   }
-  setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, LatexTagSymbol, mkString("BLOCK"));
-  setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
+  setAttrib(ans, install("srcref"), PROTECT(makeSrcref(lloc)));
+  setAttrib(ans, LatexTagSymbol, PROTECT(mkString("BLOCK")));
+  setAttrib(ans, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+  UNPROTECT(3);
 #if DEBUGVALS
   Rprintf(" result: %p\n", ans);
 #endif
@@ -608,10 +621,11 @@ static SEXP xxerrblock(SEXP body, YYLTYPE *lloc)
     PRESERVE_SV(ans = PairToVectorList(CDR(body)));
     RELEASE_SV(body);
   }
-  setAttrib(ans, install("srcref"), makeSrcref(lloc));
-  setAttrib(ans, LatexTagSymbol, mkString("ERROR"));
-  setAttrib(ans, R_ClassSymbol, mkString("LaTeX2item"));
-  setAttrib(ans, install("errormsg"), mkString(ParseErrorMsg));
+  setAttrib(ans, install("srcref"), PROTECT(makeSrcref(lloc)));
+  setAttrib(ans, LatexTagSymbol, PROTECT(mkString("ERROR")));
+  setAttrib(ans, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+  setAttrib(ans, install("errormsg"), PROTECT(mkString(ParseErrorMsg)));
+  UNPROTECT(4);
 
   return ans;
 }
@@ -646,21 +660,24 @@ static void xxsavevalue(SEXP items, YYLTYPE *lloc)
     } else {
       PRESERVE_SV(parseState.Value = allocVector(VECSXP, 1));
       SET_VECTOR_ELT(parseState.Value, 0, ScalarString(mkChar("")));
-      setAttrib(VECTOR_ELT(parseState.Value, 0), LatexTagSymbol, mkString("TEXT"));
+      setAttrib(VECTOR_ELT(parseState.Value, 0), LatexTagSymbol, PROTECT(mkString("TEXT")));
       setAttrib(VECTOR_ELT(parseState.Value, 0), R_ClassSymbol,
-        mkString("LaTeX2item"));
+        PROTECT(mkString("LaTeX2item")));
+      UNPROTECT(2);
     }
     if (!isNull(parseState.Value)) {
-      setAttrib(parseState.Value, R_ClassSymbol, mkString("LaTeX2"));
-      setAttrib(parseState.Value, install("srcref"), makeSrcref(lloc));
+      setAttrib(parseState.Value, R_ClassSymbol, PROTECT(mkString("LaTeX2")));
+      setAttrib(parseState.Value, install("srcref"), PROTECT(makeSrcref(lloc)));
+      UNPROTECT(2);
     }
 }
 
 static SEXP xxtag(SEXP item, int type, YYLTYPE *lloc)
 {
-    setAttrib(item, LatexTagSymbol, mkString(yytname[YYTRANSLATE(type)]));
-    setAttrib(item, install("srcref"), makeSrcref(lloc));
-    setAttrib(item, R_ClassSymbol, mkString("LaTeX2item"));
+    setAttrib(item, LatexTagSymbol, PROTECT(mkString(yytname[YYTRANSLATE(type)])));
+    setAttrib(item, install("srcref"), PROTECT(makeSrcref(lloc)));
+    setAttrib(item, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+    UNPROTECT(3);
     return item;
 }
 
@@ -767,8 +784,8 @@ static SEXP makeSrcref(YYLTYPE *lloc)
     INTEGER(val)[3] = lloc->last_byte;
     INTEGER(val)[4] = lloc->first_column;
     INTEGER(val)[5] = lloc->last_column;
-    setAttrib(val, R_ClassSymbol, mkString("srcref"));
-    UNPROTECT(1); /* val */
+    setAttrib(val, R_ClassSymbol, PROTECT(mkString("srcref")));
+    UNPROTECT(2);
     return val;
 }
 
@@ -825,8 +842,9 @@ static SEXP xxfakeStart(const char * start, SEXP items)
 {
   SEXP temp;
   YYLTYPE *lloc = &noSrcref;
-  PRESERVE_SV(temp = xxnewlist(xxtag(mkString(start),
+  PRESERVE_SV(temp = xxnewlist(xxtag(PROTECT(mkString(start)),
                                      TEXT, lloc)));
+  UNPROTECT(1);
   if (items)
     AppendList(temp, items);
   return temp;
@@ -838,8 +856,9 @@ static SEXP xxfakeBegin(SEXP envname, SEXP items)
 {
   SEXP temp;
   YYLTYPE *lloc = &noSrcref;
-  PRESERVE_SV(temp = xxnewlist(xxtag(mkString("\\begin"),
+  PRESERVE_SV(temp = xxnewlist(xxtag(PROTECT(mkString("\\begin")),
                                      TEXT, lloc)));
+  UNPROTECT(1);
   GrowList(temp, xxblock(envname, lloc));
   if (items)
     AppendList(temp, items);
@@ -1273,8 +1292,9 @@ static int mkWhite(int c, int cat)
     xxungetc(c);
   }
   PRESERVE_SV(yylval = mkString2(stext,  bp - stext));
-  setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
-  setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
+  setAttrib(yylval, install("catcode"), PROTECT(Rf_ScalarInteger(cat)));
+  setAttrib(yylval, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+  UNPROTECT(2);
   if(st1) free(st1);
   return SPECIAL;
 }
@@ -1507,8 +1527,9 @@ static int mkSpecial(int c, int cat)
   }
   TEXT_PUSH(c);
   PRESERVE_SV(yylval = mkString2(stext, bp - stext));
-  setAttrib(yylval, install("catcode"), Rf_ScalarInteger(cat));
-  setAttrib(yylval, R_ClassSymbol, mkString("LaTeX2item"));
+  setAttrib(yylval, install("catcode"), PROTECT(Rf_ScalarInteger(cat)));
+  setAttrib(yylval, R_ClassSymbol, PROTECT(mkString("LaTeX2item")));
+  UNPROTECT(2);
   if(st1) free(st1);
   return SPECIAL;
 }

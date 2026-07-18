@@ -1,7 +1,6 @@
-## parseLatex 0.4.1
+## parseLatex 0.4.4
 
-* This revision adds a number of functions in support of
-reading and editing tables.
-* It also includes a few bug fixes, and updates to the
-DESCRIPTION file to declare version dependencies for
-R and Bison.
+* This revision is mainly at the request of CRAN, to fix
+issues detected by rchk and a new gcc compiler.
+* It also makes \let and \def syntax a bit more 
+flexible.
