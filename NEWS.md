@@ -1,7 +1,9 @@
-# parseLatex 0.4.3
+# parseLatex 0.4.4
 
 * Improved support for syntax of `\let` and `\def`.
-* Fixed error in C code as requested by CRAN.
+* Fixed errors in C code as requested by CRAN (protection
+issues detected by rchk and "const char *" modification
+detected by new gcc.)
 
 # parseLatex 0.4.1
 
