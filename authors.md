@@ -12,12 +12,12 @@ Source:
 [`DESCRIPTION`](https://github.com/dmurdoch/parseLatex/blob/main/DESCRIPTION)
 
 Murdoch D (2026). *parseLatex: Parse 'LaTeX' Code*. R package version
-0.4.3, <https://github.com/dmurdoch/parseLatex>.
+0.4.4, <https://github.com/dmurdoch/parseLatex>.
 
     @Manual{,
       title = {parseLatex: Parse 'LaTeX' Code},
       author = {Duncan Murdoch},
       year = {2026},
-      note = {R package version 0.4.3},
+      note = {R package version 0.4.4},
       url = {https://github.com/dmurdoch/parseLatex},
     }
